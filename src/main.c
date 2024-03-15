@@ -40,7 +40,7 @@ int main(int argc, const char **argv)
     //set_palette(desktop_palette);
     //set_color_depth(desktop_color_depth());
     clear_to_color(screen, TRANS);
-    textout_centre_ex(screen, font, "Hello, world!", SCREEN_W / 2, SCREEN_H / 2, makecol(0,0,0), -1);
+    textout_centre_ex(screen, font, "Loading Instituto Rio Immaculado...", SCREEN_W / 2, SCREEN_H / 2, makecol(0,0,0), -1);
     
     for (int i = 0; i < 9; i++) {
         sprintf(file_buffer, "MIGUEL%d.PCX", i + 1);
@@ -50,13 +50,21 @@ int main(int argc, const char **argv)
             exit(1); 
         }
     }    
+    for (int i = 0; i < 9; i++) {
+        sprintf(file_buffer, "MIGUELI%d.PCX", i + 1);
+        playeri[i] = load_pcx( file_buffer, NULL ); /* load the bitmap file */ 
+        if(!playeri[i]) {
+            allegro_message(file_buffer);
+            exit(1); 
+        }
+    }    
     bg = load_pcx("bg.pcx", NULL);
     blit(bg, screen, 0, 0, 0, 0, 320, 200);
     
     // Wait for a keypress, then finish the program.
     exit_game = 0;               /* reset flag */
-    x = 0;
-    y = 120;
+    x = 100;
+    y = 150;
     do {                        /* loop */
         input();                /* get input */
         process();              /* process it */
