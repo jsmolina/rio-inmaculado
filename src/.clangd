@@ -1,0 +1,5 @@
+CompileFlags: # Tweak the parse settings, example directory given to show format
+  Add:
+    # - "-I=[folder]"         # old answer
+    - "-I/Users/jordism/repos/allegro-4.2.2-xc/include" 
+    - "-I/Users/jordism/repos/allegro" 

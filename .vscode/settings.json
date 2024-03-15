@@ -1,0 +1,20 @@
+{
+    "files.associations": {
+        "allegro.h": "c",
+        "base.h": "c",
+        "limits.h": "c",
+        "charconv": "c",
+        "istream": "c",
+        "iterator": "c",
+        "locale": "c",
+        "memory": "c",
+        "string": "c",
+        "unordered_map": "c",
+        "game.h": "c"
+    },
+    "clangd.fallbackFlags": [
+        "-I${workspaceFolder}/include",
+        "-I/Users/jordism/repos/allegro-4.2.2-xc/include",
+        "-I/Users/jordism/djgpp/include",
+    ]
+}
