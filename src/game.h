@@ -10,6 +10,7 @@ extern int exit_game;                   /* flag we'll set to end the game */
 extern int x;
 extern int y;
 extern BITMAP *player[11];
+extern BITMAP *bg;
 extern int curr_sprite;
 
 extern void input();

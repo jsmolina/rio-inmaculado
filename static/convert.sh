@@ -13,3 +13,4 @@ convert miguel_sprites.png -crop 40x40+292+0 -colors 256 -type truecolor miguel8
 convert miguel_sprites.png -crop 40x40+332+0 -colors 256 -type truecolor miguel9.pcx
 convert miguel_sprites.png -crop 40x40+373+0 -colors 256 -type truecolor miguel10.pcx
 convert miguel_sprites.png -crop 40x40+413+0 -colors 256 -type truecolor miguel11.pcx
+convert background.png -colors 256 -type truecolor bg.pcx

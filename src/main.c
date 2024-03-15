@@ -28,7 +28,8 @@ int main(int argc, const char **argv)
 
     // Installs the Allegro keyboard interrupt handler.
     install_keyboard();
-
+    //bmp = create_bitmap(640, 480);
+    set_color_depth(32);
     // Switch to graphics mode, 320x200.
     if (set_gfx_mode(GFX_AUTODETECT, 320, 200, 0, 0) != 0) {
         set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
@@ -40,7 +41,7 @@ int main(int argc, const char **argv)
     //set_color_depth(desktop_color_depth());
     clear_to_color(screen, TRANS);
     textout_centre_ex(screen, font, "Hello, world!", SCREEN_W / 2, SCREEN_H / 2, makecol(0,0,0), -1);
-
+    
     for (int i = 0; i < 9; i++) {
         sprintf(file_buffer, "MIGUEL%d.PCX", i + 1);
         player[i] = load_pcx( file_buffer, NULL ); /* load the bitmap file */ 
@@ -49,6 +50,8 @@ int main(int argc, const char **argv)
             exit(1); 
         }
     }    
+    bg = load_pcx("bg.pcx", NULL);
+    blit(bg, screen, 0, 0, 0, 0, 320, 200);
     
     // Wait for a keypress, then finish the program.
     exit_game = 0;               /* reset flag */
