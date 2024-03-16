@@ -6,6 +6,7 @@
 #include <allegro/keyboard.h>
 
 #define TRANS makecol(255, 0, 255)
+#define STOPPOS 100
 #define STOP_LEFT 101
 #define STOP_RIGHT 102
 #define MOVING_LEFT 1

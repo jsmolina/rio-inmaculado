@@ -18,7 +18,7 @@ void input() {
     if (key[KEY_ESC]) {
         exit_game = 1;
     }
-    if (moving < 100) {
+    if (moving < STOPPOS) {
        if (moving == MOVING_LEFT || moving == PUNCH_LEFT) {
            moving = STOP_LEFT;
        } else {
@@ -41,10 +41,10 @@ void input() {
 void process() {
     // delete sprite
     blit(bg, screen, x, y, x, y, 40, 40);
-    if (moving == MOVING_RIGHT && x < 280) {
+    if (moving == MOVING_RIGHT && x < 300) {
         x++;
     }
-    if (moving == MOVING_LEFT && x > 40) {
+    if (moving == MOVING_LEFT && x > 1) {
         x--;
     }
 }
