@@ -14,9 +14,12 @@
 #define JUMPING 52
 #define JUMPING_LEFT 3
 #define JUMPING_RIGHT 4
+#define PUNCH_LEFT 5
+#define PUNCH_RIGHT 6
 
 #define ANIM_WALK1 4
 #define ANIM_WALK2 5
+#define ANIM_PUNCH 1
 
 extern int exit_game;                   /* flag we'll set to end the game */
 extern int x;

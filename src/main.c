@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include "allegro/alcompat.h"
 #include "allegro/datafile.h"
+#include "allegro/gfx.h"
 #include "game.h"
 
 /**
@@ -71,6 +72,14 @@ int main(int argc, const char **argv)
         output();               /* give output */
         vsync();
     } while (exit_game == 0);    /* until the flag is set */
+
+    destroy_bitmap(bg);
+    for (int i = 0; i < 9; i++) {
+        destroy_bitmap(player[i]); 
+    }    
+    for (int i = 0; i < 9; i++) {
+        destroy_bitmap(playeri[i]); 
+    }    
   
     return 0;
 }

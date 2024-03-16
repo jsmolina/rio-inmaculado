@@ -19,19 +19,23 @@ void input() {
         exit_game = 1;
     }
     if (moving < 100) {
-       if (moving == MOVING_LEFT) {
+       if (moving == MOVING_LEFT || moving == PUNCH_LEFT) {
            moving = STOP_LEFT;
        } else {
            moving = STOP_RIGHT;
        }
     }
-
-    if (key[KEY_LEFT]) {
+    if (key[KEY_SPACE]) {
+        if (moving == STOP_LEFT) {
+            moving = PUNCH_LEFT;
+        } else {
+            moving = PUNCH_RIGHT;
+        }   
+    } else if (key[KEY_LEFT]) {
         moving = MOVING_LEFT;
     } else if (key[KEY_RIGHT]) {
         moving = MOVING_RIGHT;
     } 
-    
 }
 
 void process() {
@@ -57,7 +61,9 @@ void output() {
             } else {
                 curr_sprite = ANIM_WALK1;
             }
-        } else {
+        } else if (moving == PUNCH_RIGHT || moving == PUNCH_LEFT) {
+            curr_sprite = ANIM_PUNCH;
+        } else {    
             curr_sprite = 0;
         }
     }
