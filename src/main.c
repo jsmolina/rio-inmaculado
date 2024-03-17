@@ -51,14 +51,6 @@ int main(int argc, const char **argv)
             exit(1); 
         }
     }    
-    for (int i = 0; i < 9; i++) {
-        sprintf(file_buffer, "MIGUELI%d.PCX", i + 1);
-        playeri[i] = load_pcx( file_buffer, NULL ); /* load the bitmap file */ 
-        if(!playeri[i]) {
-            allegro_message(file_buffer);
-            exit(1); 
-        }
-    }    
     bg = load_pcx("bg.pcx", NULL);
     blit(bg, screen, 0, 0, 0, 0, 320, 200);
     

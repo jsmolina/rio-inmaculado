@@ -69,9 +69,10 @@ void output() {
     }
     // redraw pair or impair?
     if (moving & 1) {
-        draw_sprite(screen, playeri[curr_sprite], x, y);
+        draw_sprite_h_flip(screen, player[curr_sprite], x, y);
     } else {
         draw_sprite(screen, player[curr_sprite], x, y);
+        //draw_sprite_h_flip(screen, player[curr_sprite], x, y);
     }
     
     if (counter > 319) {
