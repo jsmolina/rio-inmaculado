@@ -51,7 +51,7 @@ int main(int argc, const char **argv)
             exit(1); 
         }
     }    
-    bg = load_pcx("bg.pcx", NULL);
+    bg = load_pcx("bg3.pcx", NULL);
     blit(bg, screen, 0, 0, 0, 0, 320, 200);
     
     // Wait for a keypress, then finish the program.
