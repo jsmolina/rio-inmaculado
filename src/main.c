@@ -9,6 +9,7 @@
 #include "allegro/datafile.h"
 #include "allegro/gfx.h"
 #include "game.h"
+#include "tiles.h"
 
 /**
  * Allegro example script. Switches to graphics mode to print "hello world",
@@ -51,7 +52,11 @@ int main(int argc, const char **argv)
             exit(1); 
         }
     }    
-    bg = load_pcx("bg4.pcx", NULL);
+    // load_background requires load_tiles to be executed
+    load_tiles();
+    bg = load_background("bg4.tmx");
+    //bg = load_pcx("bg4.pcx", NULL);
+    //bg = load_background("bg4.tmx");
     blit(bg, screen, 0, 0, 0, 0, 320, 200);
     
     // Wait for a keypress, then finish the program.
@@ -68,10 +73,8 @@ int main(int argc, const char **argv)
     destroy_bitmap(bg);
     for (int i = 0; i < 9; i++) {
         destroy_bitmap(player[i]); 
-    }    
-    for (int i = 0; i < 9; i++) {
-        destroy_bitmap(playeri[i]); 
-    }    
+    }
+    destroy_tiles();
   
     return 0;
 }

@@ -1,8 +1,9 @@
 #include "game.h"
 #include "allegro/inline/draw.inl"
 #include "allegro/keyboard.h"
+#include <math.h>
 
-int exit_game; 
+int exit_game;
 int x;
 int y;
 int moving = STOP_RIGHT;
@@ -10,7 +11,8 @@ int curr_sprite = 0;
 int counter = 0;
 BITMAP *player[11];
 BITMAP *playeri[11];
-BITMAP * bg;
+BITMAP *bg;
+BITMAP *tiles;
 
 void input() {
     // readkey();
@@ -19,23 +21,23 @@ void input() {
         exit_game = 1;
     }
     if (moving < STOPPOS) {
-       if (moving == MOVING_LEFT || moving == PUNCH_LEFT) {
-           moving = STOP_LEFT;
-       } else {
-           moving = STOP_RIGHT;
-       }
+        if (moving == MOVING_LEFT || moving == PUNCH_LEFT) {
+            moving = STOP_LEFT;
+        } else {
+            moving = STOP_RIGHT;
+        }
     }
     if (key[KEY_SPACE]) {
         if (moving == STOP_LEFT) {
             moving = PUNCH_LEFT;
         } else {
             moving = PUNCH_RIGHT;
-        }   
+        }
     } else if (key[KEY_LEFT]) {
         moving = MOVING_LEFT;
     } else if (key[KEY_RIGHT]) {
         moving = MOVING_RIGHT;
-    } 
+    }
 }
 
 void process() {
@@ -51,8 +53,8 @@ void process() {
 
 void output() {
     counter++;
-    //circlefill (screen, x - 1, y, 5, TRANS); /* erase from last place */
-    //circlefill (screen, x, y, 5, 15);        /* draw first time */
+    // circlefill (screen, x - 1, y, 5, TRANS); /* erase from last place */
+    // circlefill (screen, x, y, 5, 15);        /* draw first time */
 
     if ((counter % 10) == 0) {
         if (moving == MOVING_RIGHT || moving == MOVING_LEFT) {
@@ -63,7 +65,7 @@ void output() {
             }
         } else if (moving == PUNCH_RIGHT || moving == PUNCH_LEFT) {
             curr_sprite = ANIM_PUNCH;
-        } else {    
+        } else {
             curr_sprite = 0;
         }
     }
@@ -72,13 +74,14 @@ void output() {
         draw_sprite_h_flip(screen, player[curr_sprite], x, y);
     } else {
         draw_sprite(screen, player[curr_sprite], x, y);
-        //draw_sprite_h_flip(screen, player[curr_sprite], x, y);
+        // draw_sprite_h_flip(screen, player[curr_sprite], x, y);
     }
-    
+
     if (counter > 319) {
         counter = 0;
     }
 }
+
 
 /**
 blit
