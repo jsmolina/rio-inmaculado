@@ -10,7 +10,7 @@ int moving = STOP_RIGHT;
 int curr_sprite = 0;
 int counter = 0;
 BITMAP *player[11];
-BITMAP *playeri[11];
+BITMAP *enemy1[11];
 BITMAP *bg;
 BITMAP *tiles;
 
@@ -42,7 +42,6 @@ void input() {
 
 void process() {
     // delete sprite
-    blit(bg, screen, x, y, x, y, 40, 40);
     if (moving == MOVING_RIGHT && x < 300) {
         x++;
     }
@@ -53,6 +52,8 @@ void process() {
 
 void output() {
     counter++;
+    blit(bg, screen, x, y, x, y, 40, 40);
+    
     // circlefill (screen, x - 1, y, 5, TRANS); /* erase from last place */
     // circlefill (screen, x, y, 5, 15);        /* draw first time */
 

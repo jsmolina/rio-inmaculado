@@ -10,6 +10,8 @@
 #include "allegro/gfx.h"
 #include "game.h"
 #include "tiles.h"
+#include "dat_manager.h"
+
 
 /**
  * Allegro example script. Switches to graphics mode to print "hello world",
@@ -42,16 +44,28 @@ int main(int argc, const char **argv)
     //set_palette(desktop_palette);
     //set_color_depth(desktop_color_depth());
     clear_to_color(screen, TRANS);
+    extract_data();
     textout_centre_ex(screen, font, "Loading Instituto Rio Immaculado...", SCREEN_W / 2, SCREEN_H / 2, makecol(0,0,0), -1);
     
     for (int i = 0; i < 9; i++) {
-        sprintf(file_buffer, "MIGUEL%d.PCX", i + 1);
-        player[i] = load_pcx( file_buffer, NULL ); /* load the bitmap file */ 
+        sprintf(file_buffer, "MAIN%d.PCX", i + 1);
+        player[i] = load_pcx( file_buffer, NULL );
         if(!player[i]) {
             allegro_message(file_buffer);
             exit(1); 
         }
     }    
+
+    // load enemy1
+    for (int i = 0; i < 9; i++) {
+        sprintf(file_buffer, "ENEMY%d.PCX", i + 1);
+        enemy1[i] = load_pcx( file_buffer, NULL );
+        if(!enemy1[i]) {
+            allegro_message(file_buffer);
+            exit(1); 
+        }
+    }   
+
     // load_background requires load_tiles to be executed
     load_tiles();
     bg = load_background("bg4.tmx");
@@ -75,6 +89,7 @@ int main(int argc, const char **argv)
         destroy_bitmap(player[i]); 
     }
     destroy_tiles();
+    cleanup_data();
   
     return 0;
 }

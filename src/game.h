@@ -28,7 +28,7 @@ extern int y;
 extern int counter;
 extern int moving;
 extern BITMAP *player[11];
-extern BITMAP *playeri[11];
+extern BITMAP *enemy1[11];
 extern BITMAP *bg;
 extern int curr_sprite;
 
