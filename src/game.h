@@ -22,13 +22,28 @@
 #define ANIM_WALK2 5
 #define ANIM_PUNCH 1
 
+struct spritePos {
+    unsigned int x;
+    unsigned int y;
+    BITMAP *sprite[11];
+    unsigned int moving;
+};
+
+struct enemyData {
+    unsigned int x;
+    unsigned int y;
+    unsigned targetX;
+    unsigned targetY;
+    BITMAP *sprite[11];
+};
+
 extern int exit_game;                   /* flag we'll set to end the game */
-extern int x;
-extern int y;
+extern struct spritePos player;
+extern struct enemyData enem1;
 extern int counter;
-extern int moving;
-extern BITMAP *player[11];
-extern BITMAP *enemy1[11];
+//extern int moving;
+//extern BITMAP *player[11];
+//extern BITMAP *enemy1[11];
 extern BITMAP *bg;
 extern int curr_sprite;
 
