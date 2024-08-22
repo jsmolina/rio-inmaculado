@@ -50,6 +50,8 @@ int point_distance(unsigned int x, unsigned int targetX) {
 }
 
 void process() {
+    // https://code.tutsplus.com/building-a-beat-em-up-in-game-maker-part-1-player-movement-attacks-and-basic-enemies--cms-26147t
+    // https://code.tutsplus.com/building-a-beat-em-up-in-game-maker-part-2-combat-and-basic-enemy-ai--cms-26148t
     // https://code.tutsplus.com/building-a-beat-em-up-in-game-makercombo-attacks-more-ai-and-health-pickups--cms-26471t
     // delete sprite
     if (player.moving == MOVING_RIGHT && player.x < 300) {
