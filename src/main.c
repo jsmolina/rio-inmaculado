@@ -58,7 +58,7 @@ int main(int argc, const char **argv)
 
     // load enemy1
     for (int i = 0; i < 9; i++) {
-        sprintf(file_buffer, "ENEMY%d.PCX", i + 1);
+        sprintf(file_buffer, "ENEM%d.PCX", i + 1);
         enemy1[i] = load_pcx( file_buffer, NULL );
         if(!enemy1[i]) {
             allegro_message(file_buffer);
