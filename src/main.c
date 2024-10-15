@@ -78,7 +78,8 @@ int main(int argc, const char **argv)
     player.x = 100;
     player.y = 150;
     player.moving = STOP_RIGHT;
-    enem1.x = 300;
+    player.curr_sprite = 0;
+    enem1.x = 240;
     enem1.y = 150;
     enem1.targetX = 0;
     enem1.targetY = 0;

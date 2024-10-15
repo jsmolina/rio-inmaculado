@@ -1,8 +1,8 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include <allegro/gfx.h>
 #include <allegro.h>
+#include <allegro/gfx.h>
 #include <allegro/keyboard.h>
 
 #define TRANS makecol(255, 0, 255)
@@ -18,39 +18,49 @@
 #define PUNCH_LEFT 5
 #define PUNCH_RIGHT 6
 
+// enemy states
+#define ST_NONE 0
+#define ST_IDLE 1
+#define ST_POSITION_FRONT 2
+#define ST_POSITION_BACK 3
+
 #define ANIM_WALK1 4
 #define ANIM_WALK2 5
 #define ANIM_PUNCH 1
+// TODO define maximum vertical distance to allow before two objects can no
+// longer interact
 
 struct spritePos {
     unsigned int x;
     unsigned int y;
     BITMAP *sprite[11];
     unsigned int moving;
+    unsigned int curr_sprite;
+    unsigned char is_hit;
 };
 
 struct enemyData {
     unsigned int x;
     unsigned int y;
+    BITMAP *sprite[11];
+    unsigned int moving;
     unsigned targetX;
     unsigned targetY;
-    BITMAP *sprite[11];
+    unsigned int curr_sprite;
+    unsigned char is_hit;
 };
 
-extern int exit_game;                   /* flag we'll set to end the game */
+extern int exit_game; /* flag we'll set to end the game */
 extern struct spritePos player;
 extern struct enemyData enem1;
 extern int counter;
-//extern int moving;
-//extern BITMAP *player[11];
-//extern BITMAP *enemy1[11];
+// extern int moving;
+// extern BITMAP *player[11];
+// extern BITMAP *enemy1[11];
 extern BITMAP *bg;
-extern int curr_sprite;
 
 extern void input();
 extern void process();
 extern void output();
-
-
 
 #endif
