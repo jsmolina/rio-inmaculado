@@ -20,8 +20,7 @@
  * http://www.glost.eclipse.co.uk/gfoot/vivace/vivace.html
  */
 
-int main(int argc, const char **argv)
-{
+int main(int argc, const char **argv) {
     char file_buffer[14];
     BITMAP *bmp;
     
@@ -79,10 +78,13 @@ int main(int argc, const char **argv)
     player.y = 150;
     player.moving = STOP_RIGHT;
     player.curr_sprite = 0;
+    player.is_hit = FALSE;
     enem1.x = 240;
     enem1.y = 150;
     enem1.targetX = 0;
     enem1.targetY = 0;
+    enem1.curr_sprite = 0;
+    enem1.is_hit = FALSE;
 
     do {                        /* loop */
         input();                /* get input */
