@@ -16,5 +16,7 @@
         "-I${workspaceFolder}/include",
         "-I/Users/jordism/repos/allegro-4.2.2-xc/include",
         "-I/Users/jordism/djgpp/include",
-    ]
+    ],
+    "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "modifications"
 }

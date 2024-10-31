@@ -20,8 +20,7 @@
  * http://www.glost.eclipse.co.uk/gfoot/vivace/vivace.html
  */
 
-int main(int argc, const char **argv)
-{
+int main(int argc, const char **argv) {
     char file_buffer[14];
     BITMAP *bmp;
     
@@ -49,8 +48,8 @@ int main(int argc, const char **argv)
     
     for (int i = 0; i < 9; i++) {
         sprintf(file_buffer, "MAIN%d.PCX", i + 1);
-        player[i] = load_pcx( file_buffer, NULL );
-        if(!player[i]) {
+        player.sprite[i] = load_pcx( file_buffer, NULL );
+        if(!player.sprite[i]) {
             allegro_message(file_buffer);
             exit(1); 
         }
@@ -59,8 +58,8 @@ int main(int argc, const char **argv)
     // load enemy1
     for (int i = 0; i < 9; i++) {
         sprintf(file_buffer, "ENEM%d.PCX", i + 1);
-        enemy1[i] = load_pcx( file_buffer, NULL );
-        if(!enemy1[i]) {
+        enem1.sprite[i] = load_pcx( file_buffer, NULL );
+        if(!enem1.sprite[i]) {
             allegro_message(file_buffer);
             exit(1); 
         }
@@ -75,8 +74,18 @@ int main(int argc, const char **argv)
     
     // Wait for a keypress, then finish the program.
     exit_game = 0;               /* reset flag */
-    x = 100;
-    y = 150;
+    player.x = 100;
+    player.y = 150;
+    player.moving = STOP_RIGHT;
+    player.curr_sprite = 0;
+    player.is_hit = FALSE;
+    enem1.x = 240;
+    enem1.y = 150;
+    enem1.targetX = 0;
+    enem1.targetY = 0;
+    enem1.curr_sprite = 0;
+    enem1.is_hit = FALSE;
+
     do {                        /* loop */
         input();                /* get input */
         process();              /* process it */
@@ -86,7 +95,8 @@ int main(int argc, const char **argv)
 
     destroy_bitmap(bg);
     for (int i = 0; i < 9; i++) {
-        destroy_bitmap(player[i]); 
+        destroy_bitmap(player.sprite[i]); 
+        destroy_bitmap(enem1.sprite[i]); 
     }
     destroy_tiles();
     cleanup_data();
