@@ -40,8 +40,6 @@ void input() {
         } else {
             player.moving = PUNCH_RIGHT;
         }
-        // check hit
-        enem1.is_hit = HIT_DURATION;
     } else if (key[KEY_LEFT]) {
         player.moving = MOVING_LEFT;
     } else if (key[KEY_RIGHT]) {
@@ -84,16 +82,30 @@ void enemy_animations(struct enemyData *enem) {
 }
 
 void enemy_decisions(struct enemyData *enem) {
+    int distance;
+    int x_distance;
     // do not take decisions: you are hitted
     if (enem->is_hit > 0) {
         return;
     }
 
-    if (point_distance(player.x, enem->x) >= 26) {
+    x_distance = point_distance(player.x, enem->x);
+    // check hits
+    if (player.moving == PUNCH_LEFT && enem->x <= player.x &&
+        x_distance <= 26) {
+        enem1.is_hit = HIT_DURATION;
+    }
+    if (player.moving == PUNCH_RIGHT && player.x <= enem->x &&
+        x_distance <= 26) {
+        enem1.is_hit = HIT_DURATION;
+    }
+
+    // check movements
+    if (x_distance >= 26) {
         if ((counter % 30) == 0) {
             enem->targetX = player.x;
         }
-        if (point_distance(enem->targetX, enem->x) >= 26) {
+        if (x_distance >= 26) {
             if (enem->x > enem->targetX) {
                 enem->x--;
             } else if (enem->x < enem->targetX) {
@@ -107,10 +119,22 @@ void enemy_decisions(struct enemyData *enem) {
             enem->moving = MOVING_RIGHT;
         }
     } else {
-        if (enem->moving == MOVING_LEFT) {
-            enem->moving = STOP_LEFT;
-        } else if (enem->moving == MOVING_RIGHT) {
-            enem->moving = STOP_RIGHT;
+        if (point_distance(player.y, enem->y) >= 2 && (counter % 2) == 0) {
+            if (enem->y > player.y) {
+                enem->y_moving = MOVING_UP;
+                enem->y--;
+            } else {
+                enem->y_moving = MOVING_DOWN;
+                enem->y++;
+            }
+        } else {
+            enem->y_moving = STOPPOS;
+
+            if (enem->moving == MOVING_LEFT) {
+                enem->moving = STOP_LEFT;
+            } else if (enem->moving == MOVING_RIGHT) {
+                enem->moving = STOP_RIGHT;
+            }
         }
     }
 }

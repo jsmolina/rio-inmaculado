@@ -77,6 +77,7 @@ int main(int argc, const char **argv) {
     player.x = 100;
     player.y = 150;
     player.moving = STOP_RIGHT;
+    player.y_moving = 0;
     player.curr_sprite = 0;
     player.is_hit = FALSE;
     enem1.x = 240;

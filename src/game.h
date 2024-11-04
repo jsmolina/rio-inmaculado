@@ -51,6 +51,7 @@ struct enemyData {
     unsigned int y;
     BITMAP *sprite[11];
     unsigned int moving;
+    unsigned int y_moving;
     unsigned targetX;
     unsigned targetY;
     unsigned int curr_sprite;
