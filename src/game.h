@@ -56,6 +56,7 @@ struct enemyData {
     unsigned targetY;
     unsigned int curr_sprite;
     char is_hit;
+    char is_punching;
 };
 
 extern int exit_game; /* flag we'll set to end the game */

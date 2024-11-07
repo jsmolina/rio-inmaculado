@@ -2,6 +2,7 @@
 #include "allegro/inline/draw.inl"
 #include "allegro/keyboard.h"
 #include <math.h>
+#include <stdlib.h>
 
 int exit_game;
 struct spritePos player;
@@ -67,6 +68,9 @@ void enemy_animations(struct enemyData *enem) {
         enem->is_hit--;
         return;
     }
+    if (enem->is_punching > 0) {
+        enem->is_punching--;
+    }
 
     if (enem->moving == MOVING_RIGHT || enem->moving == MOVING_LEFT) {
         if (enem->curr_sprite == ANIM_WALK1) {
@@ -85,7 +89,7 @@ void enemy_decisions(struct enemyData *enem) {
     int distance;
     int x_distance;
     // do not take decisions: you are hitted
-    if (enem->is_hit > 0) {
+    if (enem->is_hit > 0 || enem->is_punching > 0) {
         return;
     }
 
@@ -130,10 +134,24 @@ void enemy_decisions(struct enemyData *enem) {
         } else {
             enem->y_moving = STOPPOS;
 
-            if (enem->moving == MOVING_LEFT) {
+            if (enem->moving == MOVING_LEFT || enem->moving == PUNCH_LEFT) {
                 enem->moving = STOP_LEFT;
-            } else if (enem->moving == MOVING_RIGHT) {
+            } else if (enem->moving == MOVING_RIGHT ||
+                       enem->moving == PUNCH_RIGHT) {
                 enem->moving = STOP_RIGHT;
+            }
+            int random_choice = rand() % 100;
+            if (counter % 100 == 0) {
+                if (enem->moving == STOP_LEFT) {
+                    // TODO think on punch
+                    enem->moving = PUNCH_LEFT;
+                    enem->is_punching = HIT_DURATION;
+
+                } else if (enem->moving == STOP_RIGHT) {
+                    // think on punch
+                    enem->moving = PUNCH_RIGHT;
+                    enem->is_punching = HIT_DURATION;
+                }
             }
         }
     }
