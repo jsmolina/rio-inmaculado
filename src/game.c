@@ -34,6 +34,10 @@ void input() {
         player.y_moving = STOPPOS;
     }
 
+    if (player.is_hit > 0) {
+        return;
+    }
+
     // now check again keys
     if (key[KEY_SPACE]) {
         if (player.moving == STOP_LEFT) {
@@ -89,7 +93,7 @@ void enemy_decisions(struct enemyData *enem) {
     int distance;
     int x_distance;
     // do not take decisions: you are hitted
-    if (enem->is_hit > 0 || enem->is_punching > 0) {
+    if (enem->is_hit > 0) {
         return;
     }
 
@@ -97,31 +101,31 @@ void enemy_decisions(struct enemyData *enem) {
     // check hits
     if (player.moving == PUNCH_LEFT && enem->x <= player.x &&
         x_distance <= 26) {
-        enem1.is_hit = HIT_DURATION;
+        enem->is_hit = HIT_DURATION;
     }
     if (player.moving == PUNCH_RIGHT && player.x <= enem->x &&
         x_distance <= 26) {
-        enem1.is_hit = HIT_DURATION;
+        enem->is_hit = HIT_DURATION;
     }
+
+    int random_choice = rand() % 10;
 
     // check movements
     if (x_distance >= 26) {
-        if ((counter % 30) == 0) {
+        if ((counter % 30) == 0 && random_choice > 5) {
             enem->targetX = player.x;
         }
-        if (x_distance >= 26) {
+
+        if (enem->targetX) {
             if (enem->x > enem->targetX) {
                 enem->x--;
+                enem->moving = MOVING_LEFT;
             } else if (enem->x < enem->targetX) {
                 enem->x++;
+                enem->moving = MOVING_RIGHT;
             }
         }
 
-        if (enem->x > player.x) {
-            enem->moving = MOVING_LEFT;
-        } else {
-            enem->moving = MOVING_RIGHT;
-        }
     } else {
         if (point_distance(player.y, enem->y) >= 2 && (counter % 2) == 0) {
             if (enem->y > player.y) {
@@ -136,11 +140,12 @@ void enemy_decisions(struct enemyData *enem) {
 
             if (enem->moving == MOVING_LEFT || enem->moving == PUNCH_LEFT) {
                 enem->moving = STOP_LEFT;
+                enem->targetX = FALSE;
             } else if (enem->moving == MOVING_RIGHT ||
                        enem->moving == PUNCH_RIGHT) {
                 enem->moving = STOP_RIGHT;
+                enem->targetX = FALSE;
             }
-            int random_choice = rand() % 100;
             if (counter % 100 == 0) {
                 if (enem->moving == STOP_LEFT) {
                     // TODO think on punch
@@ -151,6 +156,13 @@ void enemy_decisions(struct enemyData *enem) {
                     // think on punch
                     enem->moving = PUNCH_RIGHT;
                     enem->is_punching = HIT_DURATION;
+                }
+
+                if (enem->moving == PUNCH_LEFT && player.x <= enem->x) {
+                    player.is_hit = HIT_DURATION;
+                }
+                if (enem->moving == PUNCH_RIGHT && player.x >= enem->x) {
+                    player.is_hit = HIT_DURATION;
                 }
             }
         }
@@ -174,7 +186,16 @@ void process() {
         player.y--;
     }
 
+    if (player.is_hit > 0) {
+        player.curr_sprite = ANIM_HITTED;
+    }
+
     if ((counter % 10) == 0) {
+        if (player.is_hit > 0) {
+            player.is_hit--;
+            return;
+        }
+
         if (player.moving == MOVING_RIGHT || player.moving == MOVING_LEFT ||
             player.y_moving == MOVING_UP || player.y_moving == MOVING_DOWN) {
             if (player.curr_sprite == ANIM_WALK1) {
