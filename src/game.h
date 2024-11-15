@@ -33,6 +33,7 @@
 #define ANIM_PUNCH 1
 #define ANIM_HITTED 6
 #define HIT_DURATION 6 
+#define FLOOR_DURATION 18
 // TODO define maximum vertical distance to allow before two objects can no
 // longer interact
 
@@ -44,6 +45,10 @@ struct spritePos {
     unsigned int y_moving;
     unsigned int curr_sprite;
     unsigned char is_hit;
+    unsigned char is_floor;
+    unsigned char lives;
+    unsigned char received_hits;
+    unsigned char floor_times;
 };
 
 struct enemyData {
@@ -57,6 +62,8 @@ struct enemyData {
     unsigned int curr_sprite;
     char is_hit;
     char is_punching;
+    unsigned char received_hits;
+    unsigned char floor_times;
 };
 
 extern int exit_game; /* flag we'll set to end the game */
