@@ -54,6 +54,7 @@ int main(int argc, const char **argv) {
             exit(1); 
         }
     }    
+    srand(time(0));
 
     // load enemy1
     for (int i = 0; i < 9; i++) {
@@ -77,6 +78,7 @@ int main(int argc, const char **argv) {
     player.x = 100;
     player.y = 150;
     player.moving = STOP_RIGHT;
+    player.y_moving = 0;
     player.curr_sprite = 0;
     player.is_hit = FALSE;
     enem1.x = 240;
@@ -85,6 +87,7 @@ int main(int argc, const char **argv) {
     enem1.targetY = 0;
     enem1.curr_sprite = 0;
     enem1.is_hit = FALSE;
+    enem1.is_punching = FALSE;
 
     do {                        /* loop */
         input();                /* get input */

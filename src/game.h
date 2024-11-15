@@ -51,10 +51,12 @@ struct enemyData {
     unsigned int y;
     BITMAP *sprite[11];
     unsigned int moving;
+    unsigned int y_moving;
     unsigned targetX;
     unsigned targetY;
     unsigned int curr_sprite;
     char is_hit;
+    char is_punching;
 };
 
 extern int exit_game; /* flag we'll set to end the game */

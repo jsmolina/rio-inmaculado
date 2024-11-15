@@ -2,6 +2,7 @@
 #include "allegro/inline/draw.inl"
 #include "allegro/keyboard.h"
 #include <math.h>
+#include <stdlib.h>
 
 int exit_game;
 struct spritePos player;
@@ -33,6 +34,10 @@ void input() {
         player.y_moving = STOPPOS;
     }
 
+    if (player.is_hit > 0) {
+        return;
+    }
+
     // now check again keys
     if (key[KEY_SPACE]) {
         if (player.moving == STOP_LEFT) {
@@ -40,8 +45,6 @@ void input() {
         } else {
             player.moving = PUNCH_RIGHT;
         }
-        // check hit
-        enem1.is_hit = HIT_DURATION;
     } else if (key[KEY_LEFT]) {
         player.moving = MOVING_LEFT;
     } else if (key[KEY_RIGHT]) {
@@ -69,6 +72,9 @@ void enemy_animations(struct enemyData *enem) {
         enem->is_hit--;
         return;
     }
+    if (enem->is_punching > 0) {
+        enem->is_punching--;
+    }
 
     if (enem->moving == MOVING_RIGHT || enem->moving == MOVING_LEFT) {
         if (enem->curr_sprite == ANIM_WALK1) {
@@ -84,33 +90,81 @@ void enemy_animations(struct enemyData *enem) {
 }
 
 void enemy_decisions(struct enemyData *enem) {
+    int distance;
+    int x_distance;
     // do not take decisions: you are hitted
     if (enem->is_hit > 0) {
         return;
     }
 
-    if (point_distance(player.x, enem->x) >= 26) {
-        if ((counter % 30) == 0) {
+    x_distance = point_distance(player.x, enem->x);
+    // check hits
+    if (player.moving == PUNCH_LEFT && enem->x <= player.x &&
+        x_distance <= 26) {
+        enem->is_hit = HIT_DURATION;
+    }
+    if (player.moving == PUNCH_RIGHT && player.x <= enem->x &&
+        x_distance <= 26) {
+        enem->is_hit = HIT_DURATION;
+    }
+
+    int random_choice = rand() % 10;
+
+    // check movements
+    if (x_distance >= 26) {
+        if ((counter % 30) == 0 && random_choice > 5) {
             enem->targetX = player.x;
         }
-        if (point_distance(enem->targetX, enem->x) >= 26) {
+
+        if (enem->targetX) {
             if (enem->x > enem->targetX) {
                 enem->x--;
+                enem->moving = MOVING_LEFT;
             } else if (enem->x < enem->targetX) {
                 enem->x++;
+                enem->moving = MOVING_RIGHT;
             }
         }
 
-        if (enem->x > player.x) {
-            enem->moving = MOVING_LEFT;
-        } else {
-            enem->moving = MOVING_RIGHT;
-        }
     } else {
-        if (enem->moving == MOVING_LEFT) {
-            enem->moving = STOP_LEFT;
-        } else if (enem->moving == MOVING_RIGHT) {
-            enem->moving = STOP_RIGHT;
+        if (point_distance(player.y, enem->y) >= 2 && (counter % 2) == 0) {
+            if (enem->y > player.y) {
+                enem->y_moving = MOVING_UP;
+                enem->y--;
+            } else {
+                enem->y_moving = MOVING_DOWN;
+                enem->y++;
+            }
+        } else {
+            enem->y_moving = STOPPOS;
+
+            if (enem->moving == MOVING_LEFT || enem->moving == PUNCH_LEFT) {
+                enem->moving = STOP_LEFT;
+                enem->targetX = FALSE;
+            } else if (enem->moving == MOVING_RIGHT ||
+                       enem->moving == PUNCH_RIGHT) {
+                enem->moving = STOP_RIGHT;
+                enem->targetX = FALSE;
+            }
+            if (counter % 100 == 0) {
+                if (enem->moving == STOP_LEFT) {
+                    // TODO think on punch
+                    enem->moving = PUNCH_LEFT;
+                    enem->is_punching = HIT_DURATION;
+
+                } else if (enem->moving == STOP_RIGHT) {
+                    // think on punch
+                    enem->moving = PUNCH_RIGHT;
+                    enem->is_punching = HIT_DURATION;
+                }
+
+                if (enem->moving == PUNCH_LEFT && player.x <= enem->x) {
+                    player.is_hit = HIT_DURATION;
+                }
+                if (enem->moving == PUNCH_RIGHT && player.x >= enem->x) {
+                    player.is_hit = HIT_DURATION;
+                }
+            }
         }
     }
 }
@@ -132,7 +186,16 @@ void process() {
         player.y--;
     }
 
+    if (player.is_hit > 0) {
+        player.curr_sprite = ANIM_HITTED;
+    }
+
     if ((counter % 10) == 0) {
+        if (player.is_hit > 0) {
+            player.is_hit--;
+            return;
+        }
+
         if (player.moving == MOVING_RIGHT || player.moving == MOVING_LEFT ||
             player.y_moving == MOVING_UP || player.y_moving == MOVING_DOWN) {
             if (player.curr_sprite == ANIM_WALK1) {
