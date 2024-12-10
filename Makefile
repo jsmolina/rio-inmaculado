@@ -39,6 +39,7 @@ ${DISTDIR}/${BIN}: ${OBJS}
 	${CC} -o ${DISTDIR}/${BIN} $+ ${LDFLAGS}
 
 ${STATICDEST}:
+	cd $(STATICDIR) && sh convert.sh	
 	@mkdir -p $(shell dirname $@)
 	cp $(subst $(DISTDIR),$(STATICDIR),$@) $@
 

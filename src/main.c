@@ -68,7 +68,7 @@ int main(int argc, const char **argv) {
 
     // load_background requires load_tiles to be executed
     load_tiles();
-    bg = load_background("bg4.tmx");
+    bg = load_background("bg4_0.tmx");
     //bg = load_pcx("bg4.pcx", NULL);
     //bg = load_background("bg4.tmx");
     blit(bg, screen, 0, 0, 0, 0, 320, 200);
@@ -81,6 +81,10 @@ int main(int argc, const char **argv) {
     player.y_moving = 0;
     player.curr_sprite = 0;
     player.is_hit = FALSE;
+    player.is_floor = FALSE;
+    player.received_hits = 0;
+    player.lives = 3;
+    player.floor_times = 0;
     enem1.x = 240;
     enem1.y = 150;
     enem1.targetX = 0;
@@ -88,6 +92,7 @@ int main(int argc, const char **argv) {
     enem1.curr_sprite = 0;
     enem1.is_hit = FALSE;
     enem1.is_punching = FALSE;
+    enem1.received_hits = 0;
 
     do {                        /* loop */
         input();                /* get input */
