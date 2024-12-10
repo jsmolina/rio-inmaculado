@@ -4,7 +4,7 @@ echo "Clean..."
 rm -f data.dat
 
 #gcc dat.c  -o dat
-
+echo "Converting main character sprites..."
 convert miguel_sprites.png -crop 40x40+0+0 -colors 256 -type truecolor main1.pcx
 convert miguel_sprites.png -crop 40x40+40+0 -colors 256 -type truecolor main2.pcx
 convert miguel_sprites.png -crop 40x40+80+0 -colors 256 -type truecolor main3.pcx
@@ -21,6 +21,7 @@ export MIGUEL_SPRITES=`printf 'MAIN%d.PCX ' {1..10}`
 
 
 # enemy sprites
+echo "Converting enemy1 character sprites..."
 convert enemy1_sprites.png -crop 40x40+0+0 -colors 256 -type truecolor  enem1.pcx
 convert enemy1_sprites.png -crop 40x40+40+0 -colors 256 -type truecolor enem2.pcx
 convert enemy1_sprites.png -crop 40x40+80+0 -colors 256 -type truecolor enem3.pcx
@@ -34,11 +35,16 @@ convert enemy1_sprites.png -crop 40x40+360+0 -colors 256 -type truecolor enem10.
 convert enemy1_sprites.png -crop 40x40+400+0 -colors 256 -type truecolor enem11.pcx
 
 #   convert miguel_sprites.png -crop 40x40+440+0 -colors 256 -type truecolor miguel11.pcx
-convert background.png -colors 256 -type truecolor bg.pcx
-convert background3.png -colors 256 -type truecolor bg3.pcx
-convert background4.png -colors 256 -type truecolor bg4.pcx
+#convert background.png -colors 256 -type truecolor bg.pcx
+#convert background3.png -colors 256 -type truecolor bg3.pcx
+#convert background4.png -colors 256 -type truecolor bg4.pcx
+echo "Converting tiles..."
 convert new_tiles.png -colors 256 -type truecolor tiles.pcx
 
-./dat main*.pcx enem*.pcx tiles.pcx bg4.tmx
+pwd
+echo "Compress..."
+./dat main*.pcx enem*.pcx tiles.pcx bg*.tmx
 
-rm *.pcx
+echo "Removing generated pcx"
+rm enem*.pcx
+rm main*.pcx

@@ -11,6 +11,7 @@ struct enemyData enem1;
 // int moving = STOP_RIGHT;
 int curr_sprite = 0;
 int counter = 0;
+char space_was_pressed = FALSE;
 // BITMAP *player[11];
 // BITMAP *enemy1[11];
 BITMAP *bg;
@@ -37,15 +38,24 @@ void input() {
     if (player.is_hit > 0 || player.is_floor > 0) {
         return;
     }
+    if (!key[KEY_SPACE] && player.is_punching > 0) {
+        player.is_punching = 0;
+    }
 
     // now check again keys
     if (key[KEY_SPACE]) {
+        player.is_punching++;
+        if (player.is_punching > 20) {
+            return;
+        }
+
         if (player.moving == STOP_LEFT) {
             player.moving = PUNCH_LEFT;
         } else {
             player.moving = PUNCH_RIGHT;
         }
-    } else if (key[KEY_LEFT]) {
+    }
+    if (key[KEY_LEFT]) {
         player.moving = MOVING_LEFT;
     } else if (key[KEY_RIGHT]) {
         player.moving = MOVING_RIGHT;
@@ -83,7 +93,11 @@ void enemy_animations(struct enemyData *enem) {
             enem->curr_sprite = ANIM_WALK1;
         }
     } else if (enem->moving == PUNCH_RIGHT || enem->moving == PUNCH_LEFT) {
-        enem->curr_sprite = ANIM_PUNCH;
+        if (enem->curr_sprite == ANIM_PUNCH) {
+            enem->curr_sprite = ANIM_PUNCH2;
+        } else {
+            enem->curr_sprite = ANIM_PUNCH;
+        }
     } else {
         enem->curr_sprite = 0;
     }
@@ -92,20 +106,26 @@ void enemy_animations(struct enemyData *enem) {
 void enemy_decisions(struct enemyData *enem) {
     int distance;
     int x_distance;
+    int y_distance;
     // do not take decisions: you are hitted
     if (enem->is_hit > 0) {
         return;
     }
 
     x_distance = point_distance(player.x, enem->x);
+    y_distance = point_distance(player.y, enem->y);
     // check hits
-    if (player.moving == PUNCH_LEFT && enem->x <= player.x &&
-        x_distance <= 24) {
-        enem->is_hit = HIT_DURATION;
+    if (x_distance <= 24 && y_distance <= 2) {
+        if (player.moving == PUNCH_LEFT && enem->x <= player.x) {
+            enem->is_hit = HIT_DURATION;
+        }
+        if (player.moving == PUNCH_RIGHT && player.x <= enem->x) {
+            enem->is_hit = HIT_DURATION;
+        }
     }
-    if (player.moving == PUNCH_RIGHT && player.x <= enem->x &&
-        x_distance <= 24) {
-        enem->is_hit = HIT_DURATION;
+
+    if (enem->is_punching > 0) {
+        return;
     }
 
     int random_choice = rand() % 10;
@@ -218,7 +238,12 @@ void process() {
             }
         } else if (player.moving == PUNCH_RIGHT ||
                    player.moving == PUNCH_LEFT) {
-            player.curr_sprite = ANIM_PUNCH;
+
+            if (player.curr_sprite == ANIM_PUNCH) {
+                player.curr_sprite = ANIM_PUNCH2;
+            } else {
+                player.curr_sprite = ANIM_PUNCH;
+            }
             // TODO 15/10: sprite de hit
         } else {
             player.curr_sprite = 0;

@@ -68,7 +68,7 @@ int main(int argc, const char **argv) {
 
     // load_background requires load_tiles to be executed
     load_tiles();
-    bg = load_background("bg4.tmx");
+    bg = load_background("bg4_0.tmx");
     //bg = load_pcx("bg4.pcx", NULL);
     //bg = load_background("bg4.tmx");
     blit(bg, screen, 0, 0, 0, 0, 320, 200);

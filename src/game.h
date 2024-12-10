@@ -31,6 +31,7 @@
 #define ANIM_WALK1 4
 #define ANIM_WALK2 5
 #define ANIM_PUNCH 1
+#define ANIM_PUNCH2 2
 #define ANIM_HITTED 6
 #define HIT_DURATION 6 
 #define FLOOR_DURATION 18
@@ -49,6 +50,7 @@ struct spritePos {
     unsigned char lives;
     unsigned char received_hits;
     unsigned char floor_times;
+    char is_punching;
 };
 
 struct enemyData {
@@ -80,3 +82,12 @@ extern void process();
 extern void output();
 
 #endif
+
+/**
+Niveles:
+1: clases
+2: cours navé
+3: sala informática: alleycat piscina
+4: parking
+5: calle
+ */
