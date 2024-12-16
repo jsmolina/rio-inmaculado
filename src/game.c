@@ -1,6 +1,8 @@
 #include "game.h"
 #include "allegro/inline/draw.inl"
 #include "allegro/keyboard.h"
+#include "dat_manager.h"
+#include "tiles.h"
 #include <math.h>
 #include <stdlib.h>
 
@@ -8,8 +10,7 @@ int exit_game;
 struct spritePos player;
 struct enemyData enem1;
 
-// int moving = STOP_RIGHT;
-int curr_sprite = 0;
+int level = 0;
 int counter = 0;
 char space_was_pressed = FALSE;
 // BITMAP *player[11];
@@ -20,9 +21,7 @@ BITMAP *tiles;
 void input() {
     // readkey();
     // end_game = 1;
-    if (key[KEY_ESC]) {
-        exit_game = 1;
-    }
+
     if (player.moving < STOPPOS) {
         if (player.moving == MOVING_LEFT || player.moving == PUNCH_LEFT) {
             player.moving = STOP_LEFT;
@@ -312,6 +311,20 @@ void output() {
     if (counter > 319) {
         counter = 0;
     }
+}
+
+void load_curr_level() {
+    if (level == 0) {
+        bg = load_pcx("bege.pcx", NULL);
+    } else {
+        load_tiles();
+        bg = load_background("bg4_0.tmx");
+    }
+    if (!bg) {
+        allegro_message("Cannot load graphic");
+        exit(1);
+    }
+    blit(bg, screen, 0, 0, 0, 0, 320, 200);
 }
 
 /**

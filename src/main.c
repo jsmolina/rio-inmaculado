@@ -8,10 +8,10 @@
 #include "allegro/alcompat.h"
 #include "allegro/datafile.h"
 #include "allegro/gfx.h"
+#include "allegro/keyboard.h"
 #include "game.h"
 #include "tiles.h"
 #include "dat_manager.h"
-
 
 /**
  * Allegro example script. Switches to graphics mode to print "hello world",
@@ -43,9 +43,9 @@ int main(int argc, const char **argv) {
     //set_palette(desktop_palette);
     //set_color_depth(desktop_color_depth());
     clear_to_color(screen, TRANS);
-    extract_data();
     textout_centre_ex(screen, font, "Loading Instituto Rio Immaculado...", SCREEN_W / 2, SCREEN_H / 2, makecol(0,0,0), -1);
-    
+    extract_data(); // todo mover despues de textout
+
     for (int i = 0; i < 9; i++) {
         sprintf(file_buffer, "MAIN%d.PCX", i + 1);
         player.sprite[i] = load_pcx( file_buffer, NULL );
@@ -64,16 +64,17 @@ int main(int argc, const char **argv) {
             allegro_message(file_buffer);
             exit(1); 
         }
-    }   
+    }
 
-    // load_background requires load_tiles to be executed
+    // load tilemap
     load_tiles();
-    bg = load_background("bg4_0.tmx");
-    //bg = load_pcx("bg4.pcx", NULL);
-    //bg = load_background("bg4.tmx");
-    blit(bg, screen, 0, 0, 0, 0, 320, 200);
-    
-    // Wait for a keypress, then finish the program.
+
+    load_curr_level();
+    // bg = load_background("bg4_0.tmx");
+    // bg = load_pcx("bg4.pcx", NULL);
+    // bg = load_background("bg4.tmx");
+    // blit(bg, screen, 0, 0, 0, 0, 320, 200);
+
     exit_game = 0;               /* reset flag */
     player.x = 100;
     player.y = 150;
@@ -94,12 +95,24 @@ int main(int argc, const char **argv) {
     enem1.is_punching = FALSE;
     enem1.received_hits = 0;
 
-    do {                        /* loop */
-        input();                /* get input */
-        process();              /* process it */
-        output();               /* give output */
+    do {
+        if (level == 0) {
+            if (key[KEY_SPACE]) {
+                level = 1;
+                load_curr_level();
+            }
+        } else {
+            input();   /* get input */
+            process(); /* process it */
+            output();  /* give output */
+        }
+
+        if (key[KEY_ESC]) {
+            exit_game = 1;
+        }
         vsync();
-    } while (exit_game == 0);    /* until the flag is set */
+
+    } while (exit_game == 0); /* until the flag is set */
 
     destroy_bitmap(bg);
     for (int i = 0; i < 9; i++) {

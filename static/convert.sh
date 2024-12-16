@@ -41,10 +41,14 @@ convert enemy1_sprites.png -crop 40x40+400+0 -colors 256 -type truecolor enem11.
 echo "Converting tiles..."
 convert new_tiles.png -colors 256 -type truecolor tiles.pcx
 
+echo "Convert menu bg..."
+convert bege.png -colors 256 -type truecolor bege.pcx
+
 pwd
 echo "Compress..."
-./dat main*.pcx enem*.pcx tiles.pcx bg*.tmx
+./dat2 bege.pcx main*.pcx enem*.pcx tiles.pcx bg*.tmx
 
 echo "Removing generated pcx"
 rm enem*.pcx
 rm main*.pcx
+rm bege.pcx

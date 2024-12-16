@@ -30,7 +30,7 @@ int check_ext(unsigned char *name){
 
 
 int main(int argc, char **argv) {
-	unsigned short filesize = 0x0000;
+	unsigned long filesize = 0x0000;
 	unsigned long dat_offset = 32 + 2048;
 	unsigned long file_pos = 0;
     unsigned char i, arg;
