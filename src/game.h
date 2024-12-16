@@ -69,6 +69,7 @@ struct enemyData {
 };
 
 extern int exit_game; /* flag we'll set to end the game */
+extern int level;
 extern struct spritePos player;
 extern struct enemyData enem1;
 extern int counter;
@@ -80,6 +81,7 @@ extern BITMAP *bg;
 extern void input();
 extern void process();
 extern void output();
+extern void load_curr_level();
 
 #endif
 
