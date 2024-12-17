@@ -55,25 +55,13 @@ int main(int argc, const char **argv) {
         }
     }    
     srand(time(0));
-
-    // load enemy1
-    for (int i = 0; i < 9; i++) {
-        sprintf(file_buffer, "ENEM%d.PCX", i + 1);
-        enem1.sprite[i] = load_pcx( file_buffer, NULL );
-        if(!enem1.sprite[i]) {
-            allegro_message(file_buffer);
-            exit(1); 
-        }
-    }
-
     // load tilemap
     load_tiles();
+    // pre load enemies sprites
+    init_level_enemies(0, TRUE);
+    // will load menu
+    load_level(0);
 
-    load_curr_level();
-    // bg = load_background("bg4_0.tmx");
-    // bg = load_pcx("bg4.pcx", NULL);
-    // bg = load_background("bg4.tmx");
-    // blit(bg, screen, 0, 0, 0, 0, 320, 200);
 
     exit_game = 0;               /* reset flag */
     player.x = 100;
@@ -86,20 +74,11 @@ int main(int argc, const char **argv) {
     player.received_hits = 0;
     player.lives = 3;
     player.floor_times = 0;
-    enem1.x = 240;
-    enem1.y = 150;
-    enem1.targetX = 0;
-    enem1.targetY = 0;
-    enem1.curr_sprite = 0;
-    enem1.is_hit = FALSE;
-    enem1.is_punching = FALSE;
-    enem1.received_hits = 0;
 
     do {
         if (level == 0) {
             if (key[KEY_SPACE]) {
-                level = 1;
-                load_curr_level();
+                increase_level_and_load();
             }
         } else {
             input();   /* get input */
@@ -117,8 +96,8 @@ int main(int argc, const char **argv) {
     destroy_bitmap(bg);
     for (int i = 0; i < 9; i++) {
         destroy_bitmap(player.sprite[i]); 
-        destroy_bitmap(enem1.sprite[i]); 
     }
+    unload_enemies();
     destroy_tiles();
     cleanup_data();
   

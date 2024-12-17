@@ -2,15 +2,17 @@
 #include "allegro/inline/draw.inl"
 #include "allegro/keyboard.h"
 #include "dat_manager.h"
+#include "enem.h"
 #include "tiles.h"
-#include <math.h>
+
+#include "helpers.h"
 #include <stdlib.h>
 
 int exit_game;
 struct spritePos player;
-struct enemyData enem1;
 
 int level = 0;
+int level_enemies = 0;
 int counter = 0;
 char space_was_pressed = FALSE;
 // BITMAP *player[11];
@@ -67,135 +69,6 @@ void input() {
     }
 }
 
-int random_range(unsigned int low, unsigned int high) {
-    return low + (rand() % (high - low));
-}
-
-int point_distance(unsigned int x, unsigned int targetX) {
-    return abs((int)(x - targetX));
-}
-
-void enemy_animations(struct enemyData *enem) {
-    if (enem->is_hit > 0) {
-        enem->curr_sprite = ANIM_HITTED;
-        enem->is_hit--;
-        return;
-    }
-    if (enem->is_punching > 0) {
-        enem->is_punching--;
-    }
-
-    if (enem->moving == MOVING_RIGHT || enem->moving == MOVING_LEFT) {
-        if (enem->curr_sprite == ANIM_WALK1) {
-            enem->curr_sprite = ANIM_WALK2;
-        } else {
-            enem->curr_sprite = ANIM_WALK1;
-        }
-    } else if (enem->moving == PUNCH_RIGHT || enem->moving == PUNCH_LEFT) {
-        if (enem->curr_sprite == ANIM_PUNCH) {
-            enem->curr_sprite = ANIM_PUNCH2;
-        } else {
-            enem->curr_sprite = ANIM_PUNCH;
-        }
-    } else {
-        enem->curr_sprite = 0;
-    }
-}
-
-void enemy_decisions(struct enemyData *enem) {
-    int distance;
-    int x_distance;
-    int y_distance;
-    // do not take decisions: you are hitted
-    if (enem->is_hit > 0) {
-        return;
-    }
-
-    x_distance = point_distance(player.x, enem->x);
-    y_distance = point_distance(player.y, enem->y);
-    // check hits
-    if (x_distance <= 24 && y_distance <= 2) {
-        if (player.moving == PUNCH_LEFT && enem->x <= player.x) {
-            enem->is_hit = HIT_DURATION;
-        }
-        if (player.moving == PUNCH_RIGHT && player.x <= enem->x) {
-            enem->is_hit = HIT_DURATION;
-        }
-    }
-
-    if (enem->is_punching > 0) {
-        return;
-    }
-
-    int random_choice = rand() % 10;
-
-    // check movements
-    if (x_distance >= 24) {
-        if ((counter % 30) == 0 && random_choice > 5) {
-            enem->targetX = player.x;
-        }
-
-        if (enem->targetX) {
-            if (enem->x > enem->targetX) {
-                enem->x--;
-                enem->moving = MOVING_LEFT;
-            } else if (enem->x < enem->targetX) {
-                enem->x++;
-                enem->moving = MOVING_RIGHT;
-            }
-        }
-
-    } else {
-        if (point_distance(player.y, enem->y) >= 2 && (counter % 2) == 0) {
-            if (enem->y > player.y) {
-                enem->y_moving = MOVING_UP;
-                enem->y--;
-            } else {
-                enem->y_moving = MOVING_DOWN;
-                enem->y++;
-            }
-        } else {
-            enem->y_moving = STOPPOS;
-
-            if (enem->moving == MOVING_LEFT || enem->moving == PUNCH_LEFT) {
-                enem->moving = STOP_LEFT;
-                enem->targetX = FALSE;
-            } else if (enem->moving == MOVING_RIGHT ||
-                       enem->moving == PUNCH_RIGHT) {
-                enem->moving = STOP_RIGHT;
-                enem->targetX = FALSE;
-            }
-            if (counter % 50 == 0 && player.is_floor == FALSE) {
-                if (enem->moving == STOP_LEFT) {
-                    // TODO think on punch
-                    enem->moving = PUNCH_LEFT;
-                    enem->is_punching = HIT_DURATION;
-
-                } else if (enem->moving == STOP_RIGHT) {
-                    // think on punch
-                    enem->moving = PUNCH_RIGHT;
-                    enem->is_punching = HIT_DURATION;
-                }
-
-                if (enem->moving == PUNCH_LEFT && player.x <= enem->x) {
-                    player.is_hit = HIT_DURATION;
-                    player.received_hits++;
-                }
-                if (enem->moving == PUNCH_RIGHT && player.x >= enem->x) {
-                    player.is_hit = HIT_DURATION;
-                    player.received_hits++;
-                }
-
-                if (player.received_hits == 5) {
-                    player.is_floor = FLOOR_DURATION;
-                    player.floor_times++;
-                    player.received_hits = 0;
-                }
-            }
-        }
-    }
-}
-
 void process() {
     // https://code.tutsplus.com/building-a-beat-em-up-in-game-maker-part-1-player-movement-attacks-and-basic-enemies--cms-26147t
     // https://code.tutsplus.com/building-a-beat-em-up-in-game-maker-part-2-combat-and-basic-enemy-ai--cms-26148t
@@ -249,16 +122,10 @@ void process() {
         }
     }
     ///// ENEMY
-
-    // enemy tries to go to player
-    /*if (!enem1.targetX) {
-        enem1.targetX = random_range(player.x - 10, player.x + 10);
-    }*/
-
-    enemy_decisions(&enem1);
+    all_enemy_decisions(&player);
 
     if ((counter % 10) == 0) {
-        enemy_animations(&enem1);
+        all_enemy_animations();
     }
 }
 
@@ -284,27 +151,18 @@ void draw_player() {
     }
 }
 
-void draw_enemies() {
-    // redraw pair or impair?
-    if (enem1.moving & 1) {
-        draw_sprite_h_flip(screen, enem1.sprite[enem1.curr_sprite], enem1.x,
-                           enem1.y);
-    } else {
-        draw_sprite(screen, enem1.sprite[enem1.curr_sprite], enem1.x, enem1.y);
-    }
-}
-
 void output() {
     counter++;
     // clean
     blit(bg, screen, player.x, 120, player.x, 120, 40, 80);
-    blit(bg, screen, enem1.x, 120, enem1.x, 120, 40, 80);
+    redraw_bg_enemy_positions();
+
     // draw in order depending on Y
-    if (player.y < enem1.y) {
+    if (player_over_all_enemies(player.y)) {
         draw_player();
-        draw_enemies();
+        all_draw_enemies();
     } else {
-        draw_enemies();
+        all_draw_enemies();
         draw_player();
     }
 
@@ -313,20 +171,35 @@ void output() {
     }
 }
 
-void load_curr_level() {
-    if (level == 0) {
+void load_level(int lvl) {
+    if (lvl == 0) {
         bg = load_pcx("bege.pcx", NULL);
-    } else {
+        level_enemies = 0;
+    } else if (lvl == 1) {
         load_tiles();
         bg = load_background("bg4_0.tmx");
+        level_enemies = 1;
     }
     if (!bg) {
         allegro_message("Cannot load graphic");
         exit(1);
     }
     blit(bg, screen, 0, 0, 0, 0, 320, 200);
+    init_level_enemies(level_enemies, FALSE);
+
+    level = lvl;
 }
 
+void increase_level_and_load() {
+    if (level >= 1) {
+        return;
+    }
+    clear_to_color(screen, TRANS);
+    textout_centre_ex(screen, font, "Loading Level...", SCREEN_W / 2,
+                      SCREEN_H / 2, makecol(0, 0, 0), -1);
+
+    load_level(level + 1);
+}
 /**
 blit
 – Stands for “BLock Transfer”

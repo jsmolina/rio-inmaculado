@@ -42,6 +42,7 @@ ${STATICDEST}:
 	cd $(STATICDIR) && sh convert.sh	
 	@mkdir -p $(shell dirname $@)
 	cp $(subst $(DISTDIR),$(STATICDIR),$@) $@
+	cp static/cwsdpmi.exe ${DISTDIR}
 
 all: ${DISTDIR} ${DISTDIR}/${BIN} ${STATICDEST}
 
