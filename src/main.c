@@ -2,16 +2,38 @@
  * Copyright (C) 2016, Michiel Sikma <michiel@sikma.org>
  * MIT License
  */
-
+#include <time.h>
 #include <allegro.h>
 #include <stdio.h>
 #include "allegro/alcompat.h"
 #include "allegro/datafile.h"
 #include "allegro/gfx.h"
 #include "allegro/keyboard.h"
+#include "allegro/system.h"
 #include "game.h"
 #include "tiles.h"
 #include "dat_manager.h"
+
+static volatile int update_count, frame_count, fps = 0;
+
+void gfx_timer_proc(void) { update_count = 1; }
+END_OF_FUNCTION(gfx_timer_proc)
+
+static void gfx_fps_proc(void) {
+    fps = frame_count;
+    frame_count = 0;
+}
+END_OF_FUNCTION(gfx_fps_proc)
+
+void gfx_init_timer() {
+    LOCK_VARIABLE(update_count);
+    LOCK_VARIABLE(frame_count);
+    LOCK_VARIABLE(fps);
+    LOCK_FUNCTION(gfx_timer_proc);
+    LOCK_FUNCTION(gfx_fps_proc);
+    install_int_ex(gfx_timer_proc, BPS_TO_TIMER(70));
+    install_int_ex(gfx_fps_proc, BPS_TO_TIMER(1));
+}
 
 /**
  * Allegro example script. Switches to graphics mode to print "hello world",
@@ -19,6 +41,13 @@
  * Taken from <https://wiki.allegro.cc/index.php?title=Example_ExHello>.
  * http://www.glost.eclipse.co.uk/gfoot/vivace/vivace.html
  */
+/* timer callback for measuring the frames per second */
+static void fps_proc(void) {
+    fps = frame_count;
+    frame_count = 0;
+}
+
+END_OF_STATIC_FUNCTION(fps_proc);
 
 int main(int argc, const char **argv) {
     char file_buffer[14];
@@ -31,6 +60,9 @@ int main(int argc, const char **argv) {
 
     // Installs the Allegro keyboard interrupt handler.
     install_keyboard();
+    install_timer();
+
+
     //bmp = create_bitmap(640, 480);
     set_color_depth(32);
     // Switch to graphics mode, 320x200.
@@ -39,6 +71,11 @@ int main(int argc, const char **argv) {
         allegro_message("Cannot set graphics mode:\r\n%s\r\n", allegro_error);
         return 1;
     }
+
+    install_int(fps_proc, 1000);
+
+
+    
     // Print a single line of "hello world" on a white screen.
     //set_palette(desktop_palette);
     //set_color_depth(desktop_color_depth());
@@ -50,11 +87,11 @@ int main(int argc, const char **argv) {
         sprintf(file_buffer, "MAIN%d.PCX", i + 1);
         player.sprite[i] = load_pcx( file_buffer, NULL );
         if(!player.sprite[i]) {
-            allegro_message(file_buffer);
+            allegro_message("cannot load: %s", file_buffer);
             exit(1); 
         }
-    }    
-    srand(time(0));
+    }
+    srand(time(NULL));
     // load tilemap
     load_tiles();
     // pre load enemies sprites
@@ -74,8 +111,21 @@ int main(int argc, const char **argv) {
     player.received_hits = 0;
     player.lives = 3;
     player.floor_times = 0;
+    gfx_init_timer();
 
     do {
+        while (0 == update_count) {
+            rest(0);
+            if (key[KEY_ESC]) {
+                exit_game = 1;
+                break;
+            }
+            vsync();
+
+        }
+        update_count = 0;
+        frame_count++;
+
         if (level == 0) {
             if (key[KEY_SPACE]) {
                 increase_level_and_load();
@@ -89,7 +139,6 @@ int main(int argc, const char **argv) {
         if (key[KEY_ESC]) {
             exit_game = 1;
         }
-        vsync();
 
     } while (exit_game == 0); /* until the flag is set */
 
