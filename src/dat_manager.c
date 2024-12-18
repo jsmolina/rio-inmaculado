@@ -16,12 +16,12 @@ typedef struct {
     long long filesize;
 } FileHeader;
 
-void rotar_paleta(int desplazamiento) {
+static void rotar_paleta() {
     PALETTE pal;
     get_palette(pal);
 
     for (int i = 1; i < 100; i++) {
-        int nuevo_indice = (i + desplazamiento) % 256;
+        int nuevo_indice = (i + 1) % 256;
         RGB color_temp = pal[i];
         pal[i] = pal[nuevo_indice];
         pal[nuevo_indice] = color_temp;
@@ -29,9 +29,13 @@ void rotar_paleta(int desplazamiento) {
 
     set_palette(pal);
 }
+END_OF_FUNCTION(rotar_paleta)
 
 
 void extract_data() {
+    //install_int(rotar_paleta, 100);
+    install_int_ex(rotar_paleta, BPS_TO_TIMER(40));
+    
     FILE *input = fopen("DATA.DAT", "rb");
     if (!input) {
         allegro_message("Error al abrir el archivo de entrada");
@@ -41,11 +45,9 @@ void extract_data() {
     if (stat("data", &st) == -1) {
         mkdir("data", 0700);
     }
-    chdir("data");
+    chdir("data");    
 
     while (1) {
-        rotar_paleta(1);
-
         FileHeader header;
         // Leer la cabecera
         size_t read_size = fread(&header, sizeof(FileHeader), 1, input);
@@ -82,6 +84,7 @@ void extract_data() {
 
         fclose(output);        
     }
+    remove_int(rotar_paleta);
 
     fclose(input);
 }

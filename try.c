@@ -1,18 +1,9 @@
-#include "helpers.h"
-#include <allegro.h>
-#include <allegro/gfx.h>
-#include <math.h>
+#include <stdio.h>
+#include <time.h>
 
-int random_range(unsigned int low, unsigned int high) {
-    return low + (rand() % (high - low));
-}
+#define ITERATIONS 100000
 
-int point_distance(unsigned int x, unsigned int targetX) {
-    return abs((int)(x - targetX));
-}
-
-
-char is_cpu_slow() {
+int main() {
     clock_t start, end;
     double cpu_time_used;
     int i;
@@ -27,10 +18,15 @@ char is_cpu_slow() {
 
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
 
+    printf("Tiempo de ejecución: %f segundos\n", cpu_time_used);
+
     // Interpretar resultados
     if (cpu_time_used < 0.10) {
-        return FALSE;
+        printf("Probablemente es un 486 o superior\n");
     } else {
-        return TRUE;
+        printf("Probablemente es un 386 o inferior\n");
     }
+
+    return 0;
 }
+

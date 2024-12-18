@@ -20,6 +20,7 @@ extern int counter;
 // extern BITMAP *player[11];
 // extern BITMAP *enemy1[11];
 extern BITMAP *bg;
+extern char slow_cpu;
 
 extern void input();
 extern void process();

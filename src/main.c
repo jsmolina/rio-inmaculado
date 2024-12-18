@@ -51,7 +51,6 @@ static void fps_proc(void) {
 END_OF_STATIC_FUNCTION(fps_proc);
 
 
-
 int main(int argc, const char **argv) {
     char file_buffer[14];
     BITMAP *bmp;
@@ -82,6 +81,7 @@ int main(int argc, const char **argv) {
     //set_palette(desktop_palette);
 
     //set_color_depth(desktop_color_depth());
+    slow_cpu = is_cpu_slow();
     clear_to_color(screen, 0);
     textout_centre_ex(screen, font, "Loading Instituto Rio Immaculado...", SCREEN_W / 2, SCREEN_H / 2, makecol(255,255,255), -1);
     extract_data(); // todo mover despues de textout

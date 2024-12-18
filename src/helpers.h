@@ -36,6 +36,7 @@
 
 extern int random_range(unsigned int low, unsigned int high);
 extern int point_distance(unsigned int x, unsigned int targetX);
+extern char is_cpu_slow();
 
 struct spritePos {
     unsigned int x;

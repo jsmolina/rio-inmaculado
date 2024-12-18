@@ -19,6 +19,7 @@ char space_was_pressed = FALSE;
 // BITMAP *enemy1[11];
 BITMAP *bg;
 BITMAP *tiles;
+char slow_cpu;
 
 void input() {
     // readkey();
@@ -200,6 +201,7 @@ int show_bg() {
    destroy_bitmap(buffer);
 }
 
+
 void load_level(int lvl) {
     if (lvl == 0) {
         bg = load_pcx("bege.pcx", NULL);
@@ -213,8 +215,12 @@ void load_level(int lvl) {
         allegro_message("Cannot load graphic");
         exit(1);
     }
-    show_bg();
-    // blit(bg, screen, 0, 0, 0, 0, 320, 200);
+    if (slow_cpu) {
+        blit(bg, screen, 0, 0, 0, 0, 320, 200);
+    } else {
+        show_bg();
+    }
+    //
 
     init_level_enemies(level_enemies, FALSE);
 
