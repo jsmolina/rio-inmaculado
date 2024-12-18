@@ -171,6 +171,35 @@ void output() {
     }
 }
 
+
+int show_bg() {
+   BITMAP *bmp, *buffer;
+   PALETTE pal;
+   int alpha;
+   
+   if (!bg)
+      return -1;
+
+   buffer = create_bitmap(SCREEN_W, SCREEN_H);
+   blit(screen, buffer, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+
+   set_palette(pal);
+
+   /* fade it in on top of the previous picture */
+   for (alpha=0; alpha<256; alpha+=8) {
+      set_trans_blender(0, 0, 0, alpha);
+      draw_trans_sprite(buffer, bg,
+			(SCREEN_W-bg->w)/2, (SCREEN_H-bg->h)/2);
+      vsync();
+      blit(buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);      
+   }
+
+   blit(bg, screen, 0, 0, (SCREEN_W-bg->w)/2, (SCREEN_H-bg->h)/2,
+	bg->w, bg->h);
+
+   destroy_bitmap(buffer);
+}
+
 void load_level(int lvl) {
     if (lvl == 0) {
         bg = load_pcx("bege.pcx", NULL);
@@ -184,7 +213,9 @@ void load_level(int lvl) {
         allegro_message("Cannot load graphic");
         exit(1);
     }
-    blit(bg, screen, 0, 0, 0, 0, 320, 200);
+    show_bg();
+    // blit(bg, screen, 0, 0, 0, 0, 320, 200);
+
     init_level_enemies(level_enemies, FALSE);
 
     level = lvl;
@@ -194,9 +225,9 @@ void increase_level_and_load() {
     if (level >= 1) {
         return;
     }
-    clear_to_color(screen, TRANS);
+    clear_to_color(screen, 0);
     textout_centre_ex(screen, font, "Loading Level...", SCREEN_W / 2,
-                      SCREEN_H / 2, makecol(0, 0, 0), -1);
+                      SCREEN_H / 2, makecol(255, 255, 255), -1);
 
     load_level(level + 1);
 }

@@ -1,4 +1,5 @@
 #include "allegro.h"
+#include "allegro/datafile.h"
 #include "allegro/system.h"
 #include <dirent.h>
 #include <stdio.h>
@@ -15,6 +16,21 @@ typedef struct {
     long long filesize;
 } FileHeader;
 
+void rotar_paleta(int desplazamiento) {
+    PALETTE pal;
+    get_palette(pal);
+
+    for (int i = 1; i < 100; i++) {
+        int nuevo_indice = (i + desplazamiento) % 256;
+        RGB color_temp = pal[i];
+        pal[i] = pal[nuevo_indice];
+        pal[nuevo_indice] = color_temp;
+    }
+
+    set_palette(pal);
+}
+
+
 void extract_data() {
     FILE *input = fopen("DATA.DAT", "rb");
     if (!input) {
@@ -28,6 +44,8 @@ void extract_data() {
     chdir("data");
 
     while (1) {
+        rotar_paleta(1);
+
         FileHeader header;
         // Leer la cabecera
         size_t read_size = fread(&header, sizeof(FileHeader), 1, input);
@@ -37,7 +55,6 @@ void extract_data() {
             perror("Error al leer la cabecera");
             exit(EXIT_FAILURE);
         }
-        allegro_message("fname: %s\n", header.filename);
         // Abrir el archivo de salida con el nombre original
         FILE *output = fopen(header.filename, "wb");
         if (!output) {
@@ -63,9 +80,7 @@ void extract_data() {
         }
         free(buffer);
 
-        fclose(output);
-
-        allegro_message("Archivo '%s' descomprimido.\n\n", header.filename);
+        fclose(output);        
     }
 
     fclose(input);

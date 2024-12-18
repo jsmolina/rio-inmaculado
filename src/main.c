@@ -6,6 +6,7 @@
 #include <allegro.h>
 #include <stdio.h>
 #include "allegro/alcompat.h"
+#include "allegro/color.h"
 #include "allegro/datafile.h"
 #include "allegro/gfx.h"
 #include "allegro/keyboard.h"
@@ -49,6 +50,8 @@ static void fps_proc(void) {
 
 END_OF_STATIC_FUNCTION(fps_proc);
 
+
+
 int main(int argc, const char **argv) {
     char file_buffer[14];
     BITMAP *bmp;
@@ -64,24 +67,28 @@ int main(int argc, const char **argv) {
 
 
     //bmp = create_bitmap(640, 480);
-    set_color_depth(32);
+    set_color_conversion(COLORCONV_TOTAL);
     // Switch to graphics mode, 320x200.
+    set_color_depth(8);
+
     if (set_gfx_mode(GFX_AUTODETECT, 320, 200, 0, 0) != 0) {
         set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
         allegro_message("Cannot set graphics mode:\r\n%s\r\n", allegro_error);
         return 1;
     }
 
-    install_int(fps_proc, 1000);
-
-
-    
+    install_int(fps_proc, 1000);    
     // Print a single line of "hello world" on a white screen.
     //set_palette(desktop_palette);
+
     //set_color_depth(desktop_color_depth());
-    clear_to_color(screen, TRANS);
-    textout_centre_ex(screen, font, "Loading Instituto Rio Immaculado...", SCREEN_W / 2, SCREEN_H / 2, makecol(0,0,0), -1);
+    clear_to_color(screen, 0);
+    textout_centre_ex(screen, font, "Loading Instituto Rio Immaculado...", SCREEN_W / 2, SCREEN_H / 2, makecol(255,255,255), -1);
     extract_data(); // todo mover despues de textout
+
+    set_color_depth(16);
+    set_gfx_mode(GFX_AUTODETECT, 320, 200, 0, 0);
+    
 
     for (int i = 0; i < 9; i++) {
         sprintf(file_buffer, "MAIN%d.PCX", i + 1);
@@ -91,14 +98,16 @@ int main(int argc, const char **argv) {
             exit(1); 
         }
     }
+
     srand(time(NULL));
     // load tilemap
     load_tiles();
     // pre load enemies sprites
     init_level_enemies(0, TRUE);
     // will load menu
+    
     load_level(0);
-
+    
 
     exit_game = 0;               /* reset flag */
     player.x = 100;
@@ -149,6 +158,7 @@ int main(int argc, const char **argv) {
     unload_enemies();
     destroy_tiles();
     cleanup_data();
+    set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
   
     return 0;
 }

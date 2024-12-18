@@ -39,10 +39,10 @@ convert enemy1_sprites.png -crop 40x40+400+0 -colors 256 -type truecolor enem11.
 #convert background3.png -colors 256 -type truecolor bg3.pcx
 #convert background4.png -colors 256 -type truecolor bg4.pcx
 echo "Converting tiles..."
-convert new_tiles.png -colors 256 -type truecolor tiles.pcx
+convert new_tiles.png -colors 256 -depth 8 tiles.pcx
 
 echo "Convert menu bg..."
-convert bege.png -colors 256 -type truecolor bege.pcx
+convert bege.png -colors 256 -depth 8 bege.pcx
 
 pwd
 echo "Compress..."
