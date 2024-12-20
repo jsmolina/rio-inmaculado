@@ -9,10 +9,11 @@
 #include <stdlib.h>
 
 int exit_game;
-struct spritePos player;
+spritePos player;
 
 int level = 0;
 int level_enemies = 0;
+int starting_level = FALSE;
 int counter = 0;
 char space_was_pressed = FALSE;
 // BITMAP *player[11];
@@ -75,10 +76,15 @@ void process() {
     // https://code.tutsplus.com/building-a-beat-em-up-in-game-maker-part-2-combat-and-basic-enemy-ai--cms-26148t
     // https://code.tutsplus.com/building-a-beat-em-up-in-game-makercombo-attacks-more-ai-and-health-pickups--cms-26471t
     // delete sprite
+    
     if (player.moving == MOVING_RIGHT && player.x < 300) {
-        player.x++;
+        if (!enemy_on_path(player.x + 1, player.y)) {
+            player.x++;
+        }
     } else if (player.moving == MOVING_LEFT && player.x > 1) {
-        player.x--;
+        if (!enemy_on_path(player.x - 1, player.y)) {
+            player.x--;
+        }
     }
 
     if (player.y_moving == MOVING_DOWN && player.y < 151) {
@@ -132,7 +138,7 @@ void process() {
 
 void draw_player() {
     // redraw pair or impair?
-    if (player.is_floor > 0) {
+    if (player.is_floor != FALSE) {
         if (player.moving & 1) {
             rotate_sprite(screen, player.sprite[0], player.x, player.y + 10,
                           itofix(1 * 64));
@@ -142,7 +148,7 @@ void draw_player() {
         }
 
     } else {
-        if (player.moving & 1) {
+        if (player.moving & LOOKING_LEFT) {
             draw_sprite_h_flip(screen, player.sprite[player.curr_sprite],
                                player.x, player.y);
         } else {
@@ -201,6 +207,21 @@ int show_bg() {
    destroy_bitmap(buffer);
 }
 
+void init_level_1() {
+    player.x = 16;
+    player.y = 130;
+    player.moving = STOP_RIGHT;
+    player.y_moving = 0;
+    player.curr_sprite = 0;
+    player.is_hit = FALSE;
+    player.is_floor = FALSE;
+    player.received_hits = 0;
+    player.lives = 3;
+    player.floor_times = 0;
+    starting_level = 20;
+    player.curr_sprite = ANIM_WALK1;
+}
+
 
 void load_level(int lvl) {
     if (lvl == 0) {
@@ -210,6 +231,7 @@ void load_level(int lvl) {
         load_tiles();
         bg = load_background("bg4_0.tmx");
         level_enemies = 1;
+        init_level_1();
     }
     if (!bg) {
         allegro_message("Cannot load graphic");

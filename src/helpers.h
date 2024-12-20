@@ -16,6 +16,8 @@
 #define PUNCH_LEFT 5
 #define PUNCH_RIGHT 6
 
+#define LOOKING_LEFT 1
+
 // moving Y states
 #define MOVING_UP 7
 #define MOVING_DOWN 8
@@ -34,11 +36,14 @@
 #define HIT_DURATION 6
 #define FLOOR_DURATION 18
 
+#define TOTAL_LEVELS 2
+
+
 extern int random_range(unsigned int low, unsigned int high);
 extern int point_distance(unsigned int x, unsigned int targetX);
 extern char is_cpu_slow();
 
-struct spritePos {
+typedef struct  {
     unsigned int x;
     unsigned int y;
     BITMAP *sprite[11];
@@ -51,9 +56,9 @@ struct spritePos {
     unsigned char received_hits;
     unsigned char floor_times;
     char is_punching;
-};
+} spritePos;
 
-struct enemyData {
+typedef struct  {
     unsigned int x;
     unsigned int y;
     BITMAP *sprite[11];
@@ -68,6 +73,6 @@ struct enemyData {
     unsigned char floor_times;
     char is_active;
     unsigned char variant; // which enemy are we painting?
-};
+} enemyData;
 
 #endif

@@ -12,6 +12,7 @@
 #include "allegro/keyboard.h"
 #include "allegro/system.h"
 #include "game.h"
+#include "helpers.h"
 #include "tiles.h"
 #include "dat_manager.h"
 
@@ -110,8 +111,8 @@ int main(int argc, const char **argv) {
     
 
     exit_game = 0;               /* reset flag */
-    player.x = 100;
-    player.y = 150;
+    player.x = 16;
+    player.y = 130;
     player.moving = STOP_RIGHT;
     player.y_moving = 0;
     player.curr_sprite = 0;
@@ -130,7 +131,6 @@ int main(int argc, const char **argv) {
                 break;
             }
             vsync();
-
         }
         update_count = 0;
         frame_count++;
@@ -140,9 +140,20 @@ int main(int argc, const char **argv) {
                 increase_level_and_load();
             }
         } else {
-            input();   /* get input */
-            process(); /* process it */
+            if (starting_level == FALSE) {
+                input();   /* get input */
+                process(); /* process it */
+            } else {
+                if ((counter % 2) == 0) {
+                    player.y++;
+                    if (counter % 10 == 0) {
+                        player.curr_sprite ^= 1; // varies last digit 0/1, 1/0
+                    }
+                    starting_level--;
+                }
+            }
             output();  /* give output */
+            vsync();
         }
 
         if (key[KEY_ESC]) {

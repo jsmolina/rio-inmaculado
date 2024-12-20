@@ -10,7 +10,6 @@
 
 #define MAX_FILENAME_LEN 16
 
-// Estructura para almacenar la cabecera de cada archivo (nombre y tamaño)
 typedef struct {
     char filename[MAX_FILENAME_LEN];
     long long filesize;

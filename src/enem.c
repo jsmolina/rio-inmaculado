@@ -4,9 +4,9 @@
 #include "helpers.h"
 #include <stdio.h>
 
-struct enemyData enemies[MAX_ENEMIES];
+enemyData enemies[MAX_ENEMIES];
 
-void init_enemies_sprite(struct enemyData *enem) {
+void init_enemies_sprite(enemyData *enem) {
     char file_buffer[14];
     // load enemy1
     for (int i = 0; i < 9; i++) {
@@ -54,7 +54,7 @@ void init_level_enemies(int total_enemies, char first_load) {
     }
 }
 
-void enemy_animation(struct enemyData *enem) {
+void enemy_animation(enemyData *enem) {
     if (enem->is_hit > 0) {
         enem->curr_sprite = ANIM_HITTED;
         enem->is_hit--;
@@ -81,7 +81,7 @@ void enemy_animation(struct enemyData *enem) {
     }
 }
 
-inline void enemy_decision(struct enemyData *enem, struct spritePos *playr) {
+inline void enemy_decision(enemyData *enem, spritePos *playr) {
     int distance;
     int x_distance;
     int y_distance;
@@ -103,6 +103,9 @@ inline void enemy_decision(struct enemyData *enem, struct spritePos *playr) {
     }
 
     if (enem->is_punching > 0) {
+        if (x_distance > 10) {
+            enem->is_punching = FALSE;
+        }
         return;
     }
 
@@ -144,7 +147,7 @@ inline void enemy_decision(struct enemyData *enem, struct spritePos *playr) {
                 enem->moving = STOP_RIGHT;
                 enem->targetX = FALSE;
             }
-            if (counter % 50 == 0 && playr->is_floor == FALSE) {
+            if (counter % 20 == 0 && playr->is_floor == FALSE) {
                 if (enem->moving == STOP_LEFT) {
                     // TODO think on punch
                     enem->moving = PUNCH_LEFT;
@@ -175,7 +178,7 @@ inline void enemy_decision(struct enemyData *enem, struct spritePos *playr) {
     }
 }
 
-inline void draw_enemy(struct enemyData *enem) {
+inline void draw_enemy(enemyData *enem) {
 
     // redraw pair or impair?
     if (enem->moving & 1) {
@@ -192,7 +195,7 @@ void all_enemy_animations() {
     }
 }
 
-void all_enemy_decisions(struct spritePos *playr) {
+void all_enemy_decisions(spritePos *playr) {
     for (int i = 0; i < level_enemies; i++) {
         enemy_decision(&enemies[i], playr);
     }
@@ -218,4 +221,16 @@ char player_over_all_enemies(int player_y) {
         }
     }
     return player_under_enemies;
+}
+
+char enemy_on_path(int new_player_x, int play_y) {
+    for (int i = 0; i < level_enemies; i++) {
+        int x_distance = point_distance(new_player_x, enemies[i].x);        
+        int y_distance = point_distance(play_y, enemies[i].y);
+
+        if (y_distance < 2 && x_distance < 8) {
+            return TRUE;
+        }
+    }
+    return FALSE;
 }
