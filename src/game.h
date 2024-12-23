@@ -12,14 +12,16 @@
 
 extern int exit_game; /* flag we'll set to end the game */
 extern int level;
+extern int starting_level;
 extern int level_enemies;
-extern struct spritePos player;
+extern spritePos player;
 
 extern int counter;
 // extern int moving;
 // extern BITMAP *player[11];
 // extern BITMAP *enemy1[11];
 extern BITMAP *bg;
+extern char slow_cpu;
 
 extern void input();
 extern void process();

@@ -1,4 +1,5 @@
 #include "allegro.h"
+#include "allegro/datafile.h"
 #include "allegro/system.h"
 #include <dirent.h>
 #include <stdio.h>
@@ -9,13 +10,31 @@
 
 #define MAX_FILENAME_LEN 16
 
-// Estructura para almacenar la cabecera de cada archivo (nombre y tamaño)
 typedef struct {
     char filename[MAX_FILENAME_LEN];
     long long filesize;
 } FileHeader;
 
+static void rotar_paleta() {
+    PALETTE pal;
+    get_palette(pal);
+
+    for (int i = 1; i < 100; i++) {
+        int nuevo_indice = (i + 1) % 256;
+        RGB color_temp = pal[i];
+        pal[i] = pal[nuevo_indice];
+        pal[nuevo_indice] = color_temp;
+    }
+
+    set_palette(pal);
+}
+END_OF_FUNCTION(rotar_paleta)
+
+
 void extract_data() {
+    //install_int(rotar_paleta, 100);
+    install_int_ex(rotar_paleta, BPS_TO_TIMER(40));
+    
     FILE *input = fopen("DATA.DAT", "rb");
     if (!input) {
         allegro_message("Error al abrir el archivo de entrada");
@@ -25,7 +44,7 @@ void extract_data() {
     if (stat("data", &st) == -1) {
         mkdir("data", 0700);
     }
-    chdir("data");
+    chdir("data");    
 
     while (1) {
         FileHeader header;
@@ -37,7 +56,6 @@ void extract_data() {
             perror("Error al leer la cabecera");
             exit(EXIT_FAILURE);
         }
-        allegro_message("fname: %s\n", header.filename);
         // Abrir el archivo de salida con el nombre original
         FILE *output = fopen(header.filename, "wb");
         if (!output) {
@@ -63,10 +81,9 @@ void extract_data() {
         }
         free(buffer);
 
-        fclose(output);
-
-        allegro_message("Archivo '%s' descomprimido.\n\n", header.filename);
+        fclose(output);        
     }
+    remove_int(rotar_paleta);
 
     fclose(input);
 }

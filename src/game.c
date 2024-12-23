@@ -9,16 +9,18 @@
 #include <stdlib.h>
 
 int exit_game;
-struct spritePos player;
+spritePos player;
 
 int level = 0;
 int level_enemies = 0;
+int starting_level = FALSE;
 int counter = 0;
 char space_was_pressed = FALSE;
 // BITMAP *player[11];
 // BITMAP *enemy1[11];
 BITMAP *bg;
 BITMAP *tiles;
+char slow_cpu;
 
 void input() {
     // readkey();
@@ -74,10 +76,15 @@ void process() {
     // https://code.tutsplus.com/building-a-beat-em-up-in-game-maker-part-2-combat-and-basic-enemy-ai--cms-26148t
     // https://code.tutsplus.com/building-a-beat-em-up-in-game-makercombo-attacks-more-ai-and-health-pickups--cms-26471t
     // delete sprite
+    
     if (player.moving == MOVING_RIGHT && player.x < 300) {
-        player.x++;
+        if (!enemy_on_path(player.x + 1, player.y)) {
+            player.x++;
+        }
     } else if (player.moving == MOVING_LEFT && player.x > 1) {
-        player.x--;
+        if (!enemy_on_path(player.x - 1, player.y)) {
+            player.x--;
+        }
     }
 
     if (player.y_moving == MOVING_DOWN && player.y < 151) {
@@ -131,7 +138,7 @@ void process() {
 
 void draw_player() {
     // redraw pair or impair?
-    if (player.is_floor > 0) {
+    if (player.is_floor != FALSE) {
         if (player.moving & 1) {
             rotate_sprite(screen, player.sprite[0], player.x, player.y + 10,
                           itofix(1 * 64));
@@ -141,7 +148,7 @@ void draw_player() {
         }
 
     } else {
-        if (player.moving & 1) {
+        if (player.moving & LOOKING_LEFT) {
             draw_sprite_h_flip(screen, player.sprite[player.curr_sprite],
                                player.x, player.y);
         } else {
@@ -171,6 +178,51 @@ void output() {
     }
 }
 
+
+int show_bg() {
+   BITMAP *bmp, *buffer;
+   PALETTE pal;
+   int alpha;
+   
+   if (!bg)
+      return -1;
+
+   buffer = create_bitmap(SCREEN_W, SCREEN_H);
+   blit(screen, buffer, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+
+   set_palette(pal);
+
+   /* fade it in on top of the previous picture */
+   for (alpha=0; alpha<256; alpha+=8) {
+      set_trans_blender(0, 0, 0, alpha);
+      draw_trans_sprite(buffer, bg,
+			(SCREEN_W-bg->w)/2, (SCREEN_H-bg->h)/2);
+      vsync();
+      blit(buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);      
+   }
+
+   blit(bg, screen, 0, 0, (SCREEN_W-bg->w)/2, (SCREEN_H-bg->h)/2,
+	bg->w, bg->h);
+
+   destroy_bitmap(buffer);
+}
+
+void init_level_1() {
+    player.x = 16;
+    player.y = 130;
+    player.moving = STOP_RIGHT;
+    player.y_moving = 0;
+    player.curr_sprite = 0;
+    player.is_hit = FALSE;
+    player.is_floor = FALSE;
+    player.received_hits = 0;
+    player.lives = 3;
+    player.floor_times = 0;
+    starting_level = 20;
+    player.curr_sprite = ANIM_WALK1;
+}
+
+
 void load_level(int lvl) {
     if (lvl == 0) {
         bg = load_pcx("bege.pcx", NULL);
@@ -179,12 +231,19 @@ void load_level(int lvl) {
         load_tiles();
         bg = load_background("bg4_0.tmx");
         level_enemies = 1;
+        init_level_1();
     }
     if (!bg) {
         allegro_message("Cannot load graphic");
         exit(1);
     }
-    blit(bg, screen, 0, 0, 0, 0, 320, 200);
+    if (slow_cpu) {
+        blit(bg, screen, 0, 0, 0, 0, 320, 200);
+    } else {
+        show_bg();
+    }
+    //
+
     init_level_enemies(level_enemies, FALSE);
 
     level = lvl;
@@ -194,9 +253,9 @@ void increase_level_and_load() {
     if (level >= 1) {
         return;
     }
-    clear_to_color(screen, TRANS);
+    clear_to_color(screen, 0);
     textout_centre_ex(screen, font, "Loading Level...", SCREEN_W / 2,
-                      SCREEN_H / 2, makecol(0, 0, 0), -1);
+                      SCREEN_H / 2, makecol(255, 255, 255), -1);
 
     load_level(level + 1);
 }
