@@ -2,7 +2,6 @@
 #include <allegro.h>
 #include <allegro/gfx.h>
 #include <math.h>
-#include <stdio.h>
 
 
 
@@ -36,25 +35,4 @@ char is_cpu_slow() {
     } else {
         return TRUE;
     }
-}
-
-void cargar_niveles(const char* nombre_archivo) {
-    FILE* archivo = fopen(nombre_archivo, "r");
-    if (archivo == NULL) {
-        printf("No se pudo abrir el archivo %s\n", nombre_archivo);
-        return;
-    }
-
-    /*while (fscanf(archivo, "%d,%d,%d,%d,%d,%d", 
-                  &niveles[total_niveles].nivel,
-                  &niveles[total_niveles].puertas[0],
-                  &niveles[total_niveles].puertas[1],
-                  &niveles[total_niveles].puertas[2],
-                  &niveles[total_niveles].puertas[3],
-                  &niveles[total_niveles].num_enemigos) == 6) {
-        total_niveles++;
-        if (total_niveles >= MAX_NIVELES) break;
-    }*/
-
-    fclose(archivo);
 }

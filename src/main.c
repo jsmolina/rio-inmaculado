@@ -87,9 +87,10 @@ int main(int argc, const char **argv) {
     textout_centre_ex(screen, font, "Loading Instituto Rio Immaculado...", SCREEN_W / 2, SCREEN_H / 2, makecol(255,255,255), -1);
     extract_data(); // todo mover despues de textout
 
+    load_levels();
+
     set_color_depth(16);
     set_gfx_mode(GFX_AUTODETECT, 320, 200, 0, 0);
-    
 
     for (int i = 0; i < 9; i++) {
         sprintf(file_buffer, "MAIN%d.PCX", i + 1);
@@ -106,8 +107,9 @@ int main(int argc, const char **argv) {
     // pre load enemies sprites
     init_level_enemies(0, TRUE);
     // will load menu
-    
-    load_level(0);
+    next_level = 0;
+    sub_level = 0;
+    load_level();
     
 
     exit_game = 0;               /* reset flag */
@@ -140,7 +142,7 @@ int main(int argc, const char **argv) {
                 increase_level_and_load();
             }
         } else {
-            if (starting_level == FALSE) {
+            if (starting_level_counter == FALSE) {
                 input();   /* get input */
                 process(); /* process it */
             } else {
@@ -149,7 +151,7 @@ int main(int argc, const char **argv) {
                     if (counter % 10 == 0) {
                         player.curr_sprite ^= 1; // varies last digit 0/1, 1/0
                     }
-                    starting_level--;
+                    starting_level_counter--;
                 }
             }
             output();  /* give output */

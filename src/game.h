@@ -11,9 +11,11 @@
 // longer interact
 
 extern int exit_game; /* flag we'll set to end the game */
-extern int level;
-extern int starting_level;
-extern int level_enemies;
+extern unsigned char level;
+extern unsigned char sub_level;
+extern unsigned char next_level;
+extern unsigned char starting_level_counter;
+extern unsigned char level_enemies;
 extern spritePos player;
 
 extern int counter;
@@ -23,11 +25,19 @@ extern int counter;
 extern BITMAP *bg;
 extern char slow_cpu;
 
+// processes user input
 extern void input();
+// processes state changes, e.g., based on user input
 extern void process();
+// syncs current state to the screen
 extern void output();
+// setups next level
 extern void increase_level_and_load();
-extern void load_level(int lvl);
+// opens the levels.nfo file which includes actionable parameters for each level
+extern void load_levels();
+// opens the current playable level
+extern void load_level();
+
 
 #endif
 

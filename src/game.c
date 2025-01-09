@@ -7,13 +7,15 @@
 
 #include "helpers.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 int exit_game;
 spritePos player;
 
-int level = 0;
-int level_enemies = 0;
-int starting_level = FALSE;
+unsigned char level = 0;
+unsigned char next_level = FALSE;
+unsigned char level_enemies = 0;
+unsigned char starting_level_counter = FALSE;
 int counter = 0;
 char space_was_pressed = FALSE;
 // BITMAP *player[11];
@@ -21,6 +23,7 @@ char space_was_pressed = FALSE;
 BITMAP *bg;
 BITMAP *tiles;
 char slow_cpu;
+LevelData levels[TOTAL_LEVELS];
 
 void input() {
     // readkey();
@@ -58,17 +61,69 @@ void input() {
             player.moving = PUNCH_RIGHT;
         }
     }
+
     if (key[KEY_LEFT]) {
         player.moving = MOVING_LEFT;
     } else if (key[KEY_RIGHT]) {
         player.moving = MOVING_RIGHT;
     }
-
+    
     if (key[KEY_UP]) {
         player.y_moving = MOVING_UP;
     } else if (key[KEY_DOWN]) {
         player.y_moving = MOVING_DOWN;
     }
+    // TODO ALT/ALTGR for kicks
+}
+
+// returns true if player is >= or <= a margin on a door
+inline char is_on_door(int door_x) {
+    if (door_x == 0) {
+        return FALSE;
+    }
+    return (player.x >= door_x || player.x <= (door_x + 50));
+}
+
+inline unsigned char move_to_level_if_needed() {
+    if (level == 0) {
+        return FALSE;
+    }
+    LevelData curr_leveldata = levels[level - 1];
+    if (player.y < 140) { 
+        // for doors stays on same level but with subdoors
+        if (is_on_door(curr_leveldata.door1)) {
+            next_level = level;
+            sub_level = 1;
+            return TRUE;
+        } else if (is_on_door(curr_leveldata.door2)) {
+            next_level = level;
+            sub_level = 2;
+            return TRUE;
+        } 
+    }
+    // right and left sides
+    if (curr_leveldata.right != 0 && player.x >= 318) {
+        next_level = curr_leveldata.right;
+        sub_level = 0;
+        return TRUE;
+    } else if (curr_leveldata.left != 0 && player.x <= 20) {
+        next_level = curr_leveldata.left;
+        sub_level = 0;
+        return TRUE;
+    }
+    return FALSE;    
+}
+
+
+void increase_level_and_load() {
+    if (level >= 1) {
+        return;
+    }
+    clear_to_color(screen, 0);
+    textout_centre_ex(screen, font, "Loading Level...", SCREEN_W / 2,
+                      SCREEN_H / 2, makecol(255, 255, 255), -1);
+
+    load_level(next_level);
 }
 
 void process() {
@@ -89,8 +144,17 @@ void process() {
 
     if (player.y_moving == MOVING_DOWN && player.y < 151) {
         player.y++;
-    } else if (player.y_moving == MOVING_UP && player.y > 140) {
+    } 
+    
+    if (player.y_moving == MOVING_UP && player.y > 140) {
         player.y--;
+    }
+
+    // check door opening or side moving
+    if (key[KEY_RCONTROL] || key[KEY_LCONTROL]) {
+        if (move_to_level_if_needed()) {
+            load_level();
+        }
     }
 
     if (player.is_hit > 0) {
@@ -218,19 +282,48 @@ void init_level_1() {
     player.received_hits = 0;
     player.lives = 3;
     player.floor_times = 0;
-    starting_level = 20;
+    starting_level_counter = 20;
     player.curr_sprite = ANIM_WALK1;
 }
 
+/**
+Loads the whole set of levels
+*/
+void load_levels() {
+    FILE* archivo = fopen("levels.nfo", "r");
+    if (archivo == NULL) {
+        allegro_message("Cannot open 'levels.nfo'\n");
+        exit(1);
+    }
 
-void load_level(int lvl) {
-    if (lvl == 0) {
+    int total_levels = 0;
+    while (fscanf(archivo, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", 
+                  &levels[total_levels].parent_level,
+                  &levels[total_levels].door1,
+                  &levels[total_levels].door2,
+                  &levels[total_levels].left,
+                  &levels[total_levels].right,
+                  &levels[total_levels].total_enemies, 
+                  &levels[total_levels].initialX,
+                  &levels[total_levels].initialY, 
+                  &levels[total_levels].elevator) == 9) {
+        total_levels++;
+        if (total_levels >= TOTAL_LEVELS) break;
+    }
+
+    fclose(archivo);
+}
+
+
+
+void load_level() {
+    if (next_level == 0) {
         bg = load_pcx("bege.pcx", NULL);
         level_enemies = 0;
-    } else if (lvl == 1) {
+    } else if (next_level == 1) {
         load_tiles();
-        bg = load_background("bg4_0.tmx");
-        level_enemies = 1;
+        bg = load_background("bg1.tmx");
+        level_enemies = 1; // TODO take from structure
         init_level_1();
     }
     if (!bg) {
@@ -249,16 +342,6 @@ void load_level(int lvl) {
     level = lvl;
 }
 
-void increase_level_and_load() {
-    if (level >= 1) {
-        return;
-    }
-    clear_to_color(screen, 0);
-    textout_centre_ex(screen, font, "Loading Level...", SCREEN_W / 2,
-                      SCREEN_H / 2, makecol(255, 255, 255), -1);
-
-    load_level(level + 1);
-}
 /**
 blit
 – Stands for “BLock Transfer”

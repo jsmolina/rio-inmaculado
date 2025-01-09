@@ -36,7 +36,9 @@
 #define HIT_DURATION 6
 #define FLOOR_DURATION 18
 
-#define TOTAL_LEVELS 2
+#define TOTAL_LEVELS 11
+
+
 
 
 extern int random_range(unsigned int low, unsigned int high);
@@ -74,5 +76,17 @@ typedef struct  {
     char is_active;
     unsigned char variant; // which enemy are we painting?
 } enemyData;
+
+typedef struct  {
+    unsigned int parent_level; 
+    unsigned int door1; 
+    unsigned int door2;
+    unsigned int left; 
+    unsigned int right;
+    unsigned int total_enemies;
+    unsigned int initialX;
+    unsigned int initialY;
+    unsigned int elevator;
+} LevelData;
 
 #endif
