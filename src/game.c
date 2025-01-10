@@ -290,11 +290,14 @@ void init_level_1() {
 Loads the whole set of levels
 */
 void load_levels() {
-    FILE* archivo = fopen("levels.nfo", "r");
+    FILE* archivo = fopen("levels.csv", "r");
     if (archivo == NULL) {
-        allegro_message("Cannot open 'levels.nfo'\n");
+        allegro_message("Cannot open 'levels.csv'\n");
         exit(1);
     }
+    // discard first line
+    char buffer[77];
+    fgets(buffer, 77, archivo);
 
     int total_levels = 0;
     while (fscanf(archivo, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", 
