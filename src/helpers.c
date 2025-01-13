@@ -2,8 +2,8 @@
 #include <allegro.h>
 #include <allegro/gfx.h>
 #include <math.h>
-
-
+#include <stdarg.h>
+#include <stdio.h>
 
 int random_range(unsigned int low, unsigned int high) {
     return low + (rand() % (high - low));
@@ -35,4 +35,14 @@ char is_cpu_slow() {
     } else {
         return TRUE;
     }
+}
+
+void die(const char *format, ...) {
+    va_list args;
+    va_start(args, format);
+    vprintf(format, args);
+    va_end(args);
+    set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
+    chdir("..");
+    exit(1);
 }

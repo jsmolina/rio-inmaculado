@@ -14,8 +14,7 @@ void init_enemies_sprite(enemyData *enem) {
                 i + 1); // TODO add -VAR0, -VAR1 depends on which variant
         enem->sprite[i] = load_pcx(file_buffer, NULL);
         if (!enem->sprite[i]) {
-            allegro_message("failed loading: %s", file_buffer);
-            exit(1);
+            die("Cannot load %s", file_buffer);
         }
     }
 }
@@ -85,6 +84,7 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
     int distance;
     int x_distance;
     int y_distance;
+    return;
     // do not take decisions: you are hitted
     if (enem->is_hit > 0) {
         return;

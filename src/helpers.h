@@ -4,6 +4,7 @@
 #include <allegro.h>
 #include <allegro/gfx.h>
 
+
 #define STOPPOS 100
 #define STOP_LEFT 101
 #define STOP_RIGHT 102
@@ -36,7 +37,7 @@
 #define HIT_DURATION 6
 #define FLOOR_DURATION 18
 
-#define TOTAL_LEVELS 11
+#define TOTAL_LEVELS 12
 
 
 
@@ -78,15 +79,31 @@ typedef struct  {
 } enemyData;
 
 typedef struct  {
-    unsigned int parent_level; 
+    // TODO remove, just for helping
+    unsigned int level; 
+    
+    unsigned int door1Pos;
     unsigned int door1; 
+
+    unsigned int door2Pos;
     unsigned int door2;
+
     unsigned int left; 
     unsigned int right;
+
     unsigned int total_enemies;
+
     unsigned int initialX;
     unsigned int initialY;
+    unsigned int elevatorPos;
     unsigned int elevator;
+    unsigned int minX;
+    unsigned int maxX;
 } LevelData;
 
+/* 
+level,door1Pos,door1,door2Pos,door2,left,right,enemies,initialX,initialY,elevatorPos,elevator
+*/
+
+extern void die(const char *format, ...);
 #endif

@@ -72,9 +72,7 @@ int main(int argc, const char **argv) {
     set_color_depth(8);
 
     if (set_gfx_mode(GFX_AUTODETECT, 320, 200, 0, 0) != 0) {
-        set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
-        allegro_message("Cannot set graphics mode:\r\n%s\r\n", allegro_error);
-        return 1;
+        die("Cannot set graphics mode");
     }
 
     install_int(fps_proc, 1000);    
@@ -96,8 +94,7 @@ int main(int argc, const char **argv) {
         sprintf(file_buffer, "MAIN%d.PCX", i + 1);
         player.sprite[i] = load_pcx( file_buffer, NULL );
         if(!player.sprite[i]) {
-            allegro_message("cannot load: %s", file_buffer);
-            exit(1); 
+            die("Cannot load %s", file_buffer);
         }
     }
 
@@ -108,7 +105,6 @@ int main(int argc, const char **argv) {
     init_level_enemies(0, TRUE);
     // will load menu
     next_level = 0;
-    sub_level = 0;
     load_level();
     
 

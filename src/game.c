@@ -1,6 +1,7 @@
 #include "game.h"
 #include "allegro/inline/draw.inl"
 #include "allegro/keyboard.h"
+#include "allegro/text.h"
 #include "dat_manager.h"
 #include "enem.h"
 #include "tiles.h"
@@ -81,34 +82,31 @@ inline char is_on_door(int door_x) {
     if (door_x == 0) {
         return FALSE;
     }
-    return (player.x >= door_x || player.x <= (door_x + 50));
+    return (player.x >= door_x && player.x <= (door_x + 50));
 }
 
 inline unsigned char move_to_level_if_needed() {
     if (level == 0) {
         return FALSE;
     }
-    LevelData curr_leveldata = levels[level - 1];
-    if (player.y < 140) { 
+    LevelData curr_leveldata = levels[level];
+    if (player.y < 142) { 
         // for doors stays on same level but with subdoors
-        if (is_on_door(curr_leveldata.door1)) {
-            next_level = level;
-            sub_level = 1;
+        if (is_on_door(curr_leveldata.door1Pos)) {
+            next_level = curr_leveldata.door1;
+            
             return TRUE;
-        } else if (is_on_door(curr_leveldata.door2)) {
-            next_level = level;
-            sub_level = 2;
+        } else if (is_on_door(curr_leveldata.door2Pos)) {
+            next_level = curr_leveldata.door2;
             return TRUE;
         } 
     }
     // right and left sides
     if (curr_leveldata.right != 0 && player.x >= 318) {
         next_level = curr_leveldata.right;
-        sub_level = 0;
         return TRUE;
     } else if (curr_leveldata.left != 0 && player.x <= 20) {
         next_level = curr_leveldata.left;
-        sub_level = 0;
         return TRUE;
     }
     return FALSE;    
@@ -123,7 +121,8 @@ void increase_level_and_load() {
     textout_centre_ex(screen, font, "Loading Level...", SCREEN_W / 2,
                       SCREEN_H / 2, makecol(255, 255, 255), -1);
 
-    load_level(next_level);
+    next_level = 1;
+    load_level();
 }
 
 void process() {
@@ -131,12 +130,12 @@ void process() {
     // https://code.tutsplus.com/building-a-beat-em-up-in-game-maker-part-2-combat-and-basic-enemy-ai--cms-26148t
     // https://code.tutsplus.com/building-a-beat-em-up-in-game-makercombo-attacks-more-ai-and-health-pickups--cms-26471t
     // delete sprite
-    
-    if (player.moving == MOVING_RIGHT && player.x < 300) {
+    LevelData curr_leveldata = levels[level];
+    if (player.moving == MOVING_RIGHT && player.x < curr_leveldata.maxX) {
         if (!enemy_on_path(player.x + 1, player.y)) {
             player.x++;
         }
-    } else if (player.moving == MOVING_LEFT && player.x > 1) {
+    } else if (player.moving == MOVING_LEFT && player.x > curr_leveldata.minX) {
         if (!enemy_on_path(player.x - 1, player.y)) {
             player.x--;
         }
@@ -271,18 +270,21 @@ int show_bg() {
    destroy_bitmap(buffer);
 }
 
-void init_level_1() {
-    player.x = 16;
-    player.y = 130;
+void init_level_1(unsigned int initialX, unsigned int initialY) {
+    player.x = initialX;
+    player.y = initialY;
+    level_enemies = 1;
+    //player.x = 16;
+    //player.y = 130;
     player.moving = STOP_RIGHT;
     player.y_moving = 0;
     player.curr_sprite = 0;
     player.is_hit = FALSE;
     player.is_floor = FALSE;
-    player.received_hits = 0;
-    player.lives = 3;
+    player.received_hits = 0; // TODO remove
+    player.lives = 3; // TODO remove
     player.floor_times = 0;
-    starting_level_counter = 20;
+    starting_level_counter = 20; // TODO depends on level
     player.curr_sprite = ANIM_WALK1;
 }
 
@@ -292,25 +294,32 @@ Loads the whole set of levels
 void load_levels() {
     FILE* archivo = fopen("levels.csv", "r");
     if (archivo == NULL) {
-        allegro_message("Cannot open 'levels.csv'\n");
-        exit(1);
+        die("Cannot open 'levels.csv'\n");
     }
     // discard first line
-    char buffer[77];
-    fgets(buffer, 77, archivo);
-
+    char buffer[150];
+    fgets(buffer, 72, archivo);
+    /*level,door1Pos,door1,door2Pos,door2,left,right,enemies,initialX,initialY,elevatorPos,elevator, minX,maxX */
     int total_levels = 0;
-    while (fscanf(archivo, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", 
-                  &levels[total_levels].parent_level,
-                  &levels[total_levels].door1,
-                  &levels[total_levels].door2,
-                  &levels[total_levels].left,
-                  &levels[total_levels].right,
-                  &levels[total_levels].total_enemies, 
-                  &levels[total_levels].initialX,
-                  &levels[total_levels].initialY, 
-                  &levels[total_levels].elevator) == 9) {
+    int level_index = 1;
+
+    while (fscanf(archivo, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", 
+                  &levels[level_index].level,
+                  &levels[level_index].door1Pos,
+                  &levels[level_index].door1,
+                  &levels[level_index].door2Pos,
+                  &levels[level_index].door2,
+                  &levels[level_index].left,
+                  &levels[level_index].right,
+                  &levels[level_index].total_enemies, 
+                  &levels[level_index].initialX,
+                  &levels[level_index].initialY, 
+                  &levels[level_index].elevatorPos,
+                  &levels[level_index].elevator,
+                  &levels[level_index].minX, 
+                  &levels[level_index].maxX) > 2) {
         total_levels++;
+        level_index++;
         if (total_levels >= TOTAL_LEVELS) break;
     }
 
@@ -323,15 +332,27 @@ void load_level() {
     if (next_level == 0) {
         bg = load_pcx("bege.pcx", NULL);
         level_enemies = 0;
-    } else if (next_level == 1) {
+    } else if (next_level >= 1) {
         load_tiles();
-        bg = load_background("bg1.tmx");
-        level_enemies = 1; // TODO take from structure
-        init_level_1();
+        
+        char level_filename[17];
+        sprintf(level_filename, "bg%d.tmx", next_level);
+        bg = load_background(level_filename);
+        LevelData curr_leveldata = levels[next_level];
+        unsigned int initialX, initialY;
+        
+        if (next_level < level) { // coming back
+            initialX = levels[next_level].door1Pos;
+            initialY = curr_leveldata.initialY;
+        } else {
+            initialX = curr_leveldata.initialX;
+            initialY = curr_leveldata.initialY;
+        }
+        level = next_level;
+        init_level_1(initialX, initialY);
     }
     if (!bg) {
-        allegro_message("Cannot load graphic");
-        exit(1);
+        die("Cannot load graphic");        
     }
     if (slow_cpu) {
         blit(bg, screen, 0, 0, 0, 0, 320, 200);
@@ -341,8 +362,6 @@ void load_level() {
     //
 
     init_level_enemies(level_enemies, FALSE);
-
-    level = lvl;
 }
 
 /**

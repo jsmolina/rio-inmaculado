@@ -46,7 +46,7 @@ convert bege.png -colors 256 -depth 8 bege.pcx
 
 pwd
 echo "Compress..."
-./dat2 bege.pcx main*.pcx enem*.pcx tiles.pcx bg*.tmx levels.nfo
+./dat2 bege.pcx main*.pcx enem*.pcx tiles.pcx bg*.tmx levels.csv
 
 echo "Removing generated pcx"
 rm enem*.pcx
