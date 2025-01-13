@@ -342,7 +342,12 @@ void load_level() {
         unsigned int initialX, initialY;
         
         if (next_level < level) { // coming back
-            initialX = levels[next_level].door1Pos;
+            initialX = curr_leveldata.door1Pos;
+            if (is_on_door(levels[level].door1Pos)) {
+                initialX = curr_leveldata.door1Pos;
+            } else if (is_on_door(levels[level].door2Pos)) {
+                initialX = curr_leveldata.door2Pos;
+            }
             initialY = curr_leveldata.initialY;
         } else {
             initialX = curr_leveldata.initialX;
