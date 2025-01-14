@@ -96,9 +96,17 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
     if (x_distance <= 24 && y_distance <= 2) {
         if (playr->moving == PUNCH_LEFT && enem->x <= playr->x) {
             enem->is_hit = HIT_DURATION;
+            enem->received_hits++;
         }
         if (playr->moving == PUNCH_RIGHT && player.x <= enem->x) {
             enem->is_hit = HIT_DURATION;
+            enem->received_hits++;
+        }
+
+        if (enem->received_hits == 5) {
+            enem->is_floor = FLOOR_DURATION;
+            enem->floor_times++;
+            enem->received_hits = 0;
         }
     }
 
@@ -179,13 +187,23 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
 }
 
 inline void draw_enemy(enemyData *enem) {
+    if (enem->is_floor != FALSE) {
+        if (enem->moving & 1) {
+            rotate_sprite(screen, enem->sprite[enem->curr_sprite], enem->x,
+                            enem->y, itofix(1 * 64));
+        } else {
+            rotate_sprite_v_flip(screen, enem->sprite[enem->curr_sprite], enem->x,
+                            enem->y, itofix(1 * 64));
+        }
 
-    // redraw pair or impair?
-    if (enem->moving & 1) {
-        draw_sprite_h_flip(screen, enem->sprite[enem->curr_sprite], enem->x,
-                           enem->y);
     } else {
-        draw_sprite(screen, enem->sprite[enem->curr_sprite], enem->x, enem->y);
+        // redraw pair or impair?
+        if (enem->moving & 1) {
+            draw_sprite_h_flip(screen, enem->sprite[enem->curr_sprite], enem->x,
+                            enem->y);
+        } else {
+            draw_sprite(screen, enem->sprite[enem->curr_sprite], enem->x, enem->y);
+        }
     }
 }
 

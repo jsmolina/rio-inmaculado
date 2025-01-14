@@ -73,6 +73,7 @@ typedef struct  {
     char is_hit;
     char is_punching;
     unsigned char received_hits;
+    unsigned char is_floor;
     unsigned char floor_times;
     char is_active;
     unsigned char variant; // which enemy are we painting?
