@@ -29,12 +29,12 @@ void unload_enemies() {
     }
 }
 
-void init_level_enemies(int total_enemies, char first_load) {
+void init_level_enemies(int total_enemies, int maxX, char first_load) {
     int i;
     for (int i = 0; i < MAX_ENEMIES; i++) {
         if (i < total_enemies) {
             enemies[i].is_active = TRUE;
-            enemies[i].x = 240; // it should vary per level
+            enemies[i].x = maxX - 60 - i * 10; // it should vary per level
             enemies[i].y = 150; // it should vary per enemy
             enemies[i].targetX = 0;
             enemies[i].targetY = 0;

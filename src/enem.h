@@ -10,7 +10,7 @@
 extern enemyData enemies[MAX_ENEMIES];
 
 // initializes enemies on level
-extern void init_level_enemies(int total_enemies, char first_load);
+extern void init_level_enemies(int total_enemies, int maxX, char first_load);
 // Animations for all enemies
 extern void all_enemy_animations();
 // AI for all enemies

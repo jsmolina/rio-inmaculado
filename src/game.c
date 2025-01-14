@@ -273,7 +273,6 @@ int show_bg() {
 void init_level_variables(unsigned int initialX, unsigned int initialY) {
     player.x = initialX;
     player.y = initialY;
-    level_enemies = 1;
     player.moving = STOP_RIGHT;
     player.y_moving = 0;
     player.curr_sprite = 0;
@@ -283,11 +282,12 @@ void init_level_variables(unsigned int initialX, unsigned int initialY) {
     player.lives = 3; // TODO remove
     player.floor_times = 0;
     if (initialY == 130) {
-        starting_level_counter = 20; // TODO depends on level
+        starting_level_counter = 20; // simulate leaving elevator
     } else {
         starting_level_counter = 5;
     }
     player.curr_sprite = ANIM_WALK1;
+    
 }
 
 /**
@@ -357,7 +357,25 @@ void load_level() {
             initialY = curr_leveldata.initialY;
         }
         level = next_level;
-        init_level_variables(initialX, initialY);
+        player.x = initialX;
+        player.y = initialY;
+        player.moving = STOP_RIGHT;
+        player.y_moving = 0;
+        player.curr_sprite = 0;
+        player.is_hit = FALSE;
+        player.is_floor = FALSE;
+        player.received_hits = 0; // TODO remove
+        player.lives = 3; // TODO remove
+        player.floor_times = 0;
+        if (initialY == 130) {
+            starting_level_counter = 20; // simulate leaving elevator
+        } else {
+            starting_level_counter = 5;
+        }
+        player.curr_sprite = ANIM_WALK1;
+
+        level_enemies = curr_leveldata.total_enemies;
+        init_level_enemies(level_enemies, curr_leveldata.maxX, FALSE);
     }
     if (!bg) {
         die("Cannot load graphic");        
@@ -368,8 +386,6 @@ void load_level() {
         show_bg();
     }
     //
-
-    init_level_enemies(level_enemies, FALSE);
 }
 
 /**

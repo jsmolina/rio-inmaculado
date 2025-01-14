@@ -102,7 +102,7 @@ int main(int argc, const char **argv) {
     // load tilemap
     load_tiles();
     // pre load enemies sprites
-    init_level_enemies(0, TRUE);
+    init_level_enemies(0, 300, TRUE);
     // will load menu
     next_level = 0;
     load_level();
