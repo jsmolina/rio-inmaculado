@@ -90,22 +90,24 @@ inline unsigned char move_to_level_if_needed() {
         return FALSE;
     }
     LevelData curr_leveldata = levels[level];
-    if (player.y < 142) { 
-        // for doors stays on same level but with subdoors
-        if (is_on_door(curr_leveldata.door1Pos)) {
-            next_level = curr_leveldata.door1;
-            
-            return TRUE;
-        } else if (is_on_door(curr_leveldata.door2Pos)) {
-            next_level = curr_leveldata.door2;
-            return TRUE;
-        } 
+    if (player.y < 142) {
+        if (key[KEY_RCONTROL] || key[KEY_LCONTROL]) {
+            // for doors stays on same level but with subdoors
+            if (is_on_door(curr_leveldata.door1Pos)) {
+                next_level = curr_leveldata.door1;
+                
+                return TRUE;
+            } else if (is_on_door(curr_leveldata.door2Pos)) {
+                next_level = curr_leveldata.door2;
+                return TRUE;
+            } 
+        }
     }
     // right and left sides
-    if (curr_leveldata.right != 0 && player.x >= 318) {
+    if (curr_leveldata.right != 0 && player.x >= (curr_leveldata.maxX - 5)) {
         next_level = curr_leveldata.right;
         return TRUE;
-    } else if (curr_leveldata.left != 0 && player.x <= 20) {
+    } else if (curr_leveldata.left != 0 && player.x <= (curr_leveldata.minX + 5)) {
         next_level = curr_leveldata.left;
         return TRUE;
     }
@@ -150,10 +152,8 @@ void process() {
     }
 
     // check door opening or side moving
-    if (key[KEY_RCONTROL] || key[KEY_LCONTROL]) {
-        if (move_to_level_if_needed()) {
-            load_level();
-        }
+    if (move_to_level_if_needed()) {
+        load_level();
     }
 
     if (player.is_hit > 0) {
@@ -270,12 +270,10 @@ int show_bg() {
    destroy_bitmap(buffer);
 }
 
-void init_level_1(unsigned int initialX, unsigned int initialY) {
+void init_level_variables(unsigned int initialX, unsigned int initialY) {
     player.x = initialX;
     player.y = initialY;
     level_enemies = 1;
-    //player.x = 16;
-    //player.y = 130;
     player.moving = STOP_RIGHT;
     player.y_moving = 0;
     player.curr_sprite = 0;
@@ -284,7 +282,11 @@ void init_level_1(unsigned int initialX, unsigned int initialY) {
     player.received_hits = 0; // TODO remove
     player.lives = 3; // TODO remove
     player.floor_times = 0;
-    starting_level_counter = 20; // TODO depends on level
+    if (initialY == 130) {
+        starting_level_counter = 20; // TODO depends on level
+    } else {
+        starting_level_counter = 5;
+    }
     player.curr_sprite = ANIM_WALK1;
 }
 
@@ -342,11 +344,12 @@ void load_level() {
         unsigned int initialX, initialY;
         
         if (next_level < level) { // coming back
-            initialX = curr_leveldata.door1Pos;
             if (is_on_door(levels[level].door1Pos)) {
                 initialX = curr_leveldata.door1Pos;
             } else if (is_on_door(levels[level].door2Pos)) {
                 initialX = curr_leveldata.door2Pos;
+            } else {
+                initialX = curr_leveldata.maxX - 15;
             }
             initialY = curr_leveldata.initialY;
         } else {
@@ -354,7 +357,7 @@ void load_level() {
             initialY = curr_leveldata.initialY;
         }
         level = next_level;
-        init_level_1(initialX, initialY);
+        init_level_variables(initialX, initialY);
     }
     if (!bg) {
         die("Cannot load graphic");        
