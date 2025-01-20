@@ -5,8 +5,9 @@
 #include "dat_manager.h"
 #include "enem.h"
 #include "tiles.h"
-
 #include "helpers.h"
+#include "levels.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -17,6 +18,7 @@ unsigned char level = 0;
 unsigned char next_level = FALSE;
 unsigned char level_enemies = 0;
 unsigned char starting_level_counter = FALSE;
+unsigned char locked_elevator;
 int counter = 0;
 char space_was_pressed = FALSE;
 // BITMAP *player[11];
@@ -100,7 +102,7 @@ inline unsigned char move_to_level_if_needed() {
             } else if (is_on_door(curr_leveldata.door2Pos)) {
                 next_level = curr_leveldata.door2;
                 return TRUE;
-            } 
+            }
         }
     }
     // right and left sides
@@ -154,6 +156,12 @@ void process() {
     // check door opening or side moving
     if (move_to_level_if_needed()) {
         load_level();
+    }
+
+    switch(level) {        
+        case 2: 
+        level2_processing();
+        break;        
     }
 
     if (player.is_hit > 0) {
@@ -335,11 +343,8 @@ void load_level() {
         bg = load_pcx("bege.pcx", NULL);
         level_enemies = 0;
     } else if (next_level >= 1) {
-        load_tiles();
-        
-        char level_filename[17];
-        sprintf(level_filename, "bg%d.tmx", next_level);
-        bg = load_background(level_filename);
+        load_tiles();        
+        load_level_background();
         LevelData curr_leveldata = levels[next_level];
         unsigned int initialX, initialY;
         
