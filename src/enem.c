@@ -6,13 +6,13 @@
 
 enemyData enemies[MAX_ENEMIES];
 
-void init_enemies_sprite(enemyData *enem) {
+void init_enemies_sprite(enemyData *enem, unsigned int variant) {
     char file_buffer[14];
     // load enemy1
     for (int i = 0; i < 9; i++) {
-        sprintf(file_buffer, "ENEM%d.PCX",
-                i + 1); // TODO add -VAR0, -VAR1 depends on which variant
+        sprintf(file_buffer, "ENEM%d_%d.PCX", variant, i + 1); 
         enem->sprite[i] = load_pcx(file_buffer, NULL);
+        enem->variant = variant;
         if (!enem->sprite[i]) {
             die("Cannot load %s", file_buffer);
         }
@@ -43,11 +43,10 @@ void init_level_enemies(int total_enemies, int maxX, char first_load) {
             enemies[i].is_punching = FALSE;
             enemies[i].received_hits = 0;
             enemies[i].is_active = FALSE;
-            enemies[i].variant = VARIANT_JOHNY; // TODO it will be just "i"
         } else {
             enemies[i].is_active = FALSE;
             if (first_load == TRUE) {
-                init_enemies_sprite(&enemies[i]);
+                init_enemies_sprite(&enemies[i], i % 2 + 1);
             }
         }
     }

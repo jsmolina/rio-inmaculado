@@ -22,17 +22,31 @@ export MIGUEL_SPRITES=`printf 'MAIN%d.PCX ' {1..10}`
 
 # enemy sprites
 echo "Converting enemy1 character sprites..."
-convert enemy1_sprites.png -crop 40x40+0+0 -colors 256 -type truecolor  enem1.pcx
-convert enemy1_sprites.png -crop 40x40+40+0 -colors 256 -type truecolor enem2.pcx
-convert enemy1_sprites.png -crop 40x40+80+0 -colors 256 -type truecolor enem3.pcx
-convert enemy1_sprites.png -crop 40x40+120+0 -colors 256 -type truecolor enem4.pcx
-convert enemy1_sprites.png -crop 40x40+160+0 -colors 256 -type truecolor enem5.pcx
-convert enemy1_sprites.png -crop 40x40+200+0 -colors 256 -type truecolor enem6.pcx
-convert enemy1_sprites.png -crop 40x40+240+0 -colors 256 -type truecolor enem7.pcx
-convert enemy1_sprites.png -crop 40x40+280+0 -colors 256 -type truecolor enem8.pcx
-convert enemy1_sprites.png -crop 40x40+320+0 -colors 256 -type truecolor enem9.pcx
-convert enemy1_sprites.png -crop 40x40+360+0 -colors 256 -type truecolor enem10.pcx
-convert enemy1_sprites.png -crop 40x40+400+0 -colors 256 -type truecolor enem11.pcx
+convert enemy1_sprites.png -crop 40x40+0+0 -colors 256 -type truecolor  enem1_1.pcx
+convert enemy1_sprites.png -crop 40x40+40+0 -colors 256 -type truecolor enem1_2.pcx
+convert enemy1_sprites.png -crop 40x40+80+0 -colors 256 -type truecolor enem1_3.pcx
+convert enemy1_sprites.png -crop 40x40+120+0 -colors 256 -type truecolor enem1_4.pcx
+convert enemy1_sprites.png -crop 40x40+160+0 -colors 256 -type truecolor enem1_5.pcx
+convert enemy1_sprites.png -crop 40x40+200+0 -colors 256 -type truecolor enem1_6.pcx
+convert enemy1_sprites.png -crop 40x40+240+0 -colors 256 -type truecolor enem1_7.pcx
+convert enemy1_sprites.png -crop 40x40+280+0 -colors 256 -type truecolor enem1_8.pcx
+convert enemy1_sprites.png -crop 40x40+320+0 -colors 256 -type truecolor enem1_9.pcx
+convert enemy1_sprites.png -crop 40x40+360+0 -colors 256 -type truecolor enem1_10.pcx
+convert enemy1_sprites.png -crop 40x40+400+0 -colors 256 -type truecolor enem1_11.pcx
+
+# enemy2 sprites
+echo "Converting enemy2 character sprites..."
+convert enemy2_sprites.png -crop 40x40+0+0 -colors 256 -type truecolor  enem2_1.pcx
+convert enemy2_sprites.png -crop 40x40+40+0 -colors 256 -type truecolor enem2_2.pcx
+convert enemy2_sprites.png -crop 40x40+80+0 -colors 256 -type truecolor enem2_3.pcx
+convert enemy2_sprites.png -crop 40x40+120+0 -colors 256 -type truecolor enem2_4.pcx
+convert enemy2_sprites.png -crop 40x40+160+0 -colors 256 -type truecolor enem2_5.pcx
+convert enemy2_sprites.png -crop 40x40+200+0 -colors 256 -type truecolor enem2_6.pcx
+convert enemy2_sprites.png -crop 40x40+240+0 -colors 256 -type truecolor enem2_7.pcx
+convert enemy2_sprites.png -crop 40x40+280+0 -colors 256 -type truecolor enem2_8.pcx
+convert enemy2_sprites.png -crop 40x40+320+0 -colors 256 -type truecolor enem2_9.pcx
+convert enemy2_sprites.png -crop 40x40+360+0 -colors 256 -type truecolor enem2_10.pcx
+convert enemy2_sprites.png -crop 40x40+400+0 -colors 256 -type truecolor enem2_11.pcx
 
 #   convert miguel_sprites.png -crop 40x40+440+0 -colors 256 -type truecolor miguel11.pcx
 #convert background.png -colors 256 -type truecolor bg.pcx
