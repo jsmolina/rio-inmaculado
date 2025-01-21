@@ -6,7 +6,7 @@
 
 enemyData enemies[MAX_ENEMIES];
 
-void init_enemies_sprite(enemyData *enem, unsigned int variant) {
+void eies_sprite(enemyData *enem, unsigned int variant) {
     char file_buffer[14];
     // load enemy1
     for (int i = 0; i < 9; i++) {
@@ -40,19 +40,25 @@ void init_level_enemies(int total_enemies, int maxX, char first_load) {
             enemies[i].targetY = 0;
             enemies[i].curr_sprite = 0;
             enemies[i].is_hit = FALSE;
+            enemies[i].is_floor = FALSE;
             enemies[i].is_punching = FALSE;
             enemies[i].received_hits = 0;
             enemies[i].is_active = FALSE;
         } else {
             enemies[i].is_active = FALSE;
             if (first_load == TRUE) {
-                init_enemies_sprite(&enemies[i], i % 2 + 1);
+                eies_sprite(&enemies[i], i % 2 + 1);
             }
         }
     }
 }
 
 void enemy_animation(enemyData *enem) {
+
+    if (enem->is_floor != FALSE) {
+        return;
+    }
+
     if (enem->is_hit > 0) {
         enem->curr_sprite = ANIM_HITTED;
         enem->is_hit--;
@@ -83,9 +89,14 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
     int distance;
     int x_distance;
     int y_distance;
-    return;
+    // TODO return;
     // do not take decisions: you are hitted
     if (enem->is_hit > 0) {
+        return;
+    }
+
+    // no decisions in floor, sir
+    if (enem->is_floor != FALSE) {
         return;
     }
 
@@ -102,8 +113,9 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
             enem->received_hits++;
         }
 
-        if (enem->received_hits == 5) {
+        if (enem->received_hits == 6) {
             enem->is_floor = FLOOR_DURATION;
+            enem->moving = MOVING_RIGHT;
             enem->floor_times++;
             enem->received_hits = 0;
         }
@@ -116,24 +128,34 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
         return;
     }
 
+
     int random_choice = rand() % 10;
 
     // check movements
-    if (x_distance >= 24) {
-        if ((counter % 30) == 0 && random_choice > 5) {
-            enem->targetX = playr->x;
+    if ((enem->variant == 1 && (enem->targetX < playr->x || enem->targetX > playr->x + 25)) || (enem->variant == 2 && (enem->targetX > playr->x || enem->targetX < playr->x - 25))) {    
+        if ((counter % 30) == 0) {
+            if (enem->variant == 1) {
+                enem->targetX = playr->x + 25;
+            } else {
+                if (playr->x > 25) {
+                    enem->targetX = playr->x - 25;
+                } else {
+                    enem->targetX = playr->x;
+                }
+            }   
         }
-
+    } else if ((enem->variant == 1 && (enem->x < playr->x || enem->x > playr->x + 25)) || (enem->variant == 2 && (enem->x > playr->x || enem->x < playr->x - 25))) {
         if (enem->targetX) {
-            if (enem->x > enem->targetX) {
+            if (enem->x > enem->targetX && enem->x > 0) {
                 enem->x--;
                 enem->moving = MOVING_LEFT;
-            } else if (enem->x < enem->targetX) {
+            } else if (enem->x < enem->targetX && enem->x < 320) {
                 enem->x++;
                 enem->moving = MOVING_RIGHT;
+            } else {
+                enem->moving = STOP_RIGHT;
             }
-        }
-
+        } 
     } else {
         if (point_distance(playr->y, enem->y) >= 2 && (counter % 2) == 0) {
             if (enem->y > playr->y) {
@@ -155,14 +177,13 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
                 enem->targetX = FALSE;
             }
             if (counter % 20 == 0 && playr->is_floor == FALSE) {
-                if (enem->moving == STOP_LEFT) {
+                if (enem->moving == STOP_LEFT || enem->moving == STOP_RIGHT) {
                     // TODO think on punch
-                    enem->moving = PUNCH_LEFT;
-                    enem->is_punching = HIT_DURATION;
-
-                } else if (enem->moving == STOP_RIGHT) {
-                    // think on punch
-                    enem->moving = PUNCH_RIGHT;
+                    if (enem->x > playr->x) {
+                        enem->moving = PUNCH_LEFT;
+                    } else {
+                        enem->moving = PUNCH_RIGHT;
+                    }
                     enem->is_punching = HIT_DURATION;
                 }
 
@@ -189,10 +210,10 @@ inline void draw_enemy(enemyData *enem) {
     if (enem->is_floor != FALSE) {
         if (enem->moving & 1) {
             rotate_sprite(screen, enem->sprite[enem->curr_sprite], enem->x,
-                            enem->y, itofix(1 * 64));
+                            enem->y + 10, itofix(1 * 64));
         } else {
             rotate_sprite_v_flip(screen, enem->sprite[enem->curr_sprite], enem->x,
-                            enem->y, itofix(1 * 64));
+                            enem->y + 10, itofix(1 * 64));
         }
 
     } else {
@@ -242,6 +263,9 @@ char player_over_all_enemies(int player_y) {
 
 char enemy_on_path(int new_player_x, int play_y) {
     for (int i = 0; i < level_enemies; i++) {
+        if (enemies[i].is_floor != FALSE) {
+            continue;
+        }
         int x_distance = point_distance(new_player_x, enemies[i].x);        
         int y_distance = point_distance(play_y, enemies[i].y);
 
