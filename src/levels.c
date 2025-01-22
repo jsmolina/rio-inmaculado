@@ -36,3 +36,7 @@ void load_level_background() {
 
     bg = load_background(level_filename);
 }
+
+void display_lives() {
+    
+}
