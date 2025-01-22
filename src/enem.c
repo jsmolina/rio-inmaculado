@@ -130,6 +130,7 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
 
 
     int random_choice = rand() % 10;
+    char enem_has_moved = FALSE;
 
     // check movements
     if ((enem->variant == 1 && (enem->targetX < playr->x || enem->targetX > playr->x + 25)) || (enem->variant == 2 && (enem->targetX > playr->x || enem->targetX < playr->x - 25))) {    
@@ -148,9 +149,11 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
         if (enem->targetX) {
             if (enem->x > enem->targetX && enem->x > 0) {
                 enem->x--;
+                enem_has_moved = TRUE;
                 enem->moving = MOVING_LEFT;
-            } else if (enem->x < enem->targetX && enem->x < 320) {
+            } else if (enem->x < enem->targetX && enem->x < 320) {                
                 enem->x++;
+                enem_has_moved = TRUE;
                 enem->moving = MOVING_RIGHT;
             } else {
                 enem->moving = STOP_RIGHT;
@@ -165,6 +168,7 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
                 enem->y_moving = MOVING_DOWN;
                 enem->y++;
             }
+            enem_has_moved = TRUE;
         } else {
             enem->y_moving = STOPPOS;
 
@@ -203,6 +207,9 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
                 }
             }
         }
+    }
+    if (!enem_has_moved && (enem->moving == MOVING_LEFT || enem->moving == MOVING_RIGHT)) {
+        enem->moving = STOP_LEFT;
     }
 }
 
