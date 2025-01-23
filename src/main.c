@@ -98,6 +98,7 @@ int main(int argc, const char **argv) {
         }
     }
     player_head = load_pcx( "LIVES.PCX", NULL );
+    player_lifebar = load_pcx("LIFEBAR.PCX", NULL);
 
     srand(time(NULL));
     // load tilemap
@@ -112,6 +113,7 @@ int main(int argc, const char **argv) {
     exit_game = 0;               /* reset flag */
     player.x = 16;
     player.y = 130;
+    player.lifebar = LIFEBAR;
     player.moving = STOP_RIGHT;
     player.y_moving = 0;
     player.curr_sprite = 0;
@@ -134,10 +136,16 @@ int main(int argc, const char **argv) {
         }
         update_count = 0;
         frame_count++;
-
-        if (level == 0) {
+        
+        if (level == MENU) {
             if (key[KEY_SPACE]) {
                 increase_level_and_load();
+            }
+        } else if (level == GAME_OVER) {
+            if (key[KEY_SPACE]) {
+                level = 0;
+                next_level = 0;
+                load_level();
             }
         } else {
             if (starting_level_counter == FALSE) {
@@ -152,7 +160,7 @@ int main(int argc, const char **argv) {
                     starting_level_counter--;
                 }
             }
-            if (level != 0) {
+            if (level != MENU) {
                 output();  /* give output */
             }
             vsync();

@@ -6,6 +6,9 @@
 #include <allegro/keyboard.h>
 
 #define TRANS makecol(255, 0, 255)
+#define LIFEBAR 11
+#define MENU 0
+#define GAME_OVER 250
 
 // TODO define maximum vertical distance to allow before two objects can no
 // longer interact
@@ -19,7 +22,8 @@ extern unsigned char level_enemies;
 extern spritePos player;
 extern unsigned char locked_elevator;
 extern LevelData levels[TOTAL_LEVELS];
-extern BITMAP *player_head;
+extern BITMAP *player_head, *player_lifebar;
+extern void draw_lifebar();
 
 extern int counter;
 // extern int moving;

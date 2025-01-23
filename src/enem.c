@@ -191,19 +191,11 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
                     enem->is_punching = HIT_DURATION;
                 }
 
-                if (enem->moving == PUNCH_LEFT && player.x <= enem->x) {
+                if ((enem->moving == PUNCH_LEFT && player.x <= enem->x) || (enem->moving == PUNCH_RIGHT && player.x >= enem->x))  {
                     playr->is_hit = HIT_DURATION;
                     playr->received_hits++;
-                }
-                if (enem->moving == PUNCH_RIGHT && player.x >= enem->x) {
-                    playr->is_hit = HIT_DURATION;
-                    playr->received_hits++;
-                }
-
-                if (player.received_hits == 5) {
-                    playr->is_floor = FLOOR_DURATION;
-                    playr->floor_times++;
-                    playr->received_hits = 0;
+                    playr->lifebar--;                    
+                    draw_lifebar();
                 }
             }
         }

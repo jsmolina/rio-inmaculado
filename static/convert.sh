@@ -51,6 +51,7 @@ convert enemy2_sprites.png -crop 40x40+400+0 -colors 256 -type truecolor enem2_1
 # lives 
 echo "Converting player head..."
 convert player_head.png -colors 256 -type truecolor LIVES.PCX
+convert lifebar.png -colors 16 -type truecolor LIFEBAR.PCX
 
 #   convert miguel_sprites.png -crop 40x40+440+0 -colors 256 -type truecolor miguel11.pcx
 #convert background.png -colors 256 -type truecolor bg.pcx
@@ -64,7 +65,7 @@ convert bege.png -colors 256 -depth 8 bege.pcx
 
 pwd
 echo "Compress..."
-./dat2 bege.pcx main*.pcx enem*.pcx tiles.pcx bg*.tmx LIVES.PCX levels.csv
+./dat2 bege.pcx main*.pcx enem*.pcx tiles.pcx bg*.tmx LIVES.PCX LIFEBAR.PCX levels.csv
 
 echo "Removing generated pcx"
 rm enem*.pcx

@@ -1,4 +1,5 @@
 #include "game.h"
+#include "allegro/gfx.h"
 #include "allegro/inline/draw.inl"
 #include "allegro/keyboard.h"
 #include "allegro/text.h"
@@ -26,6 +27,7 @@ char space_was_pressed = FALSE;
 BITMAP *bg;
 BITMAP *tiles;
 BITMAP *player_head;
+BITMAP *player_lifebar;
 char slow_cpu;
 LevelData levels[TOTAL_LEVELS];
 
@@ -103,6 +105,16 @@ void draw_lives() {
     }
 }
 
+void game_over() {
+    textout_centre_ex(screen, font, "GAME OVER", SCREEN_W / 2,
+                      SCREEN_H / 2, makecol(255, 255, 255), makecol(10, 10, 10));
+}
+
+void draw_lifebar() {
+    blit(bg, screen, 70, 20, 70, 20, 60, 14);
+    blit(player_lifebar, screen, 0, 0, 70, 20, 2 * player.lifebar, 14);
+}
+
 void process() {
     LevelData curr_leveldata = levels[level];
     if (player.moving == MOVING_RIGHT && player.x < curr_leveldata.maxX) {
@@ -126,21 +138,33 @@ void process() {
     // check door opening or side moving
     if (move_to_level_if_needed()) {
         load_level();
+        return;
     }
     if (key[KEY_0]) {
-        player.lives = 0;
+        next_level = GAME_OVER;
+        level = GAME_OVER;
+        player.is_floor = FLOOR_DURATION;
+        game_over();
+        return;
+    }
+
+    if (player.received_hits == 5) {
+        player.is_floor = FLOOR_DURATION;
+        player.received_hits = 0;
+    }
+    if (player.lifebar == 0) {
+        player.lives--;
+        player.is_floor = FLOOR_DURATION;
+        player.lifebar = LIFEBAR;
         draw_lives();
     }
 
-    if (player.floor_times >= 3) {
-        player.lives--;
-        draw_lives();
-        player.floor_times = 0;        
-    }
     if (player.lives == 0) {
-        next_level = 0;
-        level = 0;
-        load_level();
+        next_level = GAME_OVER;
+        level = GAME_OVER;        
+        player.is_floor = FLOOR_DURATION;
+        game_over();
+        
         return;
     }
 
@@ -330,6 +354,7 @@ void load_level() {
         bg = load_pcx("bege.pcx", NULL);
         level_enemies = 0;
         player.lives = 3;
+        player.lifebar = 10;
         player.floor_times = 0;
     } else if (next_level >= 1) {
         load_tiles();        
@@ -380,6 +405,7 @@ void load_level() {
     }
     if (level != 0) {
         draw_lives();
+        draw_lifebar();
     }
 }
 

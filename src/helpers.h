@@ -56,6 +56,7 @@ typedef struct  {
     unsigned char is_hit;
     unsigned char is_floor;
     unsigned char lives;
+    unsigned char lifebar;
     unsigned char received_hits;
     unsigned char floor_times;
     char is_punching;
