@@ -97,6 +97,7 @@ int main(int argc, const char **argv) {
             die("Cannot load %s", file_buffer);
         }
     }
+    player_head = load_pcx( "LIVES.PCX", NULL );
 
     srand(time(NULL));
     // load tilemap
@@ -151,7 +152,9 @@ int main(int argc, const char **argv) {
                     starting_level_counter--;
                 }
             }
-            output();  /* give output */
+            if (level != 0) {
+                output();  /* give output */
+            }
             vsync();
         }
 

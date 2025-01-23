@@ -18,6 +18,8 @@ extern unsigned char starting_level_counter;
 extern unsigned char level_enemies;
 extern spritePos player;
 extern unsigned char locked_elevator;
+extern LevelData levels[TOTAL_LEVELS];
+extern BITMAP *player_head;
 
 extern int counter;
 // extern int moving;

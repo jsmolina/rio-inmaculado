@@ -34,8 +34,8 @@ void init_level_enemies(int total_enemies, int maxX, char first_load) {
     for (int i = 0; i < MAX_ENEMIES; i++) {
         if (i < total_enemies) {
             enemies[i].is_active = TRUE;
-            enemies[i].x = maxX - 60 - i * 10; // it should vary per level
-            enemies[i].y = 150; // it should vary per enemy
+            enemies[i].x = maxX - 60 - i * 15; // it should vary per level
+            enemies[i].y = 150 + ((i %2) * 3); // it should vary per enemy
             enemies[i].targetX = 0;
             enemies[i].targetY = 0;
             enemies[i].curr_sprite = 0;
@@ -217,10 +217,10 @@ inline void draw_enemy(enemyData *enem) {
     if (enem->is_floor != FALSE) {
         if (enem->moving & 1) {
             rotate_sprite(screen, enem->sprite[enem->curr_sprite], enem->x,
-                            enem->y + 10, itofix(1 * 64));
+                            enem->y + 20, itofix(1 * 64));
         } else {
             rotate_sprite_v_flip(screen, enem->sprite[enem->curr_sprite], enem->x,
-                            enem->y + 10, itofix(1 * 64));
+                            enem->y + 20, itofix(1 * 64));
         }
 
     } else {
@@ -245,8 +245,15 @@ void all_enemy_decisions(spritePos *playr) {
         enemy_decision(&enemies[i], playr);
     }
 }
+int enemies_y_comp(const void *a, const void *b) {
+    enemyData *enemyA = (enemyData *)a;
+    enemyData *enemyB = (enemyData *)b;
+    return (enemyA->y - enemyB->y);
+}
 
 void all_draw_enemies() {
+    qsort(enemies, level_enemies, sizeof(enemyData), enemies_y_comp);
+
     for (int i = 0; i < level_enemies; i++) {
         draw_enemy(&enemies[i]);
     }

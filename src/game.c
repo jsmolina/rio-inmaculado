@@ -25,6 +25,7 @@ char space_was_pressed = FALSE;
 // BITMAP *enemy1[11];
 BITMAP *bg;
 BITMAP *tiles;
+BITMAP *player_head;
 char slow_cpu;
 LevelData levels[TOTAL_LEVELS];
 
@@ -47,12 +48,13 @@ void input() {
     if (player.is_hit > 0 || player.is_floor > 0) {
         return;
     }
-    if (!key[KEY_SPACE] && player.is_punching > 0) {
+    unsigned char pressing_control = key[KEY_RCONTROL] || key[KEY_LCONTROL];
+    if (!pressing_control && player.is_punching > 0) {
         player.is_punching = 0;
     }
 
     // now check again keys
-    if (key[KEY_SPACE]) {
+    if (pressing_control) {
         player.is_punching++;
         if (player.is_punching > 20) {
             return;
@@ -79,43 +81,6 @@ void input() {
     // TODO ALT/ALTGR for kicks
 }
 
-// returns true if player is >= or <= a margin on a door
-inline char is_on_door(int door_x) {
-    if (door_x == 0) {
-        return FALSE;
-    }
-    return (player.x >= door_x && player.x <= (door_x + 50));
-}
-
-inline unsigned char move_to_level_if_needed() {
-    if (level == 0) {
-        return FALSE;
-    }
-    LevelData curr_leveldata = levels[level];
-    if (player.y < 142) {
-        if (key[KEY_RCONTROL] || key[KEY_LCONTROL]) {
-            // for doors stays on same level but with subdoors
-            if (is_on_door(curr_leveldata.door1Pos)) {
-                next_level = curr_leveldata.door1;
-                
-                return TRUE;
-            } else if (is_on_door(curr_leveldata.door2Pos)) {
-                next_level = curr_leveldata.door2;
-                return TRUE;
-            }
-        }
-    }
-    // right and left sides
-    if (curr_leveldata.right != 0 && player.x >= (curr_leveldata.maxX - 5)) {
-        next_level = curr_leveldata.right;
-        return TRUE;
-    } else if (curr_leveldata.left != 0 && player.x <= (curr_leveldata.minX + 5)) {
-        next_level = curr_leveldata.left;
-        return TRUE;
-    }
-    return FALSE;    
-}
-
 
 void increase_level_and_load() {
     if (level >= 1) {
@@ -128,12 +93,17 @@ void increase_level_and_load() {
     next_level = 1;
     load_level();
 }
+// draws current player lives
+void draw_lives() {
+    blit(bg, screen, 20, 20, 20, 20, 50, 20);
+
+    unsigned int i;
+    for (i = 0; i < player.lives; i++) {
+        draw_sprite(screen, player_head, 20 + i * 10, 20);
+    }
+}
 
 void process() {
-    // https://code.tutsplus.com/building-a-beat-em-up-in-game-maker-part-1-player-movement-attacks-and-basic-enemies--cms-26147t
-    // https://code.tutsplus.com/building-a-beat-em-up-in-game-maker-part-2-combat-and-basic-enemy-ai--cms-26148t
-    // https://code.tutsplus.com/building-a-beat-em-up-in-game-makercombo-attacks-more-ai-and-health-pickups--cms-26471t
-    // delete sprite
     LevelData curr_leveldata = levels[level];
     if (player.moving == MOVING_RIGHT && player.x < curr_leveldata.maxX) {
         if (!enemy_on_path(player.x + 1, player.y)) {
@@ -157,6 +127,22 @@ void process() {
     if (move_to_level_if_needed()) {
         load_level();
     }
+    if (key[KEY_0]) {
+        player.lives = 0;
+        draw_lives();
+    }
+
+    if (player.floor_times >= 3) {
+        player.lives--;
+        draw_lives();
+        player.floor_times = 0;        
+    }
+    if (player.lives == 0) {
+        next_level = 0;
+        level = 0;
+        load_level();
+        return;
+    }
 
     switch(level) {        
         case 2: 
@@ -167,6 +153,7 @@ void process() {
     if (player.is_hit > 0) {
         player.curr_sprite = ANIM_HITTED;
     }
+    
 
     if ((counter % 10) == 0) {
         if (player.is_floor > 0) {
@@ -229,6 +216,7 @@ void draw_player() {
     }
 }
 
+
 void output() {
     counter++;
     // clean
@@ -287,7 +275,6 @@ void init_level_variables(unsigned int initialX, unsigned int initialY) {
     player.is_hit = FALSE;
     player.is_floor = FALSE;
     player.received_hits = 0; // TODO remove
-    player.lives = 3; // TODO remove
     player.floor_times = 0;
     if (initialY == 130) {
         starting_level_counter = 20; // simulate leaving elevator
@@ -342,6 +329,8 @@ void load_level() {
     if (next_level == 0) {
         bg = load_pcx("bege.pcx", NULL);
         level_enemies = 0;
+        player.lives = 3;
+        player.floor_times = 0;
     } else if (next_level >= 1) {
         load_tiles();        
         load_level_background();
@@ -370,7 +359,6 @@ void load_level() {
         player.is_hit = FALSE;
         player.is_floor = FALSE;
         player.received_hits = 0; // TODO remove
-        player.lives = 3; // TODO remove
         player.floor_times = 0;
         if (initialY == 130) {
             starting_level_counter = 20; // simulate leaving elevator
@@ -390,7 +378,9 @@ void load_level() {
     } else {
         show_bg();
     }
-    //
+    if (level != 0) {
+        draw_lives();
+    }
 }
 
 /**
