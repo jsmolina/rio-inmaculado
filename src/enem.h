@@ -5,7 +5,10 @@
 #include <allegro/gfx.h>
 
 #define MAX_ENEMIES 3
-#define VARIANT_JOHNY 0
+#define JOHNY 1
+#define PETER 2
+
+#define FIGHT_DISTANCE 20
 
 extern enemyData enemies[MAX_ENEMIES];
 

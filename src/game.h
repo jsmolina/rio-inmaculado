@@ -21,6 +21,7 @@ extern unsigned char starting_level_counter;
 extern unsigned char level_enemies;
 extern spritePos player;
 extern unsigned char locked_elevator;
+extern unsigned char urinated;
 extern LevelData levels[TOTAL_LEVELS];
 extern BITMAP *player_head, *player_lifebar;
 extern void draw_lifebar();

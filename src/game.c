@@ -20,6 +20,7 @@ unsigned char next_level = FALSE;
 unsigned char level_enemies = 0;
 unsigned char starting_level_counter = FALSE;
 unsigned char locked_elevator;
+unsigned char urinated;
 int counter = 0;
 char space_was_pressed = FALSE;
 // BITMAP *player[11];
@@ -91,6 +92,8 @@ void increase_level_and_load() {
     clear_to_color(screen, 0);
     textout_centre_ex(screen, font, "Loading Level...", SCREEN_W / 2,
                       SCREEN_H / 2, makecol(255, 255, 255), -1);
+    locked_elevator = TRUE;
+    urinated = FALSE;
 
     next_level = 1;
     load_level();
@@ -116,24 +119,7 @@ void draw_lifebar() {
 }
 
 void process() {
-    LevelData curr_leveldata = levels[level];
-    if (player.moving == MOVING_RIGHT && player.x < curr_leveldata.maxX) {
-        if (!enemy_on_path(player.x + 1, player.y)) {
-            player.x++;
-        }
-    } else if (player.moving == MOVING_LEFT && player.x > curr_leveldata.minX) {
-        if (!enemy_on_path(player.x - 1, player.y)) {
-            player.x--;
-        }
-    }
-
-    if (player.y_moving == MOVING_DOWN && player.y < 151) {
-        player.y++;
-    } 
-    
-    if (player.y_moving == MOVING_UP && player.y > 140) {
-        player.y--;
-    }
+    move_with_level_limits();
 
     // check door opening or side moving
     if (move_to_level_if_needed()) {
@@ -168,11 +154,7 @@ void process() {
         return;
     }
 
-    switch(level) {        
-        case 2: 
-        level2_processing();
-        break;        
-    }
+    level_processing();
 
     if (player.is_hit > 0) {
         player.curr_sprite = ANIM_HITTED;

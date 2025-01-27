@@ -1,5 +1,6 @@
 #include "enem.h"
 #include "allegro/gfx.h"
+#include "allegro/text.h"
 #include "game.h"
 #include "helpers.h"
 #include <stdio.h>
@@ -129,15 +130,114 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
     }
 
 
-    int random_choice = rand() % 10;
+    int random_choice = rand() % 50;
     char enem_has_moved = FALSE;
+    // remove TODO    
+    char buff[24];
 
-    // check movements
-    if ((enem->variant == 1 && (enem->targetX < playr->x || enem->targetX > playr->x + 25)) || (enem->variant == 2 && (enem->targetX > playr->x || enem->targetX < playr->x - 25))) {    
-        if ((counter % 30) == 0) {
-            if (enem->variant == 1) {
-                enem->targetX = playr->x + 25;
+    if (point_distance(playr->x, enem->targetX) != FIGHT_DISTANCE || enem->targetX == FALSE) {
+        if (random_choice == 8) {
+            textout_ex(screen, font, "       targeting          ", 0,
+                        70, makecol(0, 0, 0), makecol(255, 255, 255));
+            switch (enem->variant) {
+                case JOHNY:
+                    if (playr->x < 320) {
+                        enem->targetX = playr->x + FIGHT_DISTANCE;
+                    } else {
+                        enem->targetX = playr->x - FIGHT_DISTANCE;
+                    }
+                    break;
+                case PETER:
+                    if (playr->x < 25) {
+                        enem->targetX = playr->x + FIGHT_DISTANCE;
+                    } else {
+                        enem->targetX = playr->x - FIGHT_DISTANCE;
+                    }
+                    break;
+            }
+        }
+    } 
+    if (enem->targetX != FALSE && enem->targetX != enem->x) {
+                textout_ex(screen, font, "                                             ", 0,
+                      70, makecol(0, 0, 0), makecol(255, 255, 255));
+        if (enem->x > enem->targetX && enem->x > 0) {
+            enem->x--;
+            enem_has_moved = TRUE;
+            enem->moving = MOVING_LEFT;
+        } else if (enem->x < enem->targetX && enem->x < 320) {
+            enem->x++;
+            enem_has_moved = TRUE;
+            enem->moving = MOVING_RIGHT;
+        } else {
+            enem->moving = STOP_RIGHT;
+        }
+    } else {
+        if (point_distance(playr->y, enem->y) >= 2 && (counter % 2) == 0) {
+            if (enem->y > playr->y) {
+                enem->y_moving = MOVING_UP;
+                enem->y--;
             } else {
+                enem->y_moving = MOVING_DOWN;
+                enem->y++;
+            }
+            enem_has_moved = TRUE;
+        } else {
+            enem->y_moving = STOPPOS;
+
+            if (enem->moving == MOVING_LEFT || enem->moving == PUNCH_LEFT) {
+                enem->moving = STOP_LEFT;
+                enem->targetX = FALSE;
+            } else if (enem->moving == MOVING_RIGHT ||
+                       enem->moving == PUNCH_RIGHT) {
+                enem->moving = STOP_RIGHT;
+                enem->targetX = FALSE;
+            }
+            if (counter % 30 == 0 && playr->is_floor == FALSE) {
+                if (enem->moving == STOP_LEFT || enem->moving == STOP_RIGHT) {
+                    // TODO think on punch
+                    if (enem->x > playr->x) {
+                        enem->moving = PUNCH_LEFT;
+                    } else {
+                        enem->moving = PUNCH_RIGHT;
+                    }
+                    enem->is_punching = HIT_DURATION;
+                }
+
+                if ((enem->moving == PUNCH_LEFT && player.x <= enem->x && x_distance <= FIGHT_DISTANCE) 
+                || (enem->moving == PUNCH_RIGHT && player.x >= enem->x && x_distance <= FIGHT_DISTANCE))  {
+                    playr->is_hit = HIT_DURATION;
+                    playr->received_hits++;
+                    playr->lifebar--;
+                    draw_lifebar();
+                }
+            }
+        }
+
+    }
+    
+    /*if (enem->variant == PETER) {
+               
+                sprintf(buff, "x: %d, tx: %d, enX: %d, %d", playr->x, enem->targetX, enem->x, random_choice);
+                textout_ex(screen, font, "                                             ", 0,
+                      50, makecol(0, 0, 0), makecol(255, 255, 255));
+                textout_ex(screen, font, buff, 0,
+                      50, makecol(0, 0, 0), makecol(255, 255, 255));
+    } else {
+        sprintf(buff, "x: %d, tx: %d, enX: %d", playr->x, enem->targetX, enem->x);
+                textout_ex(screen, font, "                                             ", 0,
+                      60, makecol(0, 0, 0), makecol(255, 255, 255));
+                textout_ex(screen, font, buff, 0,
+                      60, makecol(0, 0, 0), makecol(255, 255, 255));
+    }*/
+    
+/*
+    // check movements
+    if ((enem->variant == JOHNY && (enem->targetX < playr->x || enem->targetX > playr->x + 25)) 
+    || (enem->variant == PETER && (enem->targetX > playr->x || enem->targetX < (playr->x - 25)))) {    
+        if ((counter % 30) == 0) {
+            if (enem->variant == JOHNY) {
+                enem->targetX = playr->x + 25;
+            } else if (enem->variant == PETER) {                
                 if (playr->x > 25) {
                     enem->targetX = playr->x - 25;
                 } else {
@@ -145,13 +245,14 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
                 }
             }   
         }
-    } else if ((enem->variant == 1 && (enem->x < playr->x || enem->x > playr->x + 25)) || (enem->variant == 2 && (enem->x > playr->x || enem->x < playr->x - 25))) {
+    } else if ((enem->variant == JOHNY && (enem->x < playr->x || enem->x > playr->x + 25)) 
+    || (enem->variant == PETER && (enem->x > playr->x || enem->x < playr->x - 25))) {
         if (enem->targetX) {
             if (enem->x > enem->targetX && enem->x > 0) {
                 enem->x--;
                 enem_has_moved = TRUE;
                 enem->moving = MOVING_LEFT;
-            } else if (enem->x < enem->targetX && enem->x < 320) {                
+            } else if (enem->x < enem->targetX && enem->x < 320) {
                 enem->x++;
                 enem_has_moved = TRUE;
                 enem->moving = MOVING_RIGHT;
@@ -199,7 +300,7 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
                 }
             }
         }
-    }
+    }*/
     if (!enem_has_moved && (enem->moving == MOVING_LEFT || enem->moving == MOVING_RIGHT)) {
         enem->moving = STOP_LEFT;
     }

@@ -9,15 +9,30 @@
 unsigned char automatic_event = FALSE;
 
 
-void level2_processing() {
-    if (key[KEY_SPACE]) {          
-        if (player.y < 142 && player.x >= 204 && player.x <= 219) {
-            textout_centre_ex(screen, font, "support?", SCREEN_W / 2, 76, makecol(100,255,255), makecol(0,0,0));               
-            textout_centre_ex(screen, font, "who are you?", SCREEN_W / 2, 84, makecol(255,255,255), makecol(0,0,0));
-            textout_centre_ex(screen, font, "nevermind, please fix the elevator", SCREEN_W / 2, 92, makecol(100,255,255), makecol(0,0,0));
-            locked_elevator = FALSE;
-        }
+void level_processing() {
+    switch (level) {
+        case 2:
+            if (key[KEY_SPACE]) {
+                if (player.y < 142 && player.x >= 204 && player.x <= 219) {
+                    textout_centre_ex(screen, font, "support?", SCREEN_W / 2, 76, makecol(100,255,255), makecol(0,0,0));               
+                    textout_centre_ex(screen, font, "who are you?", SCREEN_W / 2, 84, makecol(255,255,255), makecol(0,0,0));
+                    textout_centre_ex(screen, font, "nevermind, please fix the elevator", SCREEN_W / 2, 92, makecol(100,255,255), makecol(0,0,0));
+                    locked_elevator = FALSE;
+                }
+            }
+        break;
+        case 4:
+            if (key[KEY_SPACE]) {
+                if (player.y < 147 && player.x >= 7 && player.x <= 28 && !urinated) {
+                    textout_centre_ex(screen, font, "ahhh, that's better!", SCREEN_W / 2, 76, makecol(100,255,255), makecol(0,0,0));               
+                    urinated = TRUE;
+                    player.lifebar = LIFEBAR;
+                    draw_lifebar();
+                }
+            }
+        break;
     }
+    
 }
 
 
@@ -43,6 +58,11 @@ inline unsigned char move_to_level_if_needed() {
                 return TRUE;
             } else if (is_on_door(curr_leveldata.door2Pos)) {
                 next_level = curr_leveldata.door2;
+                return TRUE;
+            }
+
+            if (is_on_door(curr_leveldata.elevatorPos) && !locked_elevator) {
+                next_level = curr_leveldata.elevator;
                 return TRUE;
             }
         }
@@ -76,6 +96,46 @@ void load_level_background() {
     bg = load_background(level_filename);
 }
 
-void display_lives() {
+void move_with_level_limits() {
+    LevelData curr_leveldata = levels[level];
+    unsigned int minY, maxY;
+    unsigned int minX, maxX;
+
+    minX = curr_leveldata.minX;
+    maxX = curr_leveldata.maxX;
     
+    switch (level) {
+        case 4:
+            if (player.x < 263) {
+                minY = 145;
+                maxY = 151;
+                if (player.y < minY) {
+                    minX = 263;
+                }
+            } else {
+                minY = 140;
+                maxY = 151;
+            }
+            break;
+        default:
+            minY = 140;
+            maxY = 151;            
+    }
+    if (player.moving == MOVING_RIGHT && player.x < maxX) {
+        if (!enemy_on_path(player.x + 1, player.y)) {
+                player.x++;
+        }
+    } else if (player.moving == MOVING_LEFT && player.x > minX) {
+        if (!enemy_on_path(player.x - 1, player.y)) {
+            player.x--;
+        }
+    }
+
+    if (player.y_moving == MOVING_DOWN && player.y < maxY) {
+        player.y++;
+    } 
+    
+    if (player.y_moving == MOVING_UP && player.y > minY) {
+        player.y--;
+    }
 }

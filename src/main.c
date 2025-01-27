@@ -122,7 +122,7 @@ int main(int argc, const char **argv) {
     player.received_hits = 0;
     player.lives = 3;
     player.floor_times = 0;
-    locked_elevator = TRUE;
+
     gfx_init_timer();
 
     do {
