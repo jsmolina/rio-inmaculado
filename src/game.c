@@ -332,6 +332,18 @@ void load_levels() {
 
 
 void load_level() {
+    if (next_level == 6) {
+        BITMAP * bg2;
+
+        bg2 = load_level_background(6);
+        for (unsigned int i = 0; i<200; i+=4) {
+            blit(bg2, screen, 0, 0, 0, 200 - i, 320, i);
+            blit(bg, screen, 0, i, 0, 0, 320, 200 - i);
+            vsync();
+            // TODO check speed
+        }
+    }
+
     if (next_level == 0) {
         bg = load_pcx("bege.pcx", NULL);
         level_enemies = 0;
@@ -340,7 +352,7 @@ void load_level() {
         player.floor_times = 0;
     } else if (next_level >= 1) {
         load_tiles();        
-        load_level_background();
+        bg = load_level_background(next_level);
         LevelData curr_leveldata = levels[next_level];
         unsigned int initialX, initialY;
         

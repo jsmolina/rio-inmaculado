@@ -1,3 +1,4 @@
+#include <allegro.h>
 #include "allegro/keyboard.h"
 #include "allegro/text.h"
 #include <stdio.h>
@@ -7,33 +8,6 @@
 
 
 unsigned char automatic_event = FALSE;
-
-
-void level_processing() {
-    switch (level) {
-        case 2:
-            if (key[KEY_SPACE]) {
-                if (player.y < 142 && player.x >= 204 && player.x <= 219) {
-                    textout_centre_ex(screen, font, "support?", SCREEN_W / 2, 76, makecol(100,255,255), makecol(0,0,0));               
-                    textout_centre_ex(screen, font, "who are you?", SCREEN_W / 2, 84, makecol(255,255,255), makecol(0,0,0));
-                    textout_centre_ex(screen, font, "nevermind, please fix the elevator", SCREEN_W / 2, 92, makecol(100,255,255), makecol(0,0,0));
-                    locked_elevator = FALSE;
-                }
-            }
-        break;
-        case 4:
-            if (key[KEY_SPACE]) {
-                if (player.y < 147 && player.x >= 7 && player.x <= 28 && !urinated) {
-                    textout_centre_ex(screen, font, "ahhh, that's better!", SCREEN_W / 2, 76, makecol(100,255,255), makecol(0,0,0));               
-                    urinated = TRUE;
-                    player.lifebar = LIFEBAR;
-                    draw_lifebar();
-                }
-            }
-        break;
-    }
-    
-}
 
 
 // returns true if player is >= or <= a margin on a door
@@ -79,9 +53,9 @@ inline unsigned char move_to_level_if_needed() {
 }
 
 
-void load_level_background() {
+BITMAP * load_level_background(unsigned char lvl) {
     char level_filename[17];
-    switch (next_level) {
+    switch (lvl) {
         case 5:
             if (locked_elevator) {
                 sprintf(level_filename, "bg5_0.tmx");
@@ -90,10 +64,10 @@ void load_level_background() {
             }
         break;
         default:
-            sprintf(level_filename, "bg%d.tmx", next_level);        
+            sprintf(level_filename, "bg%d.tmx", lvl);        
     }
 
-    bg = load_background(level_filename);
+    return load_background(level_filename);
 }
 
 void move_with_level_limits() {
@@ -138,4 +112,35 @@ void move_with_level_limits() {
     if (player.y_moving == MOVING_UP && player.y > minY) {
         player.y--;
     }
+}
+
+
+void level_processing() {
+
+    switch (level) {
+        case 2:
+            if (key[KEY_SPACE]) {
+                if (player.y < 142 && player.x >= 204 && player.x <= 219) {
+                    textout_centre_ex(screen, font, "support?", SCREEN_W / 2, 76, makecol(100,255,255), makecol(0,0,0));               
+                    textout_centre_ex(screen, font, "who are you?", SCREEN_W / 2, 84, makecol(255,255,255), makecol(0,0,0));
+                    textout_centre_ex(screen, font, "nevermind, please fix the elevator", SCREEN_W / 2, 92, makecol(100,255,255), makecol(0,0,0));
+                    locked_elevator = FALSE;
+                }
+            }
+        break;
+        case 4:
+            if (key[KEY_SPACE]) {
+                if (player.y < 147 && player.x >= 7 && player.x <= 28 && !urinated) {
+                    textout_centre_ex(screen, font, "ahhh, that's better!", SCREEN_W / 2, 76, makecol(100,255,255), makecol(0,0,0));               
+                    urinated = TRUE;
+                    player.lifebar = LIFEBAR;
+                    draw_lifebar();
+                }
+            }
+        break;
+        case 5:
+            
+        break;
+    }
+    
 }
