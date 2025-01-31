@@ -21,6 +21,7 @@ unsigned char level_enemies = 0;
 unsigned char starting_level_counter = FALSE;
 unsigned char locked_elevator;
 unsigned char urinated;
+char castigo;
 int counter = 0;
 char space_was_pressed = FALSE;
 // BITMAP *player[11];
@@ -28,6 +29,7 @@ char space_was_pressed = FALSE;
 BITMAP *bg;
 BITMAP *tiles;
 BITMAP *player_head;
+BITMAP *girl;
 BITMAP *player_lifebar;
 char slow_cpu;
 LevelData levels[TOTAL_LEVELS];
@@ -35,6 +37,9 @@ LevelData levels[TOTAL_LEVELS];
 void input() {
     // readkey();
     // end_game = 1;
+    if (level == 12) {
+        return;
+    }
 
     if (player.moving < STOPPOS) {
         if (player.moving == MOVING_LEFT || player.moving == PUNCH_LEFT) {
@@ -155,6 +160,16 @@ void process() {
     }
 
     level_processing();
+    if (castigo == TRUE) {
+        next_level = 12;
+        load_level();
+        return;
+    } else if (castigo == CASTIGO_FINALIZADO) {
+        next_level = 3;
+        load_level();
+        castigo = FALSE;
+        return;
+    }
 
     if (player.is_hit > 0) {
         player.curr_sprite = ANIM_HITTED;
@@ -225,6 +240,9 @@ void draw_player() {
 
 void output() {
     counter++;
+    if (level == 12) {
+        return;
+    }
     // clean
     blit(bg, screen, player.x, 120, player.x, 120, 40, 80);
     redraw_bg_enemy_positions();
@@ -341,6 +359,7 @@ void load_level() {
             blit(bg, screen, 0, i, 0, 0, 320, 200 - i);
             vsync();
             // TODO check speed
+            rest(1);
         }
     }
 
@@ -350,8 +369,11 @@ void load_level() {
         player.lives = 3;
         player.lifebar = 10;
         player.floor_times = 0;
+    } else if (next_level == 12) {
+        bg = load_level_background(next_level);
+        castigo = FALSE;
+        level = 12;
     } else if (next_level >= 1) {
-        load_tiles();        
         bg = load_level_background(next_level);
         LevelData curr_leveldata = levels[next_level];
         unsigned int initialX, initialY;

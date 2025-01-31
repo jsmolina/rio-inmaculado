@@ -1,9 +1,11 @@
 #include <allegro.h>
+#include "allegro/gfx.h"
 #include "allegro/keyboard.h"
 #include "allegro/text.h"
 #include <stdio.h>
 #include "game.h"
 #include "tiles.h"
+#include "levels.h"
 
 
 
@@ -114,6 +116,37 @@ void move_with_level_limits() {
     }
 }
 
+void loop_castigo() {
+    int index = 0;
+    int key2;
+    
+    clear_keybuf(); // Limpia el buffer del teclado
+    textout_ex(screen, font, "no entrare al de las chicas", 21, 35, makecol(194,106,228), -1);
+
+    char compar[] = "no entrare al de las chicas";
+    char buf[] =    "                           ";
+    while (index < 27) {
+        if (keypressed()) {
+            key2 = readkey();
+            
+            if (index < 30 - 1) {
+                char shifted = key2 & 0xFF;
+                if (shifted == compar[index]) {
+                    buf[index] = shifted;
+                    index++;
+                }
+            }
+            if (key[KEY_ESC]) {
+                return;
+            }
+  
+        }
+        
+        textout_ex(screen, font, buf, 21, 51, makecol(50,125,125), -1);
+        rest(1); 
+    }
+    castigo = CASTIGO_FINALIZADO;
+}
 
 void level_processing() {
 
@@ -121,25 +154,39 @@ void level_processing() {
         case 2:
             if (key[KEY_SPACE]) {
                 if (player.y < 142 && player.x >= 204 && player.x <= 219) {
-                    textout_centre_ex(screen, font, "support?", SCREEN_W / 2, 76, makecol(100,255,255), makecol(0,0,0));               
-                    textout_centre_ex(screen, font, "who are you?", SCREEN_W / 2, 84, makecol(255,255,255), makecol(0,0,0));
-                    textout_centre_ex(screen, font, "nevermind, please fix the elevator", SCREEN_W / 2, 92, makecol(100,255,255), makecol(0,0,0));
+                    textout_centre_ex(screen, font, "bedel?", SCREEN_W / 2, 76, makecol(100,255,255), makecol(0,0,0));               
+                    textout_centre_ex(screen, font, "quien eres tu?", SCREEN_W / 2, 84, makecol(255,255,255), makecol(0,0,0));
+                    textout_centre_ex(screen, font, "no importa, arregla el ascensor", SCREEN_W / 2, 92, makecol(100,255,255), makecol(0,0,0));
                     locked_elevator = FALSE;
                 }
             }
         break;
         case 4:
             if (key[KEY_SPACE]) {
-                if (player.y < 147 && player.x >= 7 && player.x <= 28 && !urinated) {
-                    textout_centre_ex(screen, font, "ahhh, that's better!", SCREEN_W / 2, 76, makecol(100,255,255), makecol(0,0,0));               
-                    urinated = TRUE;
-                    player.lifebar = LIFEBAR;
-                    draw_lifebar();
+                if (player.y < 147 && player.x >= 7 && player.x <= 28) {
+                    if (!urinated) {
+                        textout_centre_ex(screen, font, "ahhh, mejor asi!", SCREEN_W / 2, 76, makecol(100,255,255), makecol(0,0,0));               
+                        textout_centre_ex(screen, font, "largate o te castigo!", SCREEN_W / 2, 84, makecol(194,106,228), makecol(0,0,0));
+                        urinated = TRUE;
+                        player.lifebar = LIFEBAR;
+                        draw_lifebar();
+                        while (key[KEY_SPACE]) {
+                            rest(1); // Pequeña pausa para no saturar el CPU
+                        }
+                    } else {
+                        textout_centre_ex(screen, font, "vas a escribir veces", SCREEN_W / 2, 76, makecol(194,106,228), makecol(0,0,0));
+                        textout_centre_ex(screen, font, "no entrare al de las chicas", SCREEN_W / 2, 84, makecol(194,106,228), makecol(0,0,0));
+                        castigo = TRUE;
+                    }
+
                 }
             }
         break;
         case 5:
             
+        break;
+        case 12:
+            loop_castigo();
         break;
     }
     

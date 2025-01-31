@@ -99,6 +99,7 @@ int main(int argc, const char **argv) {
     }
     player_head = load_pcx( "LIVES.PCX", NULL );
     player_lifebar = load_pcx("LIFEBAR.PCX", NULL);
+    girl = load_pcx("GIRL1.PCX", NULL);
 
     srand(time(NULL));
     // load tilemap

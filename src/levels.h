@@ -2,6 +2,8 @@
 #define LEVELS_H
 #include <allegro.h>
 
+
+
 extern void level_processing();
 extern BITMAP * load_level_background(unsigned char lvl);
 extern unsigned char move_to_level_if_needed();

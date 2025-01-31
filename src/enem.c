@@ -137,8 +137,7 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
 
     if (point_distance(playr->x, enem->targetX) != FIGHT_DISTANCE || enem->targetX == FALSE) {
         if (random_choice == 8) {
-            textout_ex(screen, font, "       targeting          ", 0,
-                        70, makecol(0, 0, 0), makecol(255, 255, 255));
+
             switch (enem->variant) {
                 case JOHNY:
                     if (playr->x < 320) {
@@ -158,8 +157,6 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
         }
     } 
     if (enem->targetX != FALSE && enem->targetX != enem->x) {
-                textout_ex(screen, font, "                                             ", 0,
-                      70, makecol(0, 0, 0), makecol(255, 255, 255));
         if (enem->x > enem->targetX && enem->x > 0) {
             enem->x--;
             enem_has_moved = TRUE;
@@ -192,7 +189,7 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
                 enem->moving = STOP_RIGHT;
                 enem->targetX = FALSE;
             }
-            if (counter % 30 == 0 && playr->is_floor == FALSE) {
+            if (counter % 30 == 0 && playr->is_floor == FALSE && (point_distance(playr->x, enem->x) <= FIGHT_DISTANCE)) {
                 if (enem->moving == STOP_LEFT || enem->moving == STOP_RIGHT) {
                     // TODO think on punch
                     if (enem->x > playr->x) {
@@ -307,6 +304,12 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
 }
 
 inline void draw_enemy(enemyData *enem) {
+
+    if(level == 4 && urinated != FALSE) {
+        // draw teacher
+        draw_sprite(screen, girl, 42, 145);
+    } 
+
     if (enem->is_floor != FALSE) {
         if (enem->moving & 1) {
             rotate_sprite(screen, enem->sprite[enem->curr_sprite], enem->x,
@@ -325,6 +328,7 @@ inline void draw_enemy(enemyData *enem) {
             draw_sprite(screen, enem->sprite[enem->curr_sprite], enem->x, enem->y);
         }
     }
+
 }
 
 void all_enemy_animations() {
