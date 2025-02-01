@@ -19,6 +19,7 @@ unsigned char level = 0;
 unsigned char next_level = FALSE;
 unsigned char level_enemies = 0;
 unsigned char starting_level_counter = FALSE;
+unsigned char coursnave_completed = FALSE;
 unsigned char locked_elevator;
 unsigned char urinated;
 char castigo;
@@ -37,7 +38,7 @@ LevelData levels[TOTAL_LEVELS];
 void input() {
     // readkey();
     // end_game = 1;
-    if (level == 12) {
+    if (level == 12 || (level == 8 && !coursnave_completed)) {
         return;
     }
 
@@ -99,8 +100,9 @@ void increase_level_and_load() {
                       SCREEN_H / 2, makecol(255, 255, 255), -1);
     locked_elevator = TRUE;
     urinated = FALSE;
-
-    next_level = 7;
+    beep_count = 0;
+    coursnave_completed = FALSE;
+    next_level = 8;
     load_level();
 }
 // draws current player lives
@@ -350,7 +352,7 @@ void load_levels() {
 
 
 void load_level() {
-    if (next_level == 6) {
+    if (next_level == 6 && level == 5) {
         BITMAP * bg2;
 
         bg2 = load_level_background(6);
@@ -384,7 +386,11 @@ void load_level() {
             } else if (is_on_door(levels[level].door2Pos)) {
                 initialX = curr_leveldata.door2Pos;
             } else {
-                initialX = curr_leveldata.maxX - 15;
+                if (point_distance(player.x, levels[level].minX) < 20) {
+                    initialX = curr_leveldata.maxX - 15;
+                } else {
+                    initialX = curr_leveldata.minX + 15;
+                }
             }
             initialY = curr_leveldata.initialY;
         } else {

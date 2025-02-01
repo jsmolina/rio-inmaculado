@@ -4,9 +4,23 @@
 #include "allegro/text.h"
 #include <stdio.h>
 #include "game.h"
+#include "helpers.h"
 #include "tiles.h"
 #include "levels.h"
 
+
+#define VELOCIDAD_BASE 0
+#define VELOCIDAD_MAX 5
+#define DECAY_RATE 1
+#define DERECHA 1
+#define IZQUIERDA -1
+int velocidad = VELOCIDAD_BASE;
+char sentido = DERECHA;
+unsigned char beep_count = 1;
+char last_beep_side = IZQUIERDA;
+unsigned char ultima_tecla = 0;
+clock_t ultimo_tiempo = 0;
+clock_t ultimo_beep = 0;
 
 
 unsigned char automatic_event = FALSE;
@@ -72,6 +86,94 @@ BITMAP * load_level_background(unsigned char lvl) {
     return load_background(level_filename);
 }
 
+void level8_coursnave() {
+    clock_t tiempo_actual = clock();
+    textout_ex(screen, font, "COURSNAVE. ", 0, 40, makecol(255, 255, 255), -1);
+    textout_ex(screen, font, "Vuelve cuando haga beep. (Z/X). ", 0, 60, makecol(255, 255, 255), -1);
+
+    if (player.x < 39) {
+        player.x += 1;
+        player.moving = MOVING_RIGHT;
+        return;
+    }
+
+    float tiempo_entre_beeps = (float)(tiempo_actual - ultimo_beep) / CLOCKS_PER_SEC;
+    if (ultimo_beep == 0 || tiempo_entre_beeps > (5 - beep_count * 0.5)) {
+        ultimo_beep = tiempo_actual;
+        if (last_beep_side == IZQUIERDA) {
+            beep(2000, 50);
+            last_beep_side = DERECHA;
+            beep_count+=1;
+        } else {
+            beep(1500, 60);
+            last_beep_side = IZQUIERDA;
+            beep_count+=1;
+        }
+    }
+    if (beep_count == 5) {
+        coursnave_completed = TRUE;
+    }
+
+    float tiempo_transcurrido = (float)(tiempo_actual - ultimo_tiempo) / CLOCKS_PER_SEC;
+    char buf[25];
+    if (key[KEY_Z] && ultima_tecla != KEY_Z) {
+        //velocidad += (1.0 / tiempo_transcurrido);
+        ultima_tecla = KEY_Z;
+        ultimo_tiempo = tiempo_actual;
+    } else if (key[KEY_X] && ultima_tecla != KEY_X) {
+        if (tiempo_transcurrido > 1) {
+            velocidad = 0;
+        } else if (tiempo_transcurrido >= 0.5) {
+            velocidad = 1;
+        } else if (tiempo_transcurrido >= 0.4) {
+            velocidad = 2;
+        } else if (tiempo_transcurrido >= 0.3) {
+            velocidad = 3;
+        } else if (tiempo_transcurrido >= 0.1) {
+            velocidad = 4;
+        }
+        ultima_tecla = KEY_X;
+        ultimo_tiempo = tiempo_actual;
+    } 
+
+    if (tiempo_transcurrido > 0.1) {
+        velocidad -= 1;
+        if (velocidad  < 0) {
+            velocidad = 0;
+        }
+    }
+
+    // cambio de sentido si llega al tope (signo +1 o -1)
+    if (player.x > 230 && last_beep_side == DERECHA) {
+
+    } else if (player.x < 40 && last_beep_side == IZQUIERDA) {
+
+    } else {
+        player.x += (velocidad * sentido);
+    }
+
+    if (player.x > 230) {
+        sentido = IZQUIERDA;
+    } else if (player.x < 40) {
+        sentido = DERECHA;
+    }
+
+
+    if (velocidad > 0) {
+        if (sentido == DERECHA) {
+            player.moving = MOVING_RIGHT;
+        } else {
+            player.moving = MOVING_LEFT;
+        }
+    } else if(tiempo_transcurrido > 0.2) {
+        if (sentido == DERECHA) {
+            player.moving = STOP_RIGHT;
+        } else {
+            player.moving = STOP_LEFT;
+        }
+    }
+}
+
 void move_with_level_limits() {
     LevelData curr_leveldata = levels[level];
     unsigned int minY, maxY;
@@ -116,22 +218,29 @@ void move_with_level_limits() {
             minY = 140;
             maxY = 151;            
     }
-    if (player.moving == MOVING_RIGHT && player.x < maxX) {
-        if (!enemy_on_path(player.x + 1, player.y)) {
-                player.x++;
+    if (level == 8 && !coursnave_completed) {
+        // TODO coursnave
+        level8_coursnave();
+        return;
+    } else {
+        // normal movement
+        if (player.moving == MOVING_RIGHT && player.x < maxX) {
+            if (!enemy_on_path(player.x + 1, player.y)) {
+                    player.x++;
+            }
+        } else if (player.moving == MOVING_LEFT && player.x > minX) {
+            if (!enemy_on_path(player.x - 1, player.y)) {
+                player.x--;
+            }
         }
-    } else if (player.moving == MOVING_LEFT && player.x > minX) {
-        if (!enemy_on_path(player.x - 1, player.y)) {
-            player.x--;
-        }
-    }
 
-    if (player.y_moving == MOVING_DOWN && player.y < maxY) {
-        player.y++;
-    } 
-    
-    if (player.y_moving == MOVING_UP && player.y > minY) {
-        player.y--;
+        if (player.y_moving == MOVING_DOWN && player.y < maxY) {
+            player.y++;
+        } 
+        
+        if (player.y_moving == MOVING_UP && player.y > minY) {
+            player.y--;
+        }
     }
 }
 

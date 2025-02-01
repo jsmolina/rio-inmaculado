@@ -3,7 +3,7 @@
 #include <allegro.h>
 
 
-
+extern unsigned char beep_count;
 extern void level_processing();
 extern BITMAP * load_level_background(unsigned char lvl);
 extern unsigned char move_to_level_if_needed();
