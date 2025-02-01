@@ -86,7 +86,26 @@ void move_with_level_limits() {
                 minY = 145;
                 maxY = 151;
                 if (player.y < minY) {
-                    minX = 263;
+                    minX = 263;                    
+                }
+            } else {
+                minY = 140;
+                maxY = 151;
+            }
+            break;
+        case 7:
+            if (player.x < 213 && player.x > 40) {
+                minY = 145;
+                maxY = 151;
+                if (player.y < minY) {
+                    if (player.x > 200) minX = 213;
+                    else if (player.x > 40) maxX = 40;
+                }
+            } else if (player.x > 242) {
+                minY = 145;
+                maxY = 151;
+                if (player.y < minY) {
+                    maxX = 242;
                 }
             } else {
                 minY = 140;

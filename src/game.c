@@ -100,7 +100,7 @@ void increase_level_and_load() {
     locked_elevator = TRUE;
     urinated = FALSE;
 
-    next_level = 1;
+    next_level = 7;
     load_level();
 }
 // draws current player lives
