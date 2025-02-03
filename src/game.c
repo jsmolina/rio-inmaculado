@@ -100,7 +100,9 @@ void increase_level_and_load() {
                       SCREEN_H / 2, makecol(255, 255, 255), -1);
     locked_elevator = TRUE;
     urinated = FALSE;
-    beep_count = 0;
+    beep_count = -1;
+    missed_beeps = 0;
+    beep_side = IZQUIERDA;
     coursnave_completed = FALSE;
     next_level = 8;
     load_level();

@@ -9,18 +9,15 @@
 #include "levels.h"
 
 
-#define VELOCIDAD_BASE 0
-#define VELOCIDAD_MAX 5
-#define DECAY_RATE 1
-#define DERECHA 1
-#define IZQUIERDA -1
 int velocidad = VELOCIDAD_BASE;
 char sentido = DERECHA;
-unsigned char beep_count = 1;
-char last_beep_side = IZQUIERDA;
+char beep_count = -1;
+unsigned char missed_beeps = 0;
+char beep_side = IZQUIERDA;
 unsigned char ultima_tecla = 0;
 clock_t ultimo_tiempo = 0;
 clock_t ultimo_beep = 0;
+
 
 
 unsigned char automatic_event = FALSE;
@@ -87,31 +84,72 @@ BITMAP * load_level_background(unsigned char lvl) {
 }
 
 void level8_coursnave() {
-    clock_t tiempo_actual = clock();
-    textout_ex(screen, font, "COURSNAVE. ", 0, 40, makecol(255, 255, 255), -1);
-    textout_ex(screen, font, "Vuelve cuando haga beep. (Z/X). ", 0, 60, makecol(255, 255, 255), -1);
-
     if (player.x < 39) {
         player.x += 1;
         player.moving = MOVING_RIGHT;
         return;
     }
+    textout_ex(screen, font, "COURSNAVE. ", 0, 0, makecol(255, 255, 255), -1);    
+
+    if (beep_count < 0) {
+        textout_ex(screen, font, "PRESS SPACE TO START (Z/X). ", 0, 60, makecol(255, 255, 255), makecol(0,0,0));
+        while (!key[KEY_SPACE] && !key[KEY_ESC]) {
+            rest(1);
+        }
+        beep_count = 0;
+        beep(2000, 10);
+    } else {
+        textout_ex(screen, font, "VAMOS!!!!            (Z/X). ", 0, 60, makecol(200, 200, 255), makecol(0,0,0));
+    }
+    clock_t tiempo_actual = clock();
+
+
+    char missed[16];
+    sprintf(missed, "FAIL: %01d", missed_beeps);
+    textout_ex(screen, font, missed, 0, 68, makecol(255, 0, 0), makecol(0, 0, 0));
+    sprintf(missed, "COURSE: %01d", beep_count);
+    textout_ex(screen, font, missed, 90, 68, makecol(0, 100, 255), makecol(0, 0, 0));
+
+
 
     float tiempo_entre_beeps = (float)(tiempo_actual - ultimo_beep) / CLOCKS_PER_SEC;
-    if (ultimo_beep == 0 || tiempo_entre_beeps > (5 - beep_count * 0.5)) {
-        ultimo_beep = tiempo_actual;
-        if (last_beep_side == IZQUIERDA) {
+    if (ultimo_beep == 0 || tiempo_entre_beeps > (4 - beep_count * 0.25)) {
+        ultimo_beep = clock();
+        if (beep_side == IZQUIERDA) {
             beep(2000, 50);
-            last_beep_side = DERECHA;
-            beep_count+=1;
+            beep_side = DERECHA;
+            if (player.x > 70) {
+                missed_beeps += 1;
+            } else {
+                beep_count+=1;
+            }
         } else {
             beep(1500, 60);
-            last_beep_side = IZQUIERDA;
-            beep_count+=1;
+            beep_side = IZQUIERDA;            
+            if (player.x < 200) {
+                missed_beeps += 1;
+            } else {
+                beep_count+=1;
+            }
         }
     }
-    if (beep_count == 5) {
+    if (beep_count == 8) {
         coursnave_completed = TRUE;
+        textout_ex(screen, font, "COMPLETADO!", 180, 80, makecol(0, 255, 0), makecol(0, 0, 0));
+        beep(2000, 20);
+        beep(2000, 20);
+        next_level = 8;
+        load_level();
+    } else if (missed_beeps == 4) {
+        textout_ex(screen, font, "REPITES!", 180, 80, makecol(255,79, 0), makecol(0, 0, 0));
+        beep(800, 100);
+        beep(800, 100);
+        next_level = 7;
+        beep_count = -1;
+        missed_beeps = 0;
+        beep_side = IZQUIERDA;
+        load_level();
+        return;
     }
 
     float tiempo_transcurrido = (float)(tiempo_actual - ultimo_tiempo) / CLOCKS_PER_SEC;
@@ -144,9 +182,9 @@ void level8_coursnave() {
     }
 
     // cambio de sentido si llega al tope (signo +1 o -1)
-    if (player.x > 230 && last_beep_side == DERECHA) {
+    if (player.x > 230 && beep_side == DERECHA) {
 
-    } else if (player.x < 40 && last_beep_side == IZQUIERDA) {
+    } else if (player.x < 40 && beep_side == IZQUIERDA) {
 
     } else {
         player.x += (velocidad * sentido);
