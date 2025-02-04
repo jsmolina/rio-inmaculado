@@ -138,6 +138,7 @@ void level8_coursnave() {
         textout_ex(screen, font, "COMPLETADO!", 180, 80, makecol(0, 255, 0), makecol(0, 0, 0));
         beep(2000, 20);
         beep(2000, 20);
+        rest(1000);
         next_level = 8;
         load_level();
     } else if (missed_beeps == 4) {

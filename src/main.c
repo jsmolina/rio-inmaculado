@@ -100,6 +100,12 @@ int main(int argc, const char **argv) {
     player_head = load_pcx( "LIVES.PCX", NULL );
     player_lifebar = load_pcx("LIFEBAR.PCX", NULL);
     girl = load_pcx("GIRL1.PCX", NULL);
+    MIDI *music = load_midi("ROGERR.MID");
+
+    if (install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, NULL) != 0) {
+        die("Error: inicializando sistema de sonido\n%s\n", allegro_error);
+    }
+    set_volume(230, 200);
 
     srand(time(NULL));
     // load tilemap
@@ -141,6 +147,9 @@ int main(int argc, const char **argv) {
         if (level == MENU) {
             if (key[KEY_SPACE]) {
                 increase_level_and_load();
+                if (play_looped_midi(music, 0, -1) != 0) {
+                    die("Cant play music");
+                }
             }
         } else if (level == GAME_OVER) {
             if (key[KEY_SPACE]) {
@@ -180,6 +189,7 @@ int main(int argc, const char **argv) {
     unload_enemies();
     destroy_tiles();
     cleanup_data();
+    destroy_midi(music);
     set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
   
     return 0;

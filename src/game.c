@@ -22,6 +22,7 @@ unsigned char starting_level_counter = FALSE;
 unsigned char coursnave_completed = FALSE;
 unsigned char locked_elevator;
 unsigned char urinated;
+MIDI *music;
 char castigo;
 int counter = 0;
 char space_was_pressed = FALSE;
