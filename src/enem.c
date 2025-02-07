@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 enemyData enemies[MAX_ENEMIES];
+char hitted_this_loop = FALSE;
 
 void eies_sprite(enemyData *enem, unsigned int variant) {
     char file_buffer[14];
@@ -48,7 +49,7 @@ void init_level_enemies(int total_enemies, int maxX, char first_load) {
         } else {
             enemies[i].is_active = FALSE;
             if (first_load == TRUE) {
-                eies_sprite(&enemies[i], i % 2 + 1);
+                eies_sprite(&enemies[i], i % 3 + 1);
             }
         }
     }
@@ -93,6 +94,7 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
     // TODO return;
     // do not take decisions: you are hitted
     if (enem->is_hit > 0) {
+        hitted_this_loop = TRUE;
         return;
     }
 
@@ -105,13 +107,15 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
     y_distance = point_distance(playr->y, enem->y);
     // check hits
     if (x_distance <= 24 && y_distance <= 2) {
-        if (playr->moving == PUNCH_LEFT && enem->x <= playr->x) {
+        if (playr->moving == PUNCH_LEFT && enem->x <= playr->x && !hitted_this_loop) {
             enem->is_hit = HIT_DURATION;
             enem->received_hits++;
+            hitted_this_loop = TRUE;
         }
-        if (playr->moving == PUNCH_RIGHT && player.x <= enem->x) {
+        if (playr->moving == PUNCH_RIGHT && player.x <= enem->x && !hitted_this_loop) {
             enem->is_hit = HIT_DURATION;
             enem->received_hits++;
+            hitted_this_loop = TRUE;
         }
 
         if (enem->received_hits == 6) {
@@ -139,6 +143,7 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
         if (random_choice == 8) {
 
             switch (enem->variant) {
+                case ALEX:
                 case JOHNY:
                     if (playr->x < 320) {
                         enem->targetX = playr->x + FIGHT_DISTANCE;
@@ -152,7 +157,7 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
                     } else {
                         enem->targetX = playr->x - FIGHT_DISTANCE;
                     }
-                    break;
+                    break;                
             }
         }
     } 
@@ -338,6 +343,7 @@ void all_enemy_animations() {
 }
 
 void all_enemy_decisions(spritePos *playr) {
+    hitted_this_loop = FALSE;
     for (int i = 0; i < level_enemies; i++) {
         enemy_decision(&enemies[i], playr);
     }

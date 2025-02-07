@@ -18,10 +18,11 @@ spritePos player;
 unsigned char level = 0;
 unsigned char next_level = FALSE;
 unsigned char level_enemies = 0;
-unsigned char starting_level_counter = FALSE;
-unsigned char coursnave_completed = FALSE;
-unsigned char locked_elevator;
-unsigned char urinated;
+unsigned char starting_level_counter = 0;
+char coursnave_completed = FALSE;
+char yellow_key = FALSE;
+char locked_elevator;
+char urinated;
 MIDI *music;
 char castigo;
 int counter = 0;
@@ -105,7 +106,7 @@ void increase_level_and_load() {
     missed_beeps = 0;
     beep_side = IZQUIERDA;
     coursnave_completed = FALSE;
-    next_level = 8;
+    next_level = 1;
     load_level();
 }
 // draws current player lives
@@ -364,7 +365,7 @@ void load_level() {
             blit(bg, screen, 0, i, 0, 0, 320, 200 - i);
             vsync();
             // TODO check speed
-            rest(1);
+            rest(100);
         }
     }
 

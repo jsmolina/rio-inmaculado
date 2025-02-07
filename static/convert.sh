@@ -48,6 +48,20 @@ convert enemy2_sprites.png -crop 40x40+320+0 -colors 256 -type truecolor enem2_9
 convert enemy2_sprites.png -crop 40x40+360+0 -colors 256 -type truecolor enem2_10.pcx
 convert enemy2_sprites.png -crop 40x40+400+0 -colors 256 -type truecolor enem2_11.pcx
 
+# enemy3 sprites
+echo "Converting enemy3 character sprites..."
+convert enemy3_sprites.png -crop 40x40+0+0 -colors 256 -type truecolor  enem3_1.pcx
+convert enemy3_sprites.png -crop 40x40+40+0 -colors 256 -type truecolor enem3_2.pcx
+convert enemy3_sprites.png -crop 40x40+80+0 -colors 256 -type truecolor enem3_3.pcx
+convert enemy3_sprites.png -crop 40x40+120+0 -colors 256 -type truecolor enem3_4.pcx
+convert enemy3_sprites.png -crop 40x40+160+0 -colors 256 -type truecolor enem3_5.pcx
+convert enemy3_sprites.png -crop 40x40+200+0 -colors 256 -type truecolor enem3_6.pcx
+convert enemy3_sprites.png -crop 40x40+240+0 -colors 256 -type truecolor enem3_7.pcx
+convert enemy3_sprites.png -crop 40x40+280+0 -colors 256 -type truecolor enem3_8.pcx
+convert enemy3_sprites.png -crop 40x40+320+0 -colors 256 -type truecolor enem3_9.pcx
+convert enemy3_sprites.png -crop 40x40+360+0 -colors 256 -type truecolor enem3_10.pcx
+convert enemy3_sprites.png -crop 40x40+400+0 -colors 256 -type truecolor enem3_11.pcx
+
 # girl 
 convert girl.png -crop 40x40+0+0 -colors 256 -type truecolor  GIRL1.PCX
 

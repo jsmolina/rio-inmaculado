@@ -7,6 +7,7 @@
 #define MAX_ENEMIES 3
 #define JOHNY 1
 #define PETER 2
+#define ALEX 3
 
 #define FIGHT_DISTANCE 20
 

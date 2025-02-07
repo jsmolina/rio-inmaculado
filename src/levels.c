@@ -139,7 +139,7 @@ void level8_coursnave() {
         beep(2000, 20);
         beep(2000, 20);
         rest(1000);
-        next_level = 8;
+        next_level = 1;
         load_level();
     } else if (missed_beeps == 4) {
         textout_ex(screen, font, "REPITES!", 180, 80, makecol(255,79, 0), makecol(0, 0, 0));
