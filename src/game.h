@@ -27,12 +27,11 @@ extern char urinated;
 extern char coursnave_completed;
 extern char yellow_key;
 extern LevelData levels[TOTAL_LEVELS];
-extern BITMAP *player_head, *player_lifebar, *girl;
+extern BITMAP *player_head, *player_lifebar, *girl, *key_sprite;
 extern MIDI *music;
 extern void draw_lifebar();
 
 extern int counter;
-extern  char castigo;
 // extern int moving;
 // extern BITMAP *player[11];
 // extern BITMAP *enemy1[11];

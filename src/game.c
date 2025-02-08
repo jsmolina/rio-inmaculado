@@ -24,7 +24,6 @@ char yellow_key = FALSE;
 char locked_elevator;
 char urinated;
 MIDI *music;
-char castigo;
 int counter = 0;
 char space_was_pressed = FALSE;
 // BITMAP *player[11];
@@ -33,6 +32,7 @@ BITMAP *bg;
 BITMAP *tiles;
 BITMAP *player_head;
 BITMAP *girl;
+BITMAP *key_sprite;
 BITMAP *player_lifebar;
 char slow_cpu;
 LevelData levels[TOTAL_LEVELS];
@@ -43,17 +43,18 @@ void input() {
     if (level == 12 || (level == 8 && !coursnave_completed)) {
         return;
     }
-
-    if (player.moving < STOPPOS) {
-        if (player.moving == MOVING_LEFT || player.moving == PUNCH_LEFT) {
-            player.moving = STOP_LEFT;
-        } else {
-            player.moving = STOP_RIGHT;
+    if (player.moving != LOOKING_WALL) {
+        if (player.moving < STOPPOS) {
+            if (player.moving == MOVING_LEFT || player.moving == PUNCH_LEFT) {
+                player.moving = STOP_LEFT;
+            } else {
+                player.moving = STOP_RIGHT;
+            }
         }
-    }
 
-    if (player.y_moving < STOPPOS) {
-        player.y_moving = STOPPOS;
+        if (player.y_moving < STOPPOS) {
+            player.y_moving = STOPPOS;
+        }
     }
 
     if (player.is_hit > 0 || player.is_floor > 0) {
@@ -106,6 +107,7 @@ void increase_level_and_load() {
     missed_beeps = 0;
     beep_side = IZQUIERDA;
     coursnave_completed = FALSE;
+    yellow_key = FALSE;
     next_level = 1;
     load_level();
 }
@@ -166,7 +168,7 @@ void process() {
     }
 
     level_processing();
-    if (castigo == TRUE) {
+    /*if (castigo == TRUE) {
         next_level = 12;
         load_level();
         return;
@@ -175,7 +177,7 @@ void process() {
         load_level();
         castigo = FALSE;
         return;
-    }
+    }*/
 
     if (player.is_hit > 0) {
         player.curr_sprite = ANIM_HITTED;
@@ -209,7 +211,7 @@ void process() {
                 player.curr_sprite = ANIM_PUNCH;
             }
             // TODO 15/10: sprite de hit
-        } else {
+        } else if (player.moving != LOOKING_WALL) {
             player.curr_sprite = 0;
         }
     }
@@ -250,8 +252,16 @@ void output() {
         return;
     }
     // clean
-    blit(bg, screen, player.x, 120, player.x, 120, 40, 80);
+    blit(bg, screen, player.x, player.y - 10, player.x, player.y - 10, 40, 80);
     redraw_bg_enemy_positions();
+
+    if (level == 9 || yellow_key == TRUE) {
+        unsigned char y_pos = 105;
+        if (yellow_key == TRUE) {
+            y_pos = 30;
+        }
+        draw_sprite(screen, key_sprite, 34, y_pos);
+    }
 
     // draw in order depending on Y
     if (player_over_all_enemies(player.y)) {
@@ -377,7 +387,6 @@ void load_level() {
         player.floor_times = 0;
     } else if (next_level == 12) {
         bg = load_level_background(next_level);
-        castigo = FALSE;
         level = 12;
     } else if (next_level >= 1) {
         bg = load_level_background(next_level);

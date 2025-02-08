@@ -43,7 +43,7 @@ inline unsigned char move_to_level_if_needed() {
                 next_level = curr_leveldata.door1;
                 
                 return TRUE;
-            } else if (is_on_door(curr_leveldata.door2Pos)) {
+            } else if (is_on_door(curr_leveldata.door2Pos) && (level != 7 || yellow_key == TRUE)) {
                 next_level = curr_leveldata.door2;
                 return TRUE;
             }
@@ -58,7 +58,7 @@ inline unsigned char move_to_level_if_needed() {
     if (curr_leveldata.right != 0 && player.x >= (curr_leveldata.maxX - 5)) {
         next_level = curr_leveldata.right;
         return TRUE;
-    } else if (curr_leveldata.left != 0 && player.x <= (curr_leveldata.minX + 5)) {
+    } else if (curr_leveldata.left != 0 && player.x <= (curr_leveldata.minX)) {
         next_level = curr_leveldata.left;
         return TRUE;
     }
@@ -139,8 +139,9 @@ void level8_coursnave() {
         beep(2000, 20);
         beep(2000, 20);
         rest(1000);
-        next_level = 1;
+        next_level = 7;
         load_level();
+        return;
     } else if (missed_beeps == 4) {
         textout_ex(screen, font, "REPITES!", 180, 80, makecol(255,79, 0), makecol(0, 0, 0));
         beep(800, 100);
@@ -222,6 +223,15 @@ void move_with_level_limits() {
     maxX = curr_leveldata.maxX;
     
     switch (level) {
+        case 9:
+            minX = 0;
+            minY = 69;
+            maxY = 151;
+            maxX = 15 + (151 - player.y);
+            if (player.x > maxX) {
+                maxY = player.y;
+            }
+        break;
         case 4:
             if (player.x < 263) {
                 minY = 145;
@@ -312,7 +322,10 @@ void loop_castigo() {
         textout_ex(screen, font, buf, 21, 51, makecol(50,125,125), -1);
         rest(1); 
     }
-    castigo = CASTIGO_FINALIZADO;
+    //castigo = CASTIGO_FINALIZADO;
+    next_level = 3;
+    load_level();
+    return;
 }
 
 void level_processing() {
@@ -330,6 +343,8 @@ void level_processing() {
         break;
         case 4:
             if (key[KEY_SPACE]) {
+                player.curr_sprite = ANIM_ESPALDA;
+                player.moving = LOOKING_WALL;
                 if (player.y < 147 && player.x >= 7 && player.x <= 28) {
                     if (!urinated) {
                         textout_centre_ex(screen, font, "ahhh, mejor asi!", SCREEN_W / 2, 76, makecol(100,255,255), makecol(0,0,0));               
@@ -343,17 +358,28 @@ void level_processing() {
                     } else {
                         textout_centre_ex(screen, font, "vas a escribir veces", SCREEN_W / 2, 76, makecol(194,106,228), makecol(0,0,0));
                         textout_centre_ex(screen, font, "no entrare al de las chicas", SCREEN_W / 2, 84, makecol(194,106,228), makecol(0,0,0));
-                        castigo = TRUE;
+                        ///
+                        next_level = 12;
+                        load_level();
+                        return;
                     }
 
                 }
             }
+            
         break;
         case 5:
             
         break;
         case 12:
             loop_castigo();
+        break;
+        case 9:
+        if (key[KEY_SPACE] && yellow_key != TRUE) {
+            if (player.y < 110 && player.x >= 20 && player.x <= 45) {
+                yellow_key = TRUE;
+            }
+        }
         break;
     }
     

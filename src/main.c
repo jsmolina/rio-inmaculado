@@ -90,7 +90,7 @@ int main(int argc, const char **argv) {
     set_color_depth(16);
     set_gfx_mode(GFX_AUTODETECT, 320, 200, 0, 0);
 
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < 12; i++) {
         sprintf(file_buffer, "MAIN%d.PCX", i + 1);
         player.sprite[i] = load_pcx( file_buffer, NULL );
         if(!player.sprite[i]) {
@@ -100,6 +100,7 @@ int main(int argc, const char **argv) {
     player_head = load_pcx( "LIVES.PCX", NULL );
     player_lifebar = load_pcx("LIFEBAR.PCX", NULL);
     girl = load_pcx("GIRL1.PCX", NULL);
+    key_sprite = load_pcx( "KEY.PCX", NULL );
     MIDI *music = load_midi("ROGERR.MID");
 
     if (install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, NULL) != 0) {
@@ -183,7 +184,7 @@ int main(int argc, const char **argv) {
     } while (exit_game == 0); /* until the flag is set */
 
     destroy_bitmap(bg);
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < 12; i++) {
         destroy_bitmap(player.sprite[i]); 
     }
     unload_enemies();

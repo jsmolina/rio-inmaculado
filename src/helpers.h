@@ -12,6 +12,7 @@
 #define MOVING_RIGHT 2
 #define CROUCH 50
 #define JUMPING 52
+#define LOOKING_WALL 54
 #define JUMPING_LEFT 3
 #define JUMPING_RIGHT 4
 #define PUNCH_LEFT 5
@@ -34,6 +35,7 @@
 #define ANIM_PUNCH 1
 #define ANIM_PUNCH2 2
 #define ANIM_HITTED 6
+#define ANIM_ESPALDA 11
 #define HIT_DURATION 6
 #define FLOOR_DURATION 18
 
@@ -49,7 +51,7 @@ extern char is_cpu_slow();
 typedef struct  {
     unsigned int x;
     unsigned int y;
-    BITMAP *sprite[11];
+    BITMAP *sprite[12];
     unsigned int moving;
     unsigned int y_moving;
     unsigned int curr_sprite;
