@@ -63,6 +63,15 @@ convert enemy3_sprites.png -crop 40x40+320+0 -colors 256 -type truecolor enem3_9
 convert enemy3_sprites.png -crop 40x40+360+0 -colors 256 -type truecolor enem3_10.pcx
 convert enemy3_sprites.png -crop 40x40+400+0 -colors 256 -type truecolor enem3_11.pcx
 
+echo "Converting cat sprites..."
+convert cat_sprites.png -crop 24x24+0+0 -colors 256 -type truecolor  cat1.PCX
+convert cat_sprites.png -crop 24x24+24+0 -colors 256 -type truecolor  cat2.PCX
+convert cat_sprites.png -crop 24x24+96+0 -colors 256 -type truecolor  cat3.PCX
+convert cat_sprites.png -crop 24x24+144+0 -colors 256 -type truecolor  cat4.PCX
+convert cat_sprites.png -crop 24x24+168+0 -colors 256 -type truecolor  cat5.PCX
+convert cat_sprites.png -crop 24x24+192+0 -colors 256 -type truecolor  cat6.PCX
+convert cat_sprites.png -crop 24x24+216+0 -colors 256 -type truecolor  cat7.PCX
+
 # girl 
 convert girl.png -crop 40x40+0+0 -colors 256 -type truecolor  GIRL1.PCX
 
@@ -71,6 +80,7 @@ echo "Converting player head..."
 convert player_head.png -colors 256 -type truecolor LIVES.PCX
 convert lifebar.png -colors 16 -type truecolor LIFEBAR.PCX
 convert key.png -colors 16 -type truecolor KEY.PCX
+convert alley.png -colors 256 -depth 8 ALLEY.PCX
 
 #   convert miguel_sprites.png -crop 40x40+440+0 -colors 256 -type truecolor miguel11.pcx
 #convert background.png -colors 256 -type truecolor bg.pcx
@@ -84,7 +94,7 @@ convert bege.png -colors 256 -depth 8 bege.pcx
 
 pwd
 echo "Compress..."
-./dat2 bege.pcx main*.pcx enem*.pcx tiles.pcx bg*.tmx LIVES.PCX LIFEBAR.PCX GIRL1.PCX KEY.PCX ROGERR.MID levels.csv
+./dat2 bege.pcx main*.pcx enem*.pcx tiles.pcx bg*.tmx LIVES.PCX LIFEBAR.PCX GIRL1.PCX KEY.PCX ROGERR.MID ALLEY.PCX levels.csv
 
 echo "Removing generated pcx"
 rm enem*.pcx

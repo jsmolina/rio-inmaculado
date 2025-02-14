@@ -8,6 +8,7 @@
 #include "tiles.h"
 #include "helpers.h"
 #include "levels.h"
+#include "misifu.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -108,7 +109,7 @@ void increase_level_and_load() {
     beep_side = IZQUIERDA;
     coursnave_completed = FALSE;
     yellow_key = FALSE;
-    next_level = 1;
+    next_level = 15;
     load_level();
 }
 // draws current player lives
@@ -132,6 +133,11 @@ void draw_lifebar() {
 }
 
 void process() {
+    if (level == MISIFU_ALLEY || level ==  MISIFU_CHEESE) {
+        misifu_process();
+        return;
+    }
+
     move_with_level_limits();
 
     // check door opening or side moving
@@ -168,16 +174,6 @@ void process() {
     }
 
     level_processing();
-    /*if (castigo == TRUE) {
-        next_level = 12;
-        load_level();
-        return;
-    } else if (castigo == CASTIGO_FINALIZADO) {
-        next_level = 3;
-        load_level();
-        castigo = FALSE;
-        return;
-    }*/
 
     if (player.is_hit > 0) {
         player.curr_sprite = ANIM_HITTED;
@@ -248,6 +244,11 @@ void draw_player() {
 
 void output() {
     counter++;
+    if (level == MISIFU_ALLEY || level ==  MISIFU_CHEESE) {
+        misifu_output();
+        return;
+    }
+
     if (level == 12) {
         return;
     }
@@ -366,6 +367,7 @@ void load_levels() {
 
 
 void load_level() {
+
     if (next_level == 6 && level == 5) {
         BITMAP * bg2;
 
@@ -377,6 +379,7 @@ void load_level() {
             // TODO check speed
             rest(100);
         }
+        destroy_bitmap(bg2);
     }
 
     if (next_level == 0) {
@@ -388,6 +391,9 @@ void load_level() {
     } else if (next_level == 12) {
         bg = load_level_background(next_level);
         level = 12;
+    } else if (next_level == MISIFU_ALLEY) {
+        bg = load_pcx("alley.pcx", NULL);
+        level = next_level;
     } else if (next_level >= 1) {
         bg = load_level_background(next_level);
         LevelData curr_leveldata = levels[next_level];

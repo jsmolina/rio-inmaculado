@@ -9,6 +9,8 @@
 #define LIFEBAR 11
 #define MENU 0
 #define GAME_OVER 250
+#define MISIFU_ALLEY 15
+#define MISIFU_CHEESE 16
 #define CASTIGO_FINALIZADO 20
 
 
