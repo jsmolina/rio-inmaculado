@@ -245,7 +245,6 @@ void draw_player() {
 void output() {
     counter++;
     if (level == MISIFU_ALLEY || level ==  MISIFU_CHEESE) {
-        misifu_output();
         return;
     }
 
@@ -381,6 +380,10 @@ void load_level() {
         }
         destroy_bitmap(bg2);
     }
+    if (bg) {
+        // TODO might crash
+        destroy_bitmap(bg);
+    }
 
     if (next_level == 0) {
         bg = load_pcx("bege.pcx", NULL);
@@ -392,7 +395,7 @@ void load_level() {
         bg = load_level_background(next_level);
         level = 12;
     } else if (next_level == MISIFU_ALLEY) {
-        bg = load_pcx("alley.pcx", NULL);
+        bg = load_misifu_data();
         level = next_level;
     } else if (next_level >= 1) {
         bg = load_level_background(next_level);

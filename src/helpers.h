@@ -43,10 +43,10 @@
 
 
 
-extern void beep(int frequency, int duration);
-extern int random_range(unsigned int low, unsigned int high);
-extern int point_distance(unsigned int x, unsigned int targetX);
-extern char is_cpu_slow();
+void beep(int frequency, int duration);
+int random_range(unsigned int low, unsigned int high);
+int point_distance(unsigned int x, unsigned int targetX);
+char is_cpu_slow();
 
 typedef struct  {
     unsigned int x;
@@ -109,5 +109,5 @@ typedef struct  {
 level,door1Pos,door1,door2Pos,door2,left,right,enemies,initialX,initialY,elevatorPos,elevator
 */
 
-extern void die(const char *format, ...);
+void die(const char *format, ...);
 #endif

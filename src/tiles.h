@@ -19,14 +19,14 @@ extern BITMAP *tiles;
 /**
 Preloads all tiles as a bitmap to blit them to screen
 */
-extern inline void load_tiles();
-extern inline void destroy_tiles();
-extern BITMAP * load_background(char * filename);
+inline void load_tiles();
+inline void destroy_tiles();
+BITMAP * load_background(char * filename);
 
 /**
 Returns x and y positions from a tile number
 */
-extern struct coords get_tile_coords(int tile_number);
+struct coords get_tile_coords(int tile_number);
 
 
 #endif

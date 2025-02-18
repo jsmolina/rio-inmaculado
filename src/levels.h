@@ -12,9 +12,10 @@
 extern char beep_count;
 extern unsigned char missed_beeps;
 extern char beep_side;
-extern void level_processing();
-extern BITMAP * load_level_background(unsigned char lvl);
-extern unsigned char move_to_level_if_needed();
-extern inline unsigned char is_on_door(int door_x);
-extern void move_with_level_limits();
+
+void level_processing();
+BITMAP * load_level_background(unsigned char lvl);
+unsigned char move_to_level_if_needed();
+inline unsigned char is_on_door(int door_x);
+void move_with_level_limits();
 #endif

@@ -41,17 +41,17 @@ extern BITMAP *bg;
 extern char slow_cpu;
 
 // processes user input
-extern void input();
+void input();
 // processes state changes, e.g., based on user input
-extern void process();
+void process();
 // syncs current state to the screen
-extern void output();
+void output();
 // setups next level
-extern void increase_level_and_load();
+void increase_level_and_load();
 // opens the levels.nfo file which includes actionable parameters for each level
-extern void load_levels();
+void load_levels();
 // opens the current playable level
-extern void load_level();
+void load_level();
 
 
 #endif
