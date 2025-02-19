@@ -1,6 +1,15 @@
-#include "misifu.h"
+#include <stdint.h>
 #include <stdio.h>
 #include "game.h"
+#include "misifu.h"
+
+
+struct clothes {
+    unsigned int row1_x;
+    unsigned int row2_x;
+    BITMAP *sprite1;
+    BITMAP *sprite2;
+};
 
 struct prota {
     struct sp1_ss* sp;
@@ -16,11 +25,55 @@ struct prota {
     BITMAP *sprite[8];
 };
 struct prota misifu;
+struct clothes clothes;
+uint8_t bincat_in_bin = NONE;
 
 static void stop_jump_if_needed(uint8_t max_jump) {
     if ((misifu.initial_jump_y - misifu.y) >= max_jump || misifu.x > 318) {
         misifu.state = M_FALLING;
         misifu.draw_additional = NONE;
+    }
+}
+
+inline unsigned char is_in_bin() {
+    uint8_t bin_positions[] = {29, 60, 93, 182, 215};
+
+    for (int i = 0; i < 6; i++) {
+        if (misifu.x >= bin_positions[i] && misifu.x <= (bin_positions[i] + 24)) {
+            return i + 1;
+        }
+    }
+    return NONE;
+}
+
+inline void detect_fall_in_bin() {
+    // detect falling over bin
+    if(misifu.y == 128 || misifu.y == 138) {
+        misifu.in_bin = is_in_bin();
+        // store that it is on first bin pos so collide will bincat is easier
+        if (misifu.in_bin != NONE && misifu.in_bin != bincat_in_bin) {
+            if (misifu.y == 128 && (misifu.in_bin == HIGHER_BIN1 || misifu.in_bin == HIGHER_BIN2)) {
+                // stop falling
+                misifu.state = NONE;
+                misifu.draw_additional = CAT_IN_BIN;
+            } else if (misifu.y == 138 && misifu.in_bin != HIGHER_BIN1 && misifu.in_bin != HIGHER_BIN2) {
+                misifu.state = NONE;
+                misifu.draw_additional = CAT_IN_BIN;
+            }
+        }
+    } else if(misifu.y == 100) {
+        misifu.state = NONE;
+        misifu.draw_additional = CAT_IN_FENCE;
+    // now check ropes TODO check ropes clothes are not colliding
+    } else if(misifu.y == 75) {
+        misifu.state = CAT_IN_ROPE;
+        misifu.draw_additional = CAT_IN_ROPE1;
+    } else if(misifu.y == 44) {
+        misifu.state = CAT_IN_ROPE;
+        misifu.draw_additional = CAT_IN_ROPE2;
+    } else if(misifu.y == 12) {
+        misifu.state = CAT_IN_ROPE;
+        misifu.draw_additional = CAT_IN_ROPE3;
     }
 }
 
@@ -34,6 +87,10 @@ BITMAP * load_misifu_data() {
             die("Cannot load %s", file_buffer);
         }
     }
+    clothes.sprite1 = load_pcx("CLOTHES1.PCX", NULL);
+    clothes.sprite2 = load_pcx("CLOTHES2.PCX", NULL);
+    clothes.row1_x = 225;
+    clothes.row2_x = 50;
     misifu.offset = OFF_BORED;
     misifu.x = 65;
     misifu.y = FLOOR_Y;
@@ -88,16 +145,15 @@ void check_fsm() {
             misifu.offset = OFF_JUMPING;
         }
 
-        //if (level == 1) {
-        if (misifu.y <= 1) {
-            misifu.y = 2;
+        if (misifu.y <= 12) {
+            misifu.y = 12;
             misifu.offset = OFF_HANGING;
             misifu.state = CAT_IN_ROPE;
             misifu.draw_additional = CAT_IN_ROPE3;
         }
         //}
 
-        stop_jump_if_needed(30);
+        stop_jump_if_needed(35);
     } else if (misifu.state == M_FALLING) {
         ++misifu.y;
         misifu.offset = OFF_FALL;
@@ -156,9 +212,7 @@ void check_keys() {
     }
 }
 
-void misifu_output() {
-    blit(bg, screen, misifu.x, misifu.y - 10, misifu.x, misifu.y - 10, 30, 50);
-
+void misifu_output() {   
     if (misifu.state == M_WALKING_LEFT || misifu.draw_additional == M_JUMP_LEFT) {
         draw_sprite_h_flip(screen, misifu.sprite[misifu.offset],
             misifu.x, misifu.y);
@@ -168,10 +222,83 @@ void misifu_output() {
     }
 }
 
+inline void paint_clothes() {
+    //clothes.sprite1
+    blit(bg, screen, clothes.row1_x, 50, clothes.row1_x, 50, 64, 20);
+    blit(bg, screen, clothes.row2_x, 82, clothes.row2_x, 82, 40, 20);
+    blit(bg, screen, misifu.x - 2, misifu.y, misifu.x -2, misifu.y, 32, 50);
+
+
+    if((counter & 1) == 0) {
+        ++clothes.row2_x;
+        if (clothes.row2_x > 225) {
+            clothes.row2_x = LEVEL_MIN;
+        }
+
+        --clothes.row1_x;
+        if (clothes.row1_x <= LEVEL_MIN) {
+            clothes.row1_x = 225;
+        }
+    }
+    draw_sprite(screen, clothes.sprite2, clothes.row1_x, 50);
+    draw_sprite(screen, clothes.sprite1, clothes.row2_x, 82);    
+}
+
+inline void alley_loop() {
+    char buff[15];
+    sprintf(buff, "x:%d,y:%d", misifu.x, misifu.y);
+    textout_ex(screen, font, "              ", 0, 0, makecol(255, 255, 255), makecol(0, 0, 0));    
+    textout_ex(screen, font, buff, 0, 0, makecol(255, 255, 255), makecol(0, 0, 0));    
+
+    if((counter & 1) == 0) {
+        paint_clothes();
+        /*paint_bricks(1);
+        paint_clothes(1);
+        paint_clothes(0);*/
+        // now move cat
+        if(misifu.state == CAT_IN_ROPE) {
+            if((misifu.draw_additional == CAT_IN_ROPE1 || misifu.draw_additional == CAT_IN_ROPE3)
+                && misifu.x < LEVEL_MAX) {
+                 ++misifu.x;
+            } else if(misifu.draw_additional == CAT_IN_ROPE2 && misifu.x > 1) {
+                --misifu.x;
+                /*if(misifu.x <= LEVEL_MIN) {
+                    misifu.state = FALLING_FLOOR;
+                    misifu.draw_additional = NONE;
+                    ++misifu.y;
+                }*/
+            }
+            if(misifu.x >= LEVEL_MAX || misifu.x <= LEVEL_MIN) {
+                misifu.state = FALLING_FLOOR;
+                misifu.draw_additional = NONE;
+                ++misifu.y;
+            }
+        }
+    }
+    /*
+    anim_windows();
+    check_bincat();
+    dog_checks();
+    */
+    if (misifu.state == M_FALLING) {
+        detect_fall_in_bin();
+    }
+    if (misifu.draw_additional == CAT_IN_BIN && misifu.y < FLOOR_Y && misifu.in_bin != NONE) {
+        if (is_in_bin() == NONE) {
+            misifu.state = M_FALLING;
+            misifu.draw_additional = NONE;
+            misifu.in_bin = NONE;
+        }
+    }
+    //detect_fall_in_window();
+}
+
 void misifu_process() {
     check_keys();
+    alley_loop();
     misifu_output();
     check_fsm();
+
 
     /* 
     level1_loop();

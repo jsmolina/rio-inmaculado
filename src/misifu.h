@@ -23,6 +23,9 @@
 
 #define WALK_CYCLE 8  // Cambia el sprite cada 8 píxeles
 
+#define HIGHER_BIN1 2   // bins are from 1 - 5
+#define HIGHER_BIN2 4
+
 
 
 #define LEVEL_MAX 265
@@ -34,6 +37,8 @@
 #define CAT_IN_ROPE2 8
 #define CAT_IN_ROPE3 9
 #define CAT_ON_HIGH 10
+#define CAT_IN_BIN 3
+#define CAT_IN_FENCE 4
 #define FLOOR_Y 165
 
 BITMAP * load_misifu_data();

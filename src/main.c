@@ -101,7 +101,7 @@ int main(int argc, const char **argv) {
     player_lifebar = load_pcx("LIFEBAR.PCX", NULL);
     girl = load_pcx("GIRL1.PCX", NULL);
     key_sprite = load_pcx( "KEY.PCX", NULL );
-    MIDI *music = load_midi("ROGERR.MID");
+    MIDI *music = load_midi("ALLEYCAT.MID");
 
     if (install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, NULL) != 0) {
         die("Error: inicializando sistema de sonido\n%s\n", allegro_error);
@@ -148,9 +148,9 @@ int main(int argc, const char **argv) {
         if (level == MENU) {
             if (key[KEY_SPACE]) {
                 increase_level_and_load();
-                /*TODO if (play_looped_midi(music, 0, -1) != 0) {
+                if (play_looped_midi(music, 0, -1) != 0) {
                     die("Cant play music");
-                }*/
+                }
             }
         } else if (level == GAME_OVER) {
             if (key[KEY_SPACE]) {
