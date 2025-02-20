@@ -1,7 +1,9 @@
 #include <stdint.h>
 #include <stdio.h>
+#include "allegro/midi.h"
 #include "game.h"
 #include "misifu.h"
+#include "allegro/datafile.h"
 
 
 struct clothes {
@@ -9,6 +11,11 @@ struct clothes {
     unsigned int row2_x;
     BITMAP *sprite1;
     BITMAP *sprite2;
+};
+struct bincat {
+    uint8_t in_bin;
+    uint8_t appears;
+    BITMAP *sprite;
 };
 
 struct prota {
@@ -26,7 +33,39 @@ struct prota {
 };
 struct prota misifu;
 struct clothes clothes;
-uint8_t bincat_in_bin = NONE;
+struct bincat bincat;
+
+
+BITMAP * load_misifu_data() {
+    char file_buffer[16];
+    BITMAP *back = load_pcx("alley.pcx", NULL);
+    for (int i = 0; i < 7; i++) {
+        sprintf(file_buffer, "CAT%d.PCX", i + 1);
+        misifu.sprite[i] = load_pcx( file_buffer, NULL );
+        if(!misifu.sprite[i]) {
+            die("Cannot load %s", file_buffer);
+        }
+    }
+    if (music) {
+        stop_midi();
+        destroy_midi(music);
+    }
+    music = load_midi("ALLEYCAT.MID");
+    play_looped_midi(music, 0, -1);
+    clothes.sprite1 = load_pcx("CLOTHES1.PCX", NULL);
+    clothes.sprite2 = load_pcx("CLOTHES2.PCX", NULL);
+    bincat.in_bin = NONE;
+    bincat.appears = NONE;
+    bincat.sprite = load_pcx("BINCAT.PCX", NULL);
+    
+    clothes.row1_x = 225;
+    clothes.row2_x = 50;
+    misifu.offset = OFF_BORED;
+    misifu.x = 65;
+    misifu.y = FLOOR_Y;
+    
+    return back;
+}
 
 static void stop_jump_if_needed(uint8_t max_jump) {
     if ((misifu.initial_jump_y - misifu.y) >= max_jump || misifu.x > 318) {
@@ -46,12 +85,45 @@ inline unsigned char is_in_bin() {
     return NONE;
 }
 
+inline void check_bincat() {
+    // checks if bincat should appear and where
+    int random_value = rand();
+    if (bincat.appears == NONE && misifu.in_bin != NONE) {
+        bincat.in_bin = random_value % 6;
+        // less probable
+        if(bincat.in_bin == HIGHER_BIN1 || bincat.in_bin == HIGHER_BIN2) {            
+            bincat.appears = 120;
+        } else {
+            bincat.in_bin = NONE;
+        }
+    }
+
+    // delete bincat after some frames
+    if (bincat.appears != NONE) {
+        --bincat.appears;
+
+        // cat falls if cat_in_bin is the same of bincat_in_bin
+        if (bincat.in_bin == misifu.in_bin) {
+            misifu.state = FALLING_FLOOR;
+            misifu.in_bin = NONE;
+            //BEEPFX_HIT_2
+        }
+
+        if (bincat.appears <= 1) {
+            bincat.appears = NONE;
+            bincat.in_bin = 0;
+            blit(bg, screen, HIGHER_BIN1_X, BINCAT_Y, HIGHER_BIN1_X, BINCAT_Y, 15, 12);
+            blit(bg, screen, HIGHER_BIN2_X, BINCAT_Y, HIGHER_BIN2_X, BINCAT_Y, 15, 12);
+        }
+    }
+}
+
 inline void detect_fall_in_bin() {
     // detect falling over bin
     if(misifu.y == 128 || misifu.y == 138) {
         misifu.in_bin = is_in_bin();
         // store that it is on first bin pos so collide will bincat is easier
-        if (misifu.in_bin != NONE && misifu.in_bin != bincat_in_bin) {
+        if (misifu.in_bin != NONE && misifu.in_bin != bincat.in_bin) {
             if (misifu.y == 128 && (misifu.in_bin == HIGHER_BIN1 || misifu.in_bin == HIGHER_BIN2)) {
                 // stop falling
                 misifu.state = NONE;
@@ -77,26 +149,6 @@ inline void detect_fall_in_bin() {
     }
 }
 
-BITMAP * load_misifu_data() {
-    char file_buffer[16];
-    BITMAP *back = load_pcx("alley.pcx", NULL);
-    for (int i = 0; i < 7; i++) {
-        sprintf(file_buffer, "CAT%d.PCX", i + 1);
-        misifu.sprite[i] = load_pcx( file_buffer, NULL );
-        if(!misifu.sprite[i]) {
-            die("Cannot load %s", file_buffer);
-        }
-    }
-    clothes.sprite1 = load_pcx("CLOTHES1.PCX", NULL);
-    clothes.sprite2 = load_pcx("CLOTHES2.PCX", NULL);
-    clothes.row1_x = 225;
-    clothes.row2_x = 50;
-    misifu.offset = OFF_BORED;
-    misifu.x = 65;
-    misifu.y = FLOOR_Y;
-    
-    return back;
-}
 
 void check_fsm() {
     // decide new FSM draw status
@@ -213,13 +265,20 @@ void check_keys() {
 }
 
 void misifu_output() {   
+    if (bincat.appears != NONE) {
+        int bincat_x = 190;
+        if (bincat.in_bin == HIGHER_BIN1) {
+            bincat_x = 70;
+        }
+        draw_sprite(screen, bincat.sprite, bincat_x, BINCAT_Y);
+    }
     if (misifu.state == M_WALKING_LEFT || misifu.draw_additional == M_JUMP_LEFT) {
         draw_sprite_h_flip(screen, misifu.sprite[misifu.offset],
             misifu.x, misifu.y);
     } else {
         draw_sprite(screen, misifu.sprite[misifu.offset],
             misifu.x, misifu.y);
-    }
+    }    
 }
 
 inline void paint_clothes() {
@@ -242,6 +301,10 @@ inline void paint_clothes() {
     }
     draw_sprite(screen, clothes.sprite2, clothes.row1_x, 50);
     draw_sprite(screen, clothes.sprite1, clothes.row2_x, 82);    
+}
+
+inline void anim_windows() {
+    
 }
 
 inline void alley_loop() {
@@ -275,11 +338,11 @@ inline void alley_loop() {
             }
         }
     }
-    /*
-    anim_windows();
+    
+    //anim_windows();
     check_bincat();
-    dog_checks();
-    */
+    //dog_checks();
+    
     if (misifu.state == M_FALLING) {
         detect_fall_in_bin();
     }
@@ -319,6 +382,12 @@ void destroy_misifu_data() {
     // todo destroy sprite
     for (int i = 0; i < 8; i++) {
         destroy_bitmap(misifu.sprite[i]);
+    }
+    if (music) {
+        stop_midi();
+        destroy_midi(music);
+        music = load_midi("ROGERR.MID");
+        play_looped_midi(music, 0, -1);
     }
 }
 

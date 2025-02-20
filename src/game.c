@@ -371,7 +371,7 @@ void load_level() {
         BITMAP * bg2;
 
         bg2 = load_level_background(6);
-        for (unsigned int i = 0; i<200; i+=4) {
+        for (unsigned int i = 0; i < 200; i+=4) {
             blit(bg2, screen, 0, 0, 0, 200 - i, 320, i);
             blit(bg, screen, 0, i, 0, 0, 320, 200 - i);
             vsync();
@@ -445,7 +445,9 @@ void load_level() {
     if (slow_cpu) {
         blit(bg, screen, 0, 0, 0, 0, 320, 200);
     } else {
-        show_bg();
+        if (!(next_level == 6 && level == 5)) {
+            show_bg();
+        }
     }
     if (level != 0) {
         draw_lives();

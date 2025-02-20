@@ -21,6 +21,12 @@
 #define OFF_HANGING 5
 #define OFF_FALL 6
 
+#define BINCAT_Y 140
+#define HIGHER_BIN1_X 190
+#define HIGHER_BIN2_X 70
+#define BIN_HIGH_Y 128
+#define BIN_LOW_Y 138
+
 #define WALK_CYCLE 8  // Cambia el sprite cada 8 píxeles
 
 #define HIGHER_BIN1 2   // bins are from 1 - 5

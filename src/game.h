@@ -34,9 +34,6 @@ extern MIDI *music;
 extern void draw_lifebar();
 
 extern int counter;
-// extern int moving;
-// extern BITMAP *player[11];
-// extern BITMAP *enemy1[11];
 extern BITMAP *bg;
 extern char slow_cpu;
 

@@ -77,6 +77,7 @@ echo "Converting misifu things..."
 magick alley.png -colors 256 -depth 8 ALLEY.PCX
 magick clothes_sprites.png -colors 256 -type truecolor CLOTHES1.PCX
 magick clothes_sprites2.png -colors 256 -type truecolor CLOTHES2.PCX
+magick bincat.png -colors 256 -type truecolor BINCAT.PCX
 
 echo "Converting cat sprites..."
 magick cat_sprites.png -crop 24x24+0+0 -colors 256 -type truecolor  cat1.PCX
@@ -100,9 +101,19 @@ magick bege.png -colors 256 -depth 8 bege.pcx
 
 pwd
 echo "Compress..."
-./dat2 bege.pcx main*.pcx enem*.pcx tiles.pcx bg*.tmx LIVES.PCX LIFEBAR.PCX GIRL1.PCX KEY.PCX ROGERR.MID alleycat.mid ALLEY.PCX CLOTHES*.PCX cat*.PCX levels.csv
+./dat2 bege.pcx main*.pcx enem*.pcx tiles.pcx bg*.tmx LIVES.PCX LIFEBAR.PCX GIRL1.PCX KEY.PCX ROGERR.MID alleycat.mid ALLEY.PCX CLOTHES*.PCX cat*.PCX BINCAT.PCX levels.csv
 
 echo "Removing generated pcx"
 rm enem*.pcx
 rm main*.pcx
 rm bege.pcx
+rm cat*.PCX
+rm CLOTHES*.PCX
+rm ALLEY.PCX
+rm BINCAT.PCX
+rm KEY.PCX
+rm LIFEBAR.PCX
+rm LIVES.PCX
+rm GIRL1.PCX
+rm tiles.pcx
+

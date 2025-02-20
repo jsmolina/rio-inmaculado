@@ -101,7 +101,7 @@ int main(int argc, const char **argv) {
     player_lifebar = load_pcx("LIFEBAR.PCX", NULL);
     girl = load_pcx("GIRL1.PCX", NULL);
     key_sprite = load_pcx( "KEY.PCX", NULL );
-    MIDI *music = load_midi("ALLEYCAT.MID");
+    music = load_midi("ROGERR.MID");
 
     if (install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, NULL) != 0) {
         die("Error: inicializando sistema de sonido\n%s\n", allegro_error);
