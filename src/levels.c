@@ -110,8 +110,6 @@ void level8_coursnave() {
     sprintf(missed, "COURSE: %01d", beep_count);
     textout_ex(screen, font, missed, 210, SCREEN_H - 26, makecol(0, 100, 255), makecol(0, 0, 0));
 
-
-
     float tiempo_entre_beeps = (float)(tiempo_actual - ultimo_beep) / CLOCKS_PER_SEC;
     if (ultimo_beep == 0 || tiempo_entre_beeps > (4 - beep_count * 0.25)) {
         ultimo_beep = clock();
@@ -178,8 +176,8 @@ void level8_coursnave() {
 
     if (tiempo_transcurrido > 0.1) {
         velocidad -= 1;
-        if (velocidad  < 0) {
-            velocidad = 0;
+        if (velocidad  < 1) {
+            velocidad = 1;
         }
     }
 
