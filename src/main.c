@@ -16,6 +16,26 @@
 #include "tiles.h"
 #include "dat_manager.h"
 
+static volatile int update_count, frame_count, fps = 0;
+
+void gfx_timer_proc(void) { update_count = 1; }
+END_OF_FUNCTION(gfx_timer_proc)
+
+static void gfx_fps_proc(void) {
+    fps = frame_count;
+    frame_count = 0;
+}
+END_OF_FUNCTION(gfx_fps_proc)
+
+void gfx_init_timer() {
+    LOCK_VARIABLE(update_count);
+    LOCK_VARIABLE(frame_count);
+    LOCK_VARIABLE(fps);
+    LOCK_FUNCTION(gfx_timer_proc);
+    LOCK_FUNCTION(gfx_fps_proc);
+    install_int_ex(gfx_timer_proc, BPS_TO_TIMER(70));
+    install_int_ex(gfx_fps_proc, BPS_TO_TIMER(1));
+}
 static volatile long speed_counter = 0;
 
 void increment_speed_counter()
@@ -24,13 +44,20 @@ void increment_speed_counter()
 }
 END_OF_FUNCTION(increment_speed_counter);
 
-void gfx_init_timer2() {
-    LOCK_VARIABLE(speed_counter);
-    LOCK_FUNCTION(increment_speed_counter);
-    install_int_ex(increment_speed_counter, BPS_TO_TIMER(60));
 
+/**
+ * Allegro example script. Switches to graphics mode to print "hello world",
+ * then waits for a keypress and exits the program.
+ * Taken from <https://wiki.allegro.cc/index.php?title=Example_ExHello>.
+ * http://www.glost.eclipse.co.uk/gfoot/vivace/vivace.html
+ */
+/* timer callback for measuring the frames per second */
+static void fps_proc(void) {
+    fps = frame_count;
+    frame_count = 0;
 }
 
+END_OF_STATIC_FUNCTION(fps_proc);
 
 
 int main(int argc, const char **argv) {
@@ -56,6 +83,7 @@ int main(int argc, const char **argv) {
         die("Cannot set graphics mode");
     }
 
+    install_int(fps_proc, 1000);    
     // Print a single line of "hello world" on a white screen.
     //set_palette(desktop_palette);
 
@@ -112,19 +140,19 @@ int main(int argc, const char **argv) {
     player.lives = 3;
     player.floor_times = 0;
 
-    gfx_init_timer2();
+    gfx_init_timer();
 
     do {
-        while (speed_counter > 0) {
+        /*while (speed_counter > 0) {
             rest(0);
             if (key[KEY_ESC]) {
                 exit_game = 1;
                 break;
             }
             speed_counter--;
-        }
+        }*/
 
-        /*while (0 == update_count) {
+        while (0 == update_count) {
             rest(0);
             if (key[KEY_ESC]) {
                 exit_game = 1;
@@ -133,7 +161,7 @@ int main(int argc, const char **argv) {
             vsync();
         }
         update_count = 0;
-        frame_count++;*/
+        frame_count++;
         
         if (level == MENU) {
             if (key[KEY_SPACE]) {

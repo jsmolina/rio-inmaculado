@@ -109,7 +109,7 @@ void increase_level_and_load() {
     beep_side = IZQUIERDA;
     coursnave_completed = FALSE;
     yellow_key = FALSE;
-    next_level = 1;
+    next_level = 15;
     load_level();
 }
 // draws current player lives
