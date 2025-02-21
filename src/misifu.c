@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
+#include "allegro/gfx.h"
 #include "allegro/midi.h"
 #include "game.h"
 #include "misifu.h"
@@ -38,6 +39,8 @@ struct bincat bincat;
 
 BITMAP * load_misifu_data() {
     char file_buffer[16];
+    BITMAP * background = create_bitmap(SCREEN_W, SCREEN_H);
+    rectfill(background, 0, 0, SCREEN_W, SCREEN_H, makecol(40, 40, 40));
     BITMAP *back = load_pcx("alley.pcx", NULL);
     for (int i = 0; i < 7; i++) {
         sprintf(file_buffer, "CAT%d.PCX", i + 1);
@@ -63,8 +66,9 @@ BITMAP * load_misifu_data() {
     misifu.offset = OFF_BORED;
     misifu.x = 65;
     misifu.y = FLOOR_Y;
-    
-    return back;
+    blit(back, background,0, 0, 0, 0, 320, 200);
+    destroy_bitmap(back);
+    return background;
 }
 
 static void stop_jump_if_needed(uint8_t max_jump) {
@@ -285,7 +289,7 @@ inline void paint_clothes() {
     //clothes.sprite1
     blit(bg, screen, clothes.row1_x, 50, clothes.row1_x, 50, 64, 20);
     blit(bg, screen, clothes.row2_x, 82, clothes.row2_x, 82, 40, 20);
-    blit(bg, screen, misifu.x - 2, misifu.y, misifu.x -2, misifu.y, 32, 50);
+    blit(bg, screen, misifu.x - 2, misifu.y, misifu.x -2, misifu.y, 32, 40);
 
 
     if((counter & 1) == 0) {

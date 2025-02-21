@@ -109,7 +109,7 @@ void increase_level_and_load() {
     beep_side = IZQUIERDA;
     coursnave_completed = FALSE;
     yellow_key = FALSE;
-    next_level = 1;
+    next_level = 8;
     load_level();
 }
 // draws current player lives
@@ -123,8 +123,7 @@ void draw_lives() {
 }
 
 void game_over() {
-    textout_centre_ex(screen, font, "GAME OVER", SCREEN_W / 2,
-                      SCREEN_H / 2, makecol(255, 255, 255), makecol(10, 10, 10));
+    textout_centre_ex(screen, font, "GAME OVER", 120, SCREEN_H - 34, makecol(255, 255, 255), makecol(10, 10, 10));
 }
 
 void draw_lifebar() {
@@ -258,7 +257,7 @@ void output() {
     if (level == 9 || yellow_key == TRUE) {
         unsigned char y_pos = 105;
         if (yellow_key == TRUE) {
-            y_pos = 30;
+            y_pos = SCREEN_H - 18;
         }
         draw_sprite(screen, key_sprite, 34, y_pos);
     }

@@ -89,26 +89,26 @@ void level8_coursnave() {
         player.moving = MOVING_RIGHT;
         return;
     }
-    textout_ex(screen, font, "COURSNAVE. ", 0, 0, makecol(255, 255, 255), -1);    
+    textout_ex(screen, font, "COURSNAVE. ", 120, SCREEN_H - 34, makecol(255, 255, 255), -1);    
 
     if (beep_count < 0) {
-        textout_ex(screen, font, "PRESS SPACE TO START (Z/X). ", 0, 60, makecol(255, 255, 255), makecol(0,0,0));
+        textout_ex(screen, font, "PRESS SPACE TO START (KEYS Z/X). ", 40, SCREEN_H - 10, makecol(255, 255, 255), makecol(0,0,0));
         while (!key[KEY_SPACE] && !key[KEY_ESC]) {
             rest(1);
         }
         beep_count = 0;
         beep(2000, 10);
     } else {
-        textout_ex(screen, font, "VAMOS!!!!            (Z/X). ", 0, 60, makecol(200, 200, 255), makecol(0,0,0));
+        textout_ex(screen, font, "GO GO GO GO          (KEYS Z/X). ", 40, SCREEN_H - 10, makecol(200, 200, 255), makecol(0,0,0));
     }
     clock_t tiempo_actual = clock();
 
 
     char missed[16];
     sprintf(missed, "FAIL: %01d", missed_beeps);
-    textout_ex(screen, font, missed, 0, 68, makecol(255, 0, 0), makecol(0, 0, 0));
+    textout_ex(screen, font, missed, 120, SCREEN_H - 26, makecol(255, 0, 0), makecol(0, 0, 0));
     sprintf(missed, "COURSE: %01d", beep_count);
-    textout_ex(screen, font, missed, 90, 68, makecol(0, 100, 255), makecol(0, 0, 0));
+    textout_ex(screen, font, missed, 210, SCREEN_H - 26, makecol(0, 100, 255), makecol(0, 0, 0));
 
 
 
