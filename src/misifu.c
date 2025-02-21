@@ -39,8 +39,6 @@ struct bincat bincat;
 
 BITMAP * load_misifu_data() {
     char file_buffer[16];
-    BITMAP * background = create_bitmap(SCREEN_W, SCREEN_H);
-    rectfill(background, 0, 0, SCREEN_W, SCREEN_H, makecol(40, 40, 40));
     BITMAP *back = load_pcx("alley.pcx", NULL);
     for (int i = 0; i < 7; i++) {
         sprintf(file_buffer, "CAT%d.PCX", i + 1);
@@ -66,9 +64,8 @@ BITMAP * load_misifu_data() {
     misifu.offset = OFF_BORED;
     misifu.x = 65;
     misifu.y = FLOOR_Y;
-    blit(back, background,0, 0, 0, 0, 320, 200);
-    destroy_bitmap(back);
-    return background;
+        
+    return back;
 }
 
 static void stop_jump_if_needed(uint8_t max_jump) {

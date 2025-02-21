@@ -109,7 +109,7 @@ void increase_level_and_load() {
     beep_side = IZQUIERDA;
     coursnave_completed = FALSE;
     yellow_key = FALSE;
-    next_level = 8;
+    next_level = 15;
     load_level();
 }
 // draws current player lives
@@ -127,7 +127,7 @@ void game_over() {
 }
 
 void draw_lifebar() {
-    rectfill(screen, 70, SCREEN_H - 30, 110, SCREEN_H - 20, makecol(40, 40, 40));
+    rectfill(screen, 70, SCREEN_H - 30, 90, SCREEN_H - 20, makecol(40, 40, 40));
     blit(player_lifebar, screen, 0, 0, 70, SCREEN_H -30, 2 * player.lifebar, 14);
 }
 
