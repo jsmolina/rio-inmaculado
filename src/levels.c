@@ -333,10 +333,11 @@ void level_processing() {
     switch (level) {
         case 2:
             if (key[KEY_SPACE]) {
+                //76, 84, 92
                 if (player.y < 142 && player.x >= 204 && player.x <= 219) {
-                    textout_centre_ex(screen, font, "bedel?", SCREEN_W / 2, 76, makecol(100,255,255), makecol(0,0,0));               
-                    textout_centre_ex(screen, font, "quien eres tu?", SCREEN_W / 2, 84, makecol(255,255,255), makecol(0,0,0));
-                    textout_centre_ex(screen, font, "no importa, arregla el ascensor", SCREEN_W / 2, 92, makecol(100,255,255), makecol(0,0,0));
+                    textout_ex(screen, font, "bedel?", 120, SCREEN_H - 34, makecol(100,255,255), makecol(0,0,0));               
+                    textout_ex(screen, font, "quien eres tu?", 120, SCREEN_H - 26, makecol(255,255,255), makecol(0,0,0));
+                    textout_ex(screen, font, "arregla el ascensor!", 120, SCREEN_H - 18, makecol(100,255,255), makecol(0,0,0));
                     locked_elevator = FALSE;
                 }
             }
@@ -347,8 +348,8 @@ void level_processing() {
                 player.moving = LOOKING_WALL;
                 if (player.y < 147 && player.x >= 7 && player.x <= 28) {
                     if (!urinated) {
-                        textout_centre_ex(screen, font, "ahhh, mejor asi!", SCREEN_W / 2, 76, makecol(100,255,255), makecol(0,0,0));               
-                        textout_centre_ex(screen, font, "largate o te castigo!", SCREEN_W / 2, 84, makecol(194,106,228), makecol(0,0,0));
+                        textout_ex(screen, font, "ahhh, mejor asi!", 120, SCREEN_H - 34, makecol(100,255,255), makecol(0,0,0));               
+                        textout_ex(screen, font, "largate o te castigo!", 120, SCREEN_H - 26, makecol(194,106,228), makecol(0,0,0));
                         urinated = TRUE;
                         player.lifebar = LIFEBAR;
                         draw_lifebar();

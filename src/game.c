@@ -128,7 +128,7 @@ void game_over() {
 }
 
 void draw_lifebar() {
-    rectfill(screen, 70, SCREEN_H - 30, 130, SCREEN_H - 20, makecol(40, 40, 40));
+    rectfill(screen, 70, SCREEN_H - 30, 110, SCREEN_H - 20, makecol(40, 40, 40));
     blit(player_lifebar, screen, 0, 0, 70, SCREEN_H -30, 2 * player.lifebar, 14);
 }
 
