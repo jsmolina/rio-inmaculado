@@ -1,5 +1,7 @@
 #include "tiles.h"
+#include "allegro/color.h"
 #include "allegro/gfx.h"
+#include "allegro/inline/draw.inl"
 #include "allegro/system.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,6 +24,7 @@ inline void destroy_tiles() {
 
 BITMAP * load_background(char * filename) {
     BITMAP * background = create_bitmap(SCREEN_W, SCREEN_H);
+    rectfill(background, 0, 0, SCREEN_W, SCREEN_H, makecol(40, 40, 40));
     FILE *in_file  = fopen(filename, "r");
     char current;
 

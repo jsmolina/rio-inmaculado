@@ -67,7 +67,7 @@ int main(int argc, const char **argv) {
 
 
     //bmp = create_bitmap(640, 480);
-    set_color_conversion(COLORCONV_TOTAL);
+    set_color_conversion(COLORCONV_KEEP_ALPHA);
     // Switch to graphics mode, 320x200.
     set_color_depth(8);
 
@@ -86,9 +86,10 @@ int main(int argc, const char **argv) {
     extract_data(); // todo mover despues de textout
 
     load_levels();
-
     set_color_depth(16);
-    set_gfx_mode(GFX_AUTODETECT, 320, 200, 0, 0);
+    if(set_gfx_mode(GFX_AUTODETECT, 320, 240, 0, 0) != 0) {
+        die("error setting 320x240 16bpp: %s", allegro_error);
+    }
 
     for (int i = 0; i < 12; i++) {
         sprintf(file_buffer, "MAIN%d.PCX", i + 1);

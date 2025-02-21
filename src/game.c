@@ -109,16 +109,16 @@ void increase_level_and_load() {
     beep_side = IZQUIERDA;
     coursnave_completed = FALSE;
     yellow_key = FALSE;
-    next_level = 15;
+    next_level = 1;
     load_level();
 }
 // draws current player lives
 void draw_lives() {
-    blit(bg, screen, 20, 20, 20, 20, 50, 20);
-
+    //blit(bg, screen, 20, 20, 20, 20, 50, 20);
+    rectfill(screen, 20, SCREEN_H - 30, 60, SCREEN_H - 20, makecol(40, 40, 40));
     unsigned int i;
     for (i = 0; i < player.lives; i++) {
-        draw_sprite(screen, player_head, 20 + i * 10, 20);
+        draw_sprite(screen, player_head, 20 + i * 10, SCREEN_H - 30);
     }
 }
 
@@ -128,8 +128,8 @@ void game_over() {
 }
 
 void draw_lifebar() {
-    blit(bg, screen, 70, 20, 70, 20, 60, 14);
-    blit(player_lifebar, screen, 0, 0, 70, 20, 2 * player.lifebar, 14);
+    rectfill(screen, 70, SCREEN_H - 30, 130, SCREEN_H - 20, makecol(40, 40, 40));
+    blit(player_lifebar, screen, 0, 0, 70, SCREEN_H -30, 2 * player.lifebar, 14);
 }
 
 void process() {
@@ -252,7 +252,7 @@ void output() {
         return;
     }
     // clean
-    blit(bg, screen, player.x, player.y - 10, player.x, player.y - 10, 40, 80);
+    blit(bg, screen, player.x-5, player.y - 10, player.x-5, player.y - 10, 45, 55);
     redraw_bg_enemy_positions();
 
     if (level == 9 || yellow_key == TRUE) {
@@ -292,7 +292,7 @@ int show_bg() {
    set_palette(pal);
 
    /* fade it in on top of the previous picture */
-   for (alpha=0; alpha<256; alpha+=8) {
+   for (alpha=100; alpha<256; alpha+=8) {
       set_trans_blender(0, 0, 0, alpha);
       draw_trans_sprite(buffer, bg,
 			(SCREEN_W-bg->w)/2, (SCREEN_H-bg->h)/2);
@@ -302,6 +302,8 @@ int show_bg() {
 
    blit(bg, screen, 0, 0, (SCREEN_W-bg->w)/2, (SCREEN_H-bg->h)/2,
 	bg->w, bg->h);
+    //rectfill(screen, 0, 200, 320, 240, makecol(0, 0, 0));
+
 
    destroy_bitmap(buffer);
 }
@@ -442,13 +444,16 @@ void load_level() {
     if (!bg) {
         die("Cannot load graphic");        
     }
+    //blit(bg, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
     if (slow_cpu) {
-        blit(bg, screen, 0, 0, 0, 0, 320, 200);
+        blit(bg, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
     } else {
         if (!(next_level == 6 && level == 5)) {
             show_bg();
         }
     }
+
+    //rectfill(screen, 0, 200, 320, 240, makecol(0, 0, 0));
     if (level != 0) {
         draw_lives();
         draw_lifebar();
