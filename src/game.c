@@ -127,7 +127,7 @@ void game_over() {
 }
 
 void draw_lifebar() {
-    rectfill(screen, 70, SCREEN_H - 30, 90, SCREEN_H - 20, makecol(40, 40, 40));
+    rectfill(screen, 70, SCREEN_H - 30, 94, SCREEN_H - 20, makecol(40, 40, 40));
     blit(player_lifebar, screen, 0, 0, 70, SCREEN_H -30, 2 * player.lifebar, 14);
 }
 
@@ -192,7 +192,7 @@ void process() {
 
         if (player.moving == MOVING_RIGHT || player.moving == MOVING_LEFT ||
             player.y_moving == MOVING_UP || player.y_moving == MOVING_DOWN) {
-            if (player.curr_sprite == ANIM_WALK1) {
+            if ((player.x / MIGUEL_WALK_CYCLE) % 2 == 0) {
                 player.curr_sprite = ANIM_WALK2;
             } else {
                 player.curr_sprite = ANIM_WALK1;

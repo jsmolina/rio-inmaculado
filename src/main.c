@@ -33,7 +33,7 @@ void gfx_init_timer() {
     LOCK_VARIABLE(fps);
     LOCK_FUNCTION(gfx_timer_proc);
     LOCK_FUNCTION(gfx_fps_proc);
-    install_int_ex(gfx_timer_proc, BPS_TO_TIMER(100));
+    install_int_ex(gfx_timer_proc, BPS_TO_TIMER(200));
     install_int_ex(gfx_fps_proc, BPS_TO_TIMER(1));
 }
 

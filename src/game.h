@@ -12,6 +12,7 @@
 #define MISIFU_ALLEY 15
 #define MISIFU_CHEESE 16
 #define CASTIGO_FINALIZADO 20
+#define MIGUEL_WALK_CYCLE 8 
 
 
 // TODO define maximum vertical distance to allow before two objects can no
