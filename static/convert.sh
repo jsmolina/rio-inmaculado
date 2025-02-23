@@ -121,4 +121,4 @@ rm LIFEBAR.PCX
 rm LIVES.PCX
 rm GIRL1.PCX
 rm tiles.pcx
-
+rm dog*.PCX
