@@ -73,13 +73,12 @@ int main(int argc, const char **argv) {
     install_keyboard();
     install_timer();
 
-
     //bmp = create_bitmap(640, 480);
     set_color_conversion(COLORCONV_KEEP_ALPHA);
     // Switch to graphics mode, 320x200.
     set_color_depth(8);
 
-    if (set_gfx_mode(GFX_AUTODETECT, 320, 200, 0, 0) != 0) {
+    if (set_gfx_mode(GFX_MODEX, 320, 200, 0, 0) != 0) {
         die("Cannot set graphics mode");
     }
 
@@ -94,10 +93,23 @@ int main(int argc, const char **argv) {
     extract_data(); // todo mover despues de textout
 
     load_levels();
-    set_color_depth(16);
+    set_color_depth(15);
+    //try GFX_MODEX
     if(set_gfx_mode(GFX_AUTODETECT, 320, 240, 0, 0) != 0) {
         die("error setting 320x240 16bpp: %s", allegro_error);
     }
+
+    music = load_midi("ROGERR.MID");
+
+    if (install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, NULL) != 0) {
+        die("Error: inicializando sistema de sonido\n%s\n", allegro_error);
+    }
+    set_volume(230, 150);
+
+    srand(time(NULL));
+    // load tilemap
+    load_tiles();
+    set_pallete(palette);
 
     for (int i = 0; i < 12; i++) {
         sprintf(file_buffer, "MAIN%d.PCX", i + 1);
@@ -110,16 +122,7 @@ int main(int argc, const char **argv) {
     player_lifebar = load_pcx("LIFEBAR.PCX", NULL);
     girl = load_pcx("GIRL1.PCX", NULL);
     key_sprite = load_pcx( "KEY.PCX", NULL );
-    music = load_midi("ROGERR.MID");
 
-    if (install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, NULL) != 0) {
-        die("Error: inicializando sistema de sonido\n%s\n", allegro_error);
-    }
-    set_volume(230, 150);
-
-    srand(time(NULL));
-    // load tilemap
-    load_tiles();
     // pre load enemies sprites
     init_level_enemies(0, 300, TRUE);
     // will load menu
@@ -205,6 +208,10 @@ int main(int argc, const char **argv) {
     for (int i = 0; i < 12; i++) {
         destroy_bitmap(player.sprite[i]); 
     }
+    destroy_bitmap(player_head);
+    destroy_bitmap(player_lifebar);
+    destroy_bitmap(girl);
+    destroy_bitmap(key_sprite);
     unload_enemies();
     destroy_tiles();
     cleanup_data();

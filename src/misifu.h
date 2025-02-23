@@ -5,6 +5,8 @@
 #define NONE 0
 #define M_JUMPING 3
 #define M_FALLING 4
+#define M_FIGHTING 5
+
 #define M_WALKING_LEFT 1
 #define M_WALKING_RIGHT 2
 #define M_JUMPING_PUSHED 11
@@ -21,7 +23,14 @@
 #define OFF_HANGING 5
 #define OFF_FALL 6
 
+#define OFF_DOG_WALK 0
+#define OFF_DOG_FIGHT 2
+
+#define DOG_LEFT 1
+#define DOG_RIGHT 2
+
 #define BINCAT_Y 140
+#define BINCAT_Y_LOW 148
 #define HIGHER_BIN1_X 190
 #define HIGHER_BIN2_X 70
 #define BIN_HIGH_Y 128
@@ -29,8 +38,11 @@
 
 #define WALK_CYCLE 8  // Cambia el sprite cada 8 píxeles
 
+#define LOWER_BIN1 1
 #define HIGHER_BIN1 2   // bins are from 1 - 5
+#define LOWER_BIN2 3
 #define HIGHER_BIN2 4
+#define LOWER_BIN3 5
 
 
 
@@ -46,6 +58,7 @@
 #define CAT_IN_BIN 3
 #define CAT_IN_FENCE 4
 #define FLOOR_Y 165
+#define DOG_Y 174
 
 BITMAP * load_misifu_data();
 void misifu_process();

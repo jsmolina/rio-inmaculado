@@ -127,8 +127,8 @@ void game_over() {
 }
 
 void draw_lifebar() {
-    rectfill(screen, 70, SCREEN_H - 30, 94, SCREEN_H - 20, makecol(40, 40, 40));
-    blit(player_lifebar, screen, 0, 0, 70, SCREEN_H -30, 2 * player.lifebar, 14);
+    rectfill(screen, 60, SCREEN_H - 30, 94, SCREEN_H - 20, makecol(40, 40, 40));
+    blit(player_lifebar, screen, 0, 0, 60, SCREEN_H -30, 2 * player.lifebar, 14);
 }
 
 void process() {
@@ -220,6 +220,7 @@ void process() {
 
 void draw_player() {
     // redraw pair or impair?
+
     if (player.is_floor != FALSE) {
         if (player.moving & 1) {
             rotate_sprite(screen, player.sprite[0], player.x, player.y + 10,

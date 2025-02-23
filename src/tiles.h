@@ -15,6 +15,7 @@ struct coords {
 Tiles image
 */
 extern BITMAP *tiles;
+extern PALETTE palette;
 
 /**
 Preloads all tiles as a bitmap to blit them to screen

@@ -88,6 +88,11 @@ magick cat_sprites.png -crop 24x24+168+0 -colors 256 -type truecolor  cat5.PCX
 magick cat_sprites.png -crop 24x24+192+0 -colors 256 -type truecolor  cat6.PCX
 magick cat_sprites.png -crop 24x24+216+0 -colors 256 -type truecolor  cat7.PCX
 
+echo "Converting dog sprites..."
+magick dog_sprites.png -crop 24x16+0+0 -colors 256 -type truecolor  dog1.PCX
+magick dog_sprites.png -crop 24x16+24+0 -colors 256 -type truecolor  dog2.PCX
+magick dog_sprites.png -crop 24x16+48+0 -colors 256 -type truecolor  dog3.PCX
+magick dog_sprites.png -crop 24x16+72+0 -colors 256 -type truecolor  dog4.PCX
 
 #   magick miguel_sprites.png -crop 40x40+440+0 -colors 256 -type truecolor miguel11.pcx
 #magick background.png -colors 256 -type truecolor bg.pcx
@@ -101,7 +106,7 @@ magick bege.png -colors 256 -depth 8 bege.pcx
 
 pwd
 echo "Compress..."
-./dat2 bege.pcx main*.pcx enem*.pcx tiles.pcx bg*.tmx LIVES.PCX LIFEBAR.PCX GIRL1.PCX KEY.PCX ROGERR.MID alleycat.mid ALLEY.PCX CLOTHES*.PCX cat*.PCX BINCAT.PCX levels.csv
+./dat2 bege.pcx main*.pcx enem*.pcx tiles.pcx bg*.tmx LIVES.PCX LIFEBAR.PCX GIRL1.PCX KEY.PCX ROGERR.MID alleycat.mid ALLEY.PCX CLOTHES*.PCX cat*.PCX dog*.PCX BINCAT.PCX levels.csv
 
 echo "Removing generated pcx"
 rm enem*.pcx

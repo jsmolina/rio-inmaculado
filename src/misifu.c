@@ -1,10 +1,13 @@
 #include <stdint.h>
 #include <stdio.h>
+#include "allegro/color.h"
 #include "allegro/gfx.h"
 #include "allegro/midi.h"
+#include "enem.h"
 #include "game.h"
 #include "misifu.h"
 #include "allegro/datafile.h"
+#include "tiles.h"
 
 
 struct clothes {
@@ -15,13 +18,23 @@ struct clothes {
 };
 struct bincat {
     uint8_t in_bin;
+    int x;
+    int y;
     uint8_t appears;
     BITMAP *sprite;
 };
 
+struct dog {
+    int x;
+    BITMAP *sprite[4];
+    char appears;
+    uint8_t direction;
+    uint8_t offset;
+};
+
 struct prota {
     struct sp1_ss* sp;
-    unsigned int x;
+    int x;
     unsigned int y;
     unsigned int initial_jump_y;
     uint8_t draw_additional;
@@ -33,17 +46,27 @@ struct prota {
     BITMAP *sprite[8];
 };
 struct prota misifu;
+struct dog dog;
 struct clothes clothes;
 struct bincat bincat;
+PALETTE misifu_palette;
 
 
 BITMAP * load_misifu_data() {
     char file_buffer[16];
-    BITMAP *back = load_pcx("alley.pcx", NULL);
+    BITMAP *back = load_pcx("alley.pcx", misifu_palette);
+    set_pallete(misifu_palette);
     for (int i = 0; i < 7; i++) {
         sprintf(file_buffer, "CAT%d.PCX", i + 1);
         misifu.sprite[i] = load_pcx( file_buffer, NULL );
         if(!misifu.sprite[i]) {
+            die("Cannot load %s", file_buffer);
+        }
+    }
+    for (int i = 0; i < 4; i++) {
+        sprintf(file_buffer, "DOG%d.PCX", i + 1);
+        dog.sprite[i] = load_pcx( file_buffer, NULL );
+        if(!dog.sprite[i]) {
             die("Cannot load %s", file_buffer);
         }
     }
@@ -62,8 +85,11 @@ BITMAP * load_misifu_data() {
     clothes.row1_x = 225;
     clothes.row2_x = 50;
     misifu.offset = OFF_BORED;
+    dog.offset = OFF_DOG_WALK;
+    dog.direction = DOG_LEFT;
     misifu.x = 65;
     misifu.y = FLOOR_Y;
+    dog.appears = FALSE;
         
     return back;
 }
@@ -90,10 +116,16 @@ inline void check_bincat() {
     // checks if bincat should appear and where
     int random_value = rand();
     if (bincat.appears == NONE && misifu.in_bin != NONE) {
-        bincat.in_bin = random_value % 6;
+        bincat.in_bin = random_value % 12;
         // less probable
-        if(bincat.in_bin == HIGHER_BIN1 || bincat.in_bin == HIGHER_BIN2) {            
+        if(bincat.in_bin > 0 && bincat.in_bin < 6) {            
             bincat.appears = 120;
+            int bin_pos[5] = {39, 70, 103, 192, 225};
+            bincat.x = bin_pos[bincat.in_bin - 1];
+            bincat.y = BINCAT_Y_LOW;
+            if (bincat.in_bin == HIGHER_BIN1 || bincat.in_bin == HIGHER_BIN2) {
+                bincat.y = BINCAT_Y;
+            } 
         } else {
             bincat.in_bin = NONE;
         }
@@ -113,8 +145,7 @@ inline void check_bincat() {
         if (bincat.appears <= 1) {
             bincat.appears = NONE;
             bincat.in_bin = 0;
-            blit(bg, screen, HIGHER_BIN1_X, BINCAT_Y, HIGHER_BIN1_X, BINCAT_Y, 15, 12);
-            blit(bg, screen, HIGHER_BIN2_X, BINCAT_Y, HIGHER_BIN2_X, BINCAT_Y, 15, 12);
+            blit(bg, screen, bincat.x, bincat.y, bincat.x, bincat.y, 15, 12);
         }
     }
 }
@@ -232,6 +263,10 @@ void check_fsm() {
 }
 
 void check_keys() {
+    if(misifu.state == M_FIGHTING) {
+        return;
+    }
+
     if((!(key[KEY_UP]) && !(key[KEY_DOWN]))) {
         misifu.last_key = NONE;
     }
@@ -266,12 +301,10 @@ void check_keys() {
 }
 
 void misifu_output() {   
+    draw_sprite(screen, clothes.sprite2, clothes.row1_x, 50);
+    draw_sprite(screen, clothes.sprite1, clothes.row2_x, 82); 
     if (bincat.appears != NONE) {
-        int bincat_x = 190;
-        if (bincat.in_bin == HIGHER_BIN1) {
-            bincat_x = 70;
-        }
-        draw_sprite(screen, bincat.sprite, bincat_x, BINCAT_Y);
+        draw_sprite(screen, bincat.sprite, bincat.x, bincat.y);
     }
     if (misifu.state == M_WALKING_LEFT || misifu.draw_additional == M_JUMP_LEFT) {
         draw_sprite_h_flip(screen, misifu.sprite[misifu.offset],
@@ -280,6 +313,14 @@ void misifu_output() {
         draw_sprite(screen, misifu.sprite[misifu.offset],
             misifu.x, misifu.y);
     }    
+    if (dog.appears == TRUE) {
+        if (dog.direction == DOG_LEFT) {
+            draw_sprite(screen, dog.sprite[dog.offset], dog.x, DOG_Y);
+        } else {
+            draw_sprite_h_flip(screen, dog.sprite[dog.offset], dog.x, DOG_Y);
+        }
+    }
+
 }
 
 inline void paint_clothes() {
@@ -287,7 +328,7 @@ inline void paint_clothes() {
     blit(bg, screen, clothes.row1_x, 50, clothes.row1_x, 50, 64, 20);
     blit(bg, screen, clothes.row2_x, 82, clothes.row2_x, 82, 40, 20);
     blit(bg, screen, misifu.x - 2, misifu.y, misifu.x -2, misifu.y, 32, 40);
-
+    blit(bg, screen, dog.x, DOG_Y, dog.x, DOG_Y, 24, 16);
 
     if((counter & 1) == 0) {
         ++clothes.row2_x;
@@ -300,12 +341,73 @@ inline void paint_clothes() {
             clothes.row1_x = 225;
         }
     }
-    draw_sprite(screen, clothes.sprite2, clothes.row1_x, 50);
-    draw_sprite(screen, clothes.sprite1, clothes.row2_x, 82);    
+   
 }
 
 inline void anim_windows() {
     
+}
+
+inline void dog_checks() {
+    if (dog.appears == TRUE) {
+        if ((counter & 1) == 0) {
+            if (misifu.state != M_FIGHTING) {
+                if (dog.direction == DOG_LEFT) {
+                    dog.x -= 2;
+                } else {
+                    dog.x += 3;
+                }
+
+                if ((dog.x / WALK_CYCLE) % 2 == 0) {
+                    dog.offset = OFF_DOG_WALK + 1;
+                } else {
+                    dog.offset = OFF_DOG_WALK;
+                }
+
+                // TODO if cat on floor, change direction!
+                if (misifu.y >= 160) {
+                    if (misifu.x > dog.x) {
+                        dog.direction = DOG_RIGHT;
+                    } else {
+                        dog.direction = DOG_LEFT;
+                    }
+
+                    if (abs(misifu.x - dog.x) <= 4) {
+                        misifu.state = M_FIGHTING;
+                        dog.offset = OFF_DOG_FIGHT;
+                    }
+                } else if(dog.direction == DOG_RIGHT) {
+                    dog.direction = DOG_LEFT;
+                }
+
+            } else {
+                // he is fighting
+                if ((dog.x / WALK_CYCLE) % 2 == 0) {
+                    dog.offset = OFF_DOG_FIGHT + 1;
+                } else {
+                    dog.offset = OFF_DOG_FIGHT;
+                }
+                dog.x -=3;
+                misifu.x = dog.x;
+            }
+        } 
+
+        if (dog.x <= LEVEL_MIN) {
+            dog.appears = FALSE;
+            if (misifu.state == M_FIGHTING) {
+                misifu.state = FALLING_FLOOR;
+            }
+        }
+    }
+
+    if (dog.appears != TRUE && (counter & 1) == 0) {
+        uint8_t random_value = rand() % 255;
+
+        if (random_value > 253) {
+            dog.appears = TRUE;
+            dog.x = LEVEL_MAX;
+        }
+    }
 }
 
 inline void alley_loop() {
@@ -342,7 +444,7 @@ inline void alley_loop() {
     
     //anim_windows();
     check_bincat();
-    //dog_checks();
+    dog_checks();
     
     if (misifu.state == M_FALLING) {
         detect_fall_in_bin();
@@ -390,6 +492,7 @@ void destroy_misifu_data() {
         music = load_midi("ROGERR.MID");
         play_looped_midi(music, 0, -1);
     }
+    set_palette(palette);
 }
 
 /*
