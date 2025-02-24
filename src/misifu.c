@@ -358,7 +358,7 @@ inline void paint_clothes() {
     //clothes.sprite1
     blit(bg, screen, clothes.row1_x, 50, clothes.row1_x, 50, 64, 20);
     blit(bg, screen, clothes.row2_x, 82, clothes.row2_x, 82, 40, 20);
-    blit(bg, screen, misifu.x - 2, misifu.y, misifu.x -2, misifu.y, 32, 40);
+    blit(bg, screen, misifu.x - 2, misifu.y -2, misifu.x -2, misifu.y -2, 32, 42);
     blit(bg, screen, dog.x, DOG_Y, dog.x, DOG_Y, 24, 16);
 
     if ((counter & 1) == 0) {
