@@ -2,7 +2,9 @@
 #include <stdio.h>
 #include "allegro/color.h"
 #include "allegro/gfx.h"
+#include "allegro/inline/draw.inl"
 #include "allegro/midi.h"
+#include "allegro/platform/astdint.h"
 #include "enem.h"
 #include "game.h"
 #include "misifu.h"
@@ -15,6 +17,7 @@ struct clothes {
     unsigned int row2_x;
     BITMAP *sprite1;
     BITMAP *sprite2;
+    uint8_t frames_moving;
 };
 struct bincat {
     uint8_t in_bin;
@@ -49,7 +52,14 @@ struct prota misifu;
 struct dog dog;
 struct clothes clothes;
 struct bincat bincat;
+struct coord {
+    int x;
+    int y;
+};
 PALETTE misifu_palette;
+uint8_t random_value;
+uint8_t opened_window_frames;
+uint8_t opened_window;
 
 
 BITMAP * load_misifu_data() {
@@ -84,12 +94,15 @@ BITMAP * load_misifu_data() {
     
     clothes.row1_x = 225;
     clothes.row2_x = 50;
+    clothes.frames_moving = NONE;
     misifu.offset = OFF_BORED;
     dog.offset = OFF_DOG_WALK;
     dog.direction = DOG_LEFT;
     misifu.x = 65;
     misifu.y = FLOOR_Y;
     dog.appears = FALSE;
+    opened_window_frames = NONE;
+    opened_window = NONE;
         
     return back;
 }
@@ -114,7 +127,6 @@ inline unsigned char is_in_bin() {
 
 inline void check_bincat() {
     // checks if bincat should appear and where
-    int random_value = rand();
     if (bincat.appears == NONE && misifu.in_bin != NONE) {
         bincat.in_bin = random_value % 12;
         // less probable
@@ -323,6 +335,25 @@ void misifu_output() {
 
 }
 
+inline void move_clothes() {
+    clothes.row2_x += 3;
+    clothes.row1_x -=3;
+
+    if (clothes.row2_x > 225) {
+        clothes.row2_x = LEVEL_MIN;
+    }
+    if (clothes.row1_x <= LEVEL_MIN) {
+        clothes.row1_x = 225;
+    }
+
+    if((misifu.draw_additional == CAT_IN_ROPE1 || misifu.draw_additional == CAT_IN_ROPE3)
+                && misifu.x < LEVEL_MAX) {
+        misifu.x += 3;
+    } else if(misifu.draw_additional == CAT_IN_ROPE2 && misifu.x > 1) {
+        misifu.x -=3;
+    }
+}
+
 inline void paint_clothes() {
     //clothes.sprite1
     blit(bg, screen, clothes.row1_x, 50, clothes.row1_x, 50, 64, 20);
@@ -330,22 +361,70 @@ inline void paint_clothes() {
     blit(bg, screen, misifu.x - 2, misifu.y, misifu.x -2, misifu.y, 32, 40);
     blit(bg, screen, dog.x, DOG_Y, dog.x, DOG_Y, 24, 16);
 
-    if((counter & 1) == 0) {
-        ++clothes.row2_x;
-        if (clothes.row2_x > 225) {
-            clothes.row2_x = LEVEL_MIN;
+    if ((counter & 1) == 0) {
+        if(random_value > 235 && clothes.frames_moving == NONE) {
+            clothes.frames_moving = 20;        
         }
-
-        --clothes.row1_x;
-        if (clothes.row1_x <= LEVEL_MIN) {
-            clothes.row1_x = 225;
+        if (clothes.frames_moving != NONE) {
+            --clothes.frames_moving;
+            move_clothes();
         }
     }
    
 }
 
-inline void anim_windows() {
+
+
+struct coord get_window_coords() {
+    struct coord coordinate;
+    coordinate.x = 56 + (opened_window % 4) * 65;
+    coordinate.y = 36 + 32 * ((int) (opened_window / 4)) + 15;
+    return coordinate;
+}
+
+void open_window(uint8_t height, char open_window) {
+    struct coord window_coords = get_window_coords();
     
+    if (open_window == TRUE) {
+        rectfill(screen, window_coords.x, window_coords.y, window_coords.x + 31, window_coords.y - height, makecol(41, 40, 41));
+        rectfill(bg, window_coords.x, window_coords.y, window_coords.x + 31, window_coords.y - height, makecol(41, 40, 41));
+    } else {
+        rectfill(screen, window_coords.x, window_coords.y, window_coords.x + 31, window_coords.y - 8, makecol(86, 255, 255));
+        rectfill(bg, window_coords.x, window_coords.y, window_coords.x + 31, window_coords.y - 8, makecol(86, 255, 255));
+
+        rectfill(screen, window_coords.x, window_coords.y - 8, window_coords.x + 31, window_coords.y - 15, makecol(64, 197, 197));
+        rectfill(bg, window_coords.x, window_coords.y - 8, window_coords.x + 31, window_coords.y - 15, makecol(64, 197, 197));
+    }
+}
+
+inline void anim_windows() {
+    if (opened_window_frames == NONE) {
+        if (random_value > 125) {
+            opened_window = random_value - 125;
+        } else {
+            opened_window = random_value;
+        }
+        if (opened_window < 12) { 
+            // 0 to 11
+            opened_window_frames = 255;
+        }
+    } else {
+        if ((counter & 1) == 0) {
+            --opened_window_frames;
+        
+            if(opened_window_frames == 254) {
+                // open half of the window
+                struct coord window_coords = get_window_coords();
+                // todo do also for bg
+                open_window(8, TRUE);                
+            } else if (opened_window_frames == 200) {
+                open_window(15, TRUE);
+            }
+            if (opened_window_frames == 0) {
+                open_window(15, FALSE);
+            }
+        }
+    }
 }
 
 inline void dog_checks() {
@@ -401,8 +480,6 @@ inline void dog_checks() {
     }
 
     if (dog.appears != TRUE && (counter & 1) == 0) {
-        uint8_t random_value = rand() % 255;
-
         if (random_value > 253) {
             dog.appears = TRUE;
             dog.x = LEVEL_MAX;
@@ -423,17 +500,12 @@ inline void alley_loop() {
         paint_clothes(0);*/
         // now move cat
         if(misifu.state == CAT_IN_ROPE) {
-            if((misifu.draw_additional == CAT_IN_ROPE1 || misifu.draw_additional == CAT_IN_ROPE3)
+            /*if((misifu.draw_additional == CAT_IN_ROPE1 || misifu.draw_additional == CAT_IN_ROPE3)
                 && misifu.x < LEVEL_MAX) {
-                 ++misifu.x;
+                 misifu.x += 3;
             } else if(misifu.draw_additional == CAT_IN_ROPE2 && misifu.x > 1) {
-                --misifu.x;
-                /*if(misifu.x <= LEVEL_MIN) {
-                    misifu.state = FALLING_FLOOR;
-                    misifu.draw_additional = NONE;
-                    ++misifu.y;
-                }*/
-            }
+                misifu.x -=3;
+            }*/
             if(misifu.x >= LEVEL_MAX || misifu.x <= LEVEL_MIN) {
                 misifu.state = FALLING_FLOOR;
                 misifu.draw_additional = NONE;
@@ -442,7 +514,6 @@ inline void alley_loop() {
         }
     }
     
-    //anim_windows();
     check_bincat();
     dog_checks();
     
@@ -460,8 +531,10 @@ inline void alley_loop() {
 }
 
 void misifu_process() {
+    random_value = rand() % 255;
     check_keys();
     alley_loop();
+    anim_windows();
     misifu_output();
     check_fsm();
 
