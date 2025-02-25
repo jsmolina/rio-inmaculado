@@ -8,6 +8,7 @@
 #include "allegro/alcompat.h"
 #include "allegro/color.h"
 #include "allegro/datafile.h"
+#include "allegro/digi.h"
 #include "allegro/gfx.h"
 #include "allegro/keyboard.h"
 #include "allegro/system.h"
@@ -100,6 +101,7 @@ int main(int argc, const char **argv) {
     }
 
     music = load_midi("ROGERR.MID");
+    alleytheme = load_wav("alleytheme.wav");
 
     if (install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, NULL) != 0) {
         die("Error: inicializando sistema de sonido\n%s\n", allegro_error);

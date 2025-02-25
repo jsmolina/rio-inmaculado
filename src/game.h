@@ -32,11 +32,12 @@ extern char yellow_key;
 extern LevelData levels[TOTAL_LEVELS];
 extern BITMAP *player_head, *player_lifebar, *girl, *key_sprite;
 extern MIDI *music;
-extern void draw_lifebar();
+extern SAMPLE *alleytheme;
 
 extern int counter;
 extern BITMAP *bg;
 extern char slow_cpu;
+
 
 // processes user input
 void input();
@@ -50,7 +51,8 @@ void increase_level_and_load();
 void load_levels();
 // opens the current playable level
 void load_level();
-
+void draw_lives();
+void draw_lifebar();
 
 #endif
 

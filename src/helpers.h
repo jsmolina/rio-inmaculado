@@ -36,7 +36,7 @@
 #define ANIM_PUNCH2 2
 #define ANIM_HITTED 6
 #define ANIM_ESPALDA 11
-#define HIT_DURATION 6
+#define HIT_DURATION 4
 #define FLOOR_DURATION 18
 
 #define TOTAL_LEVELS 12

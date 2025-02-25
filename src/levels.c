@@ -342,10 +342,11 @@ void level_processing() {
         break;
         case 4:
             if (key[KEY_SPACE]) {
-                player.curr_sprite = ANIM_ESPALDA;
-                player.moving = LOOKING_WALL;
+
                 if (player.y < 147 && player.x >= 7 && player.x <= 28) {
-                    if (!urinated) {
+                    player.curr_sprite = ANIM_ESPALDA;
+                    player.moving = LOOKING_WALL;
+                    if (urinated == FALSE) {
                         textout_ex(screen, font, "ahhh, mejor asi!", 120, SCREEN_H - 34, makecol(100,255,255), makecol(0,0,0));               
                         textout_ex(screen, font, "largate o te castigo!", 120, SCREEN_H - 26, makecol(194,106,228), makecol(0,0,0));
                         urinated = TRUE;
@@ -355,9 +356,13 @@ void level_processing() {
                             rest(1); // Pequeña pausa para no saturar el CPU
                         }
                     } else {
-                        textout_centre_ex(screen, font, "vas a escribir veces", SCREEN_W / 2, 76, makecol(194,106,228), makecol(0,0,0));
+                        textout_centre_ex(screen, font, "vas a escribir 1 veces", SCREEN_W / 2, 76, makecol(194,106,228), makecol(0,0,0));
                         textout_centre_ex(screen, font, "no entrare al de las chicas", SCREEN_W / 2, 84, makecol(194,106,228), makecol(0,0,0));
                         ///
+                        rest(2000);
+                        while (key[KEY_SPACE]) {
+                            rest(1); // Pequeña pausa para no saturar el CPU
+                        }
                         next_level = 12;
                         load_level();
                         return;

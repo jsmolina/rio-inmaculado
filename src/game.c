@@ -1,4 +1,5 @@
 #include "game.h"
+#include "allegro/digi.h"
 #include "allegro/gfx.h"
 #include "allegro/inline/draw.inl"
 #include "allegro/keyboard.h"
@@ -35,6 +36,7 @@ BITMAP *player_head;
 BITMAP *girl;
 BITMAP *key_sprite;
 BITMAP *player_lifebar;
+SAMPLE *alleytheme;
 char slow_cpu;
 LevelData levels[TOTAL_LEVELS];
 
@@ -109,7 +111,7 @@ void increase_level_and_load() {
     beep_side = IZQUIERDA;
     coursnave_completed = FALSE;
     yellow_key = FALSE;
-    next_level = 15;
+    next_level = 10;
     load_level();
 }
 // draws current player lives
@@ -127,7 +129,7 @@ void game_over() {
 }
 
 void draw_lifebar() {
-    rectfill(screen, 60, SCREEN_H - 30, 94, SCREEN_H - 20, makecol(40, 40, 40));
+    rectfill(screen, 60, SCREEN_H - 30, 88, SCREEN_H - 20, makecol(40, 40, 40));
     blit(player_lifebar, screen, 0, 0, 60, SCREEN_H -30, 2 * player.lifebar, 14);
 }
 
@@ -421,6 +423,11 @@ void load_level() {
             initialX = curr_leveldata.initialX;
             initialY = curr_leveldata.initialY;
         }
+
+        if (next_level == 10) {
+            play_sample(alleytheme, 200, 127, 1000, 0);
+        }
+
         level = next_level;
         player.x = initialX;
         player.y = initialY;

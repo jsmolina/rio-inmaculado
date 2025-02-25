@@ -26,8 +26,10 @@
 #define OFF_DOG_WALK 0
 #define OFF_DOG_FIGHT 2
 
-#define DOG_LEFT 1
-#define DOG_RIGHT 2
+#define MDIR_LEFT 1
+#define MDIR_RIGHT 2
+#define MDIR_UP 64
+#define MDIR_DOWN 128
 
 #define BINCAT_Y 140
 #define BINCAT_Y_LOW 148
