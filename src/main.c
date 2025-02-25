@@ -102,6 +102,8 @@ int main(int argc, const char **argv) {
 
     music = load_midi("ROGERR.MID");
     alleytheme = load_wav("alleytheme.wav");
+    hit = load_wav("hit.wav");
+    dog_theme = load_wav("dog.wav");
 
     if (install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, NULL) != 0) {
         die("Error: inicializando sistema de sonido\n%s\n", allegro_error);
@@ -214,6 +216,8 @@ int main(int argc, const char **argv) {
     destroy_bitmap(player_lifebar);
     destroy_bitmap(girl);
     destroy_bitmap(key_sprite);
+    destroy_sample(alleytheme);
+    destroy_sample(hit);
     unload_enemies();
     destroy_tiles();
     cleanup_data();

@@ -37,6 +37,8 @@ BITMAP *girl;
 BITMAP *key_sprite;
 BITMAP *player_lifebar;
 SAMPLE *alleytheme;
+SAMPLE *dog_theme;
+SAMPLE *hit;
 char slow_cpu;
 LevelData levels[TOTAL_LEVELS];
 

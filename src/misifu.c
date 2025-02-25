@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "allegro/color.h"
+#include "allegro/digi.h"
 #include "allegro/gfx.h"
 #include "allegro/inline/draw.inl"
 #include "allegro/inline/gfx.inl"
@@ -167,6 +168,7 @@ inline void check_bincat() {
 
         // cat falls if cat_in_bin is the same of bincat_in_bin
         if (bincat.in_bin == misifu.in_bin) {
+            play_sample(hit, 200, 127, 1000, 0);
             misifu.state = FALLING_FLOOR;
             misifu.in_bin = NONE;
             //BEEPFX_HIT_2
@@ -453,7 +455,10 @@ inline void anim_windows() {
     } else {
         struct coord window_coords = get_window_coords();
         if (misifu.state == M_FALLING || misifu.state == M_JUMPING) {
-            // TODO window_coords.y - 15;
+            int normalized_window_y = window_coords.y - 15;
+            if (misifu.y >= normalized_window_y && misifu.y <= (normalized_window_y + 24) && misifu.x >= window_coords.x && misifu.x <= (window_coords.x+31)) {
+                textout_ex(screen, font, "  WINDOZE ", 0, 10, makecol(255, 255, 255), makecol(0, 0, 0));    
+            }
         }
         if ((counter & 1) == 0) {
             --opened_window_frames;
@@ -474,6 +479,7 @@ inline void anim_windows() {
                 if(misifu.state != FALLING_FLOOR && misifu.y <= 100 && abs(misifu.x - object.x) < 8 && abs(misifu.y - object.y) < 16) {
                     // sound zap and icon zap
                     misifu.state = FALLING_FLOOR;
+                    play_sample(hit, 200, 127, 1200, 0);
                 } else {
                     if (object.y > 140 || object.y < 2 || object.x > LEVEL_MAX || object.x < LEVEL_MIN ) {
                         object.direction = NONE;
@@ -548,7 +554,10 @@ inline void dog_checks() {
 
         if (dog.x <= LEVEL_MIN) {
             dog.appears = FALSE;
+            stop_sample(dog_theme);
+            
             if (misifu.state == M_FIGHTING) {
+                stop_sample(dog_theme);
                 misifu.state = FALLING_FLOOR;
                 player.lives--;
                 draw_lives();
@@ -558,6 +567,7 @@ inline void dog_checks() {
 
     if (dog.appears != TRUE && (counter & 1) == 0) {
         if (random_value > 250) {
+            play_sample(dog_theme, 50, 127, 1000, 1);
             dog.appears = TRUE;
             dog.x = LEVEL_MAX;
         }

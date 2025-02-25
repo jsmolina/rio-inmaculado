@@ -261,6 +261,22 @@ void move_with_level_limits() {
                 maxY = 151;
             }
             break;
+        case 10:
+            if (player.x < 252 && player.x > 27) {
+                minY = 145;
+                maxY = 151;
+                if (player.y < minY) {
+                    if (player.x > 242) {
+                        minX = 252;
+                    } else if (player.x < 37) {
+                        maxX = 27;
+                    }                    
+                }
+            } else {
+                minY = 140;
+                maxY = 151;
+            }
+            break;
         default:
             minY = 140;
             maxY = 151;            
@@ -382,6 +398,16 @@ void level_processing() {
         if (key[KEY_SPACE] && yellow_key != TRUE) {
             if (player.y < 110 && player.x >= 20 && player.x <= 45) {
                 yellow_key = TRUE;
+            }
+        }
+        break;
+        case 10:
+        if (key[KEY_SPACE]) {
+            //76, 84, 92
+            if (player.y < 147 && player.x >= 28 && player.x <= 252) {
+                next_level = MISIFU_ALLEY;
+                load_level();
+                return;
             }
         }
         break;

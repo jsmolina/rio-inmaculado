@@ -33,6 +33,8 @@ extern LevelData levels[TOTAL_LEVELS];
 extern BITMAP *player_head, *player_lifebar, *girl, *key_sprite;
 extern MIDI *music;
 extern SAMPLE *alleytheme;
+extern SAMPLE *hit;
+extern SAMPLE *dog_theme;
 
 extern int counter;
 extern BITMAP *bg;
