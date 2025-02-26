@@ -30,6 +30,9 @@
 #define MDIR_RIGHT 2
 #define MDIR_UP 64
 #define MDIR_DOWN 128
+#define HOLES_CONN 4
+#define HOLES_POS 16
+
 
 #define BINCAT_Y 140
 #define BINCAT_Y_LOW 148
@@ -37,6 +40,9 @@
 #define HIGHER_BIN2_X 70
 #define BIN_HIGH_Y 128
 #define BIN_LOW_Y 138
+
+#define MEXIT_END 1
+#define MEXIT_SUCCESS 2
 
 #define WALK_CYCLE 8  // Cambia el sprite cada 8 píxeles
 
@@ -49,7 +55,7 @@
 
 
 #define LEVEL_MAX 265
-#define LEVEL_MIN 30
+#define LEVEL_MIN 26
 #define FALLING_FLOOR 69
 
 #define CAT_IN_ROPE 6
@@ -62,7 +68,8 @@
 #define FLOOR_Y 165
 #define DOG_Y 174
 
-BITMAP * load_misifu_data();
+BITMAP * load_misifu_alley();
+BITMAP * load_misifu_cheese();
 void misifu_process();
 void misifu_output();
 void destroy_misifu_data();

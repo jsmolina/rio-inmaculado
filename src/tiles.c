@@ -1,4 +1,5 @@
 #include "tiles.h"
+#include "helpers.h"
 #include "allegro/color.h"
 #include "allegro/gfx.h"
 #include "allegro/inline/draw.inl"
@@ -32,8 +33,7 @@ BITMAP * load_background(char * filename) {
     char current;
 
     if (!in_file) { 
-        allegro_message("ops, file <%s> can't be read", filename);
-        exit(1); 
+        die("ops, file <%s> can't be read", filename);
     }
     
     short start_csv = 0;

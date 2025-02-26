@@ -23,6 +23,7 @@ unsigned char level_enemies = 0;
 unsigned char starting_level_counter = 0;
 char coursnave_completed = FALSE;
 char yellow_key = FALSE;
+char blue_key = FALSE;
 char locked_elevator;
 char urinated;
 MIDI *music;
@@ -35,6 +36,7 @@ BITMAP *tiles;
 BITMAP *player_head;
 BITMAP *girl;
 BITMAP *key_sprite;
+BITMAP *key_sprite_blue;
 BITMAP *player_lifebar;
 SAMPLE *alleytheme;
 SAMPLE *dog_theme;
@@ -113,13 +115,14 @@ void increase_level_and_load() {
     beep_side = IZQUIERDA;
     coursnave_completed = FALSE;
     yellow_key = FALSE;
+    blue_key = FALSE;
     next_level = 10;
     load_level();
 }
 // draws current player lives
 void draw_lives() {
     //blit(bg, screen, 20, 20, 20, 20, 50, 20);
-    rectfill(screen, 20, SCREEN_H - 30, 60, SCREEN_H - 20, makecol(40, 40, 40));
+    rectfill(screen, 20, SCREEN_H - 30, 55, SCREEN_H - 20, makecol(40, 40, 40));
     unsigned int i;
     for (i = 0; i < player.lives; i++) {
         draw_sprite(screen, player_head, 20 + i * 10, SCREEN_H - 30);
@@ -267,6 +270,10 @@ void output() {
         draw_sprite(screen, key_sprite, 34, y_pos);
     }
 
+    if (blue_key == TRUE) {
+        draw_sprite(screen, key_sprite_blue, 64, SCREEN_H - 18);
+    }
+
     // draw in order depending on Y
     if (player_over_all_enemies(player.y)) {
         draw_player();
@@ -387,7 +394,6 @@ void load_level() {
         destroy_bitmap(bg2);
     }
     if (bg) {
-        // TODO might crash
         destroy_bitmap(bg);
     }
 
@@ -401,7 +407,10 @@ void load_level() {
         bg = load_level_background(next_level);
         level = 12;
     } else if (next_level == MISIFU_ALLEY) {
-        bg = load_misifu_data();
+        bg = load_misifu_alley();
+        level = next_level;
+    } else if (next_level == MISIFU_CHEESE) {
+        bg = load_misifu_cheese();
         level = next_level;
     } else if (next_level >= 1) {
         bg = load_level_background(next_level);
@@ -426,8 +435,8 @@ void load_level() {
             initialY = curr_leveldata.initialY;
         }
 
-        if (next_level == 10) {
-            play_sample(alleytheme, 200, 127, 1000, 0);
+        if (next_level == 10 && blue_key != TRUE) {
+            play_sample(alleytheme, 150, 127, 1000, 0);
         }
 
         level = next_level;

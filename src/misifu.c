@@ -30,6 +30,10 @@ struct bincat {
     uint8_t appears;
     BITMAP *sprite;
 };
+struct holes {
+    int x;
+    int y;
+};
 
 struct object {
     int x;
@@ -76,11 +80,40 @@ uint8_t opened_window_frames;
 uint8_t opened_window;
 uint8_t exit_misifu;
 unsigned char original_lives;
+BITMAP *heart;
 
+struct holes holes_pos[HOLES_POS] = {
+    26,140, 
+    42,122, 
+    52,95, 
+    90, 132, 
+    156, 138, 
+    139, 117,
+    81, 98,
+    139, 95,
+    162, 84,
+    66,77,
+    31, 83,
+    26, 50,
+    58, 42,
+    74, 21,
+    97,21,
+    115, 31
+};
 
-BITMAP * load_misifu_data() {
+struct holes holes_conn[HOLES_CONN] = {
+    1, 6,
+    4, 8,
+    9, 12,
+    3, 5,
+};
+
+BITMAP *load_misifu_alley() {
     char file_buffer[16];
+
+    stop_sample(alleytheme);
     BITMAP *back = load_pcx("alley.pcx", misifu_palette);
+    heart = load_pcx("HEART.PCX", NULL);
     original_lives = player.lives;
     set_palette(misifu_palette);
     for (int i = 0; i < 7; i++) {
@@ -119,10 +152,24 @@ BITMAP * load_misifu_data() {
     dog.direction = MDIR_LEFT;
     misifu.x = 65;
     misifu.y = FLOOR_Y;
+    misifu.state = FALLING_FLOOR;
     dog.appears = FALSE;
     opened_window_frames = NONE;
     opened_window = NONE;
         
+    return back;
+}
+
+BITMAP * load_misifu_cheese() {
+    BITMAP *back = load_pcx("cheese.pcx", misifu_palette);
+    opened_window_frames = NONE;
+    opened_window = NONE;
+    misifu.y = FLOOR_Y;
+    dog.appears = FALSE;
+    dog.offset = OFF_DOG_WALK;
+    dog.direction = MDIR_LEFT;
+    bincat.in_bin = NONE;
+    bincat.appears = NONE;
     return back;
 }
 
@@ -249,13 +296,13 @@ void check_fsm() {
 
             misifu.offset = OFF_JRIGHT;
             if((key[KEY_RIGHT])) {
-                ++misifu.x;
+                misifu.x += 1;
             }
         }  else if(misifu.draw_additional == M_JUMP_LEFT && misifu.x > LEVEL_MIN) {
             misifu.offset = OFF_JRIGHT;
 
             if((key[KEY_LEFT])) {
-                --misifu.x;
+                misifu.x -=1;
             }
         } else {
             misifu.offset = OFF_JUMPING;
@@ -298,11 +345,27 @@ void check_keys() {
     if(misifu.state == M_FIGHTING) {
         return;
     }
+    if (key[KEY_4_PAD])  {
+        misifu.state = CAT_IN_ROPE;
+        --misifu.x;
+    }
+    if (key[KEY_6_PAD])  {
+        misifu.state = CAT_IN_ROPE;
+        ++misifu.x;
+    }
+    if (key[KEY_8_PAD]) {
+        misifu.state = CAT_IN_ROPE;
+        --misifu.y;
+    }
+    if (key[KEY_2_PAD]) {
+        misifu.state = CAT_IN_ROPE;
+        ++misifu.y;
+    }
 
     if((!(key[KEY_UP]) && !(key[KEY_DOWN]))) {
         misifu.last_key = NONE;
     }
-    if ((misifu.last_key != KEY_UP) && (key[KEY_UP]) && (misifu.y > 0) && (misifu.state == NONE || misifu.state == M_WALKING_LEFT || misifu.state == M_WALKING_RIGHT || misifu.state == CAT_IN_ROPE || misifu.state ==CAT_ON_HIGH) ) {
+    if ((misifu.last_key != KEY_UP) && (key[KEY_UP]) && (misifu.y > 0) && (misifu.state == NONE || misifu.state == M_WALKING_LEFT || misifu.state == M_WALKING_RIGHT || misifu.state == CAT_IN_ROPE || misifu.state == CAT_ON_HIGH) ) {
         misifu.state = M_JUMPING;
         misifu.in_bin = NONE;
         misifu.initial_jump_y = misifu.y;
@@ -311,7 +374,7 @@ void check_keys() {
 
         if((key[KEY_RIGHT]) && misifu.x < LEVEL_MAX ) {
             misifu.draw_additional = M_JUMP_RIGHT;
-        } else if((key[KEY_LEFT]) && misifu.x > 0 ) {
+        } else if((key[KEY_LEFT]) && misifu.x > LEVEL_MIN ) {
             misifu.draw_additional = M_JUMP_LEFT;
         } else {
             misifu.draw_additional = M_JUMP_UP;
@@ -330,14 +393,31 @@ void check_keys() {
         misifu.in_bin = NONE;
         ++misifu.y;
     }
-    if (key[KEY_X]) {
-        exit_misifu = 1;
+
+    if (key[KEY_ESC]) {
+        exit_misifu = MEXIT_END;
+    }
+    if (key[KEY_1]) {
+        next_level = MISIFU_CHEESE;
     }
 }
 
+void misifu_clean() {
+    if (level == MISIFU_ALLEY) {
+        blit(bg, screen, clothes.row1_x, 50, clothes.row1_x, 50, 64, 20);
+        blit(bg, screen, clothes.row2_x, 82, clothes.row2_x, 82, 40, 20);
+        blit(bg, screen, object.x, object.y, object.x, object.y, 16, 14);
+
+    }
+    blit(bg, screen, misifu.x - 2, misifu.y -2, misifu.x - 2, misifu.y - 2, 32, 42);
+    blit(bg, screen, dog.x - 2, DOG_Y, dog.x - 2, DOG_Y, 30, 16);
+}
+
 void misifu_output() {   
-    draw_sprite(screen, clothes.sprite2, clothes.row1_x, 50);
-    draw_sprite(screen, clothes.sprite1, clothes.row2_x, 82);
+    if (level == MISIFU_ALLEY) {
+        draw_sprite(screen, clothes.sprite2, clothes.row1_x, 50);
+        draw_sprite(screen, clothes.sprite1, clothes.row2_x, 82);
+    }
     if (bincat.appears != NONE) {
         draw_sprite(screen, bincat.sprite, bincat.x, bincat.y);
     }
@@ -382,11 +462,6 @@ inline void move_clothes() {
 
 inline void paint_clothes() {
     //clothes.sprite1
-    blit(bg, screen, clothes.row1_x, 50, clothes.row1_x, 50, 64, 20);
-    blit(bg, screen, clothes.row2_x, 82, clothes.row2_x, 82, 40, 20);
-    blit(bg, screen, misifu.x - 2, misifu.y -2, misifu.x -2, misifu.y -2, 32, 42);
-    blit(bg, screen, dog.x, DOG_Y, dog.x, DOG_Y, 24, 16);
-    blit(bg, screen, object.x, object.y, object.x, object.y, 16, 14);
 
     if ((counter & 1) == 0) {
         if(random_value > 235 && clothes.frames_moving == NONE) {
@@ -457,7 +532,8 @@ inline void anim_windows() {
         if (misifu.state == M_FALLING || misifu.state == M_JUMPING) {
             int normalized_window_y = window_coords.y - 15;
             if (misifu.y >= normalized_window_y && misifu.y <= (normalized_window_y + 24) && misifu.x >= window_coords.x && misifu.x <= (window_coords.x+31)) {
-                textout_ex(screen, font, "  WINDOZE ", 0, 10, makecol(255, 255, 255), makecol(0, 0, 0));    
+                next_level = MISIFU_CHEESE;
+                return;
             }
         }
         if ((counter & 1) == 0) {
@@ -575,11 +651,6 @@ inline void dog_checks() {
 }
 
 inline void alley_loop() {
-    char buff[15];
-    sprintf(buff, "x:%d,y:%d", misifu.x, misifu.y);
-    textout_ex(screen, font, "              ", 0, 0, makecol(255, 255, 255), makecol(0, 0, 0));    
-    textout_ex(screen, font, buff, 0, 0, makecol(255, 255, 255), makecol(0, 0, 0));    
-
     if((counter & 1) == 0) {
         paint_clothes();
         /*paint_bricks(1);
@@ -600,10 +671,9 @@ inline void alley_loop() {
             }
         }
     }
-    
+
     check_bincat();
-    dog_checks();
-    
+
     if (misifu.state == M_FALLING) {
         detect_fall_in_bin();
     }
@@ -619,6 +689,7 @@ inline void alley_loop() {
 
 
 
+
 void destroy_misifu_data() {
     // todo destroy sprite
     for (int i = 0; i < 8; i++) {
@@ -631,6 +702,7 @@ void destroy_misifu_data() {
     destroy_bitmap(clothes.sprite2);
     destroy_bitmap(bincat.sprite);
     destroy_bitmap(object.sprite);
+    destroy_bitmap(heart);
 
     if (music) {
         stop_midi();
@@ -654,17 +726,74 @@ if (misifu.draw_additional == CAT_IN_BIN && misifu.y < FLOOR_Y && misifu.in_bin 
 
 void misifu_process() {
     random_value = rand() % 255;
-    check_keys();
-    alley_loop();
-    anim_windows();
-    misifu_output();
-    check_fsm();
 
-    if (player.lives == 0) {
-        exit_misifu = 1;
+    check_keys();
+    if (level == MISIFU_ALLEY) {
+        misifu_clean();
+        alley_loop();
+        dog_checks();
+        anim_windows();
+    } else if (level == MISIFU_CHEESE) {
+        // cheez loop
+        dog_checks();
+        misifu_clean();
+        for (int h = 0; h < HOLES_POS; h++) {
+            if (misifu.state == M_FALLING) {
+                int right_x = (holes_pos[h].x + 6);
+                int down_y = (holes_pos[h].y + 4);
+                if(misifu.x >= holes_pos[h].x && misifu.x <= right_x && misifu.y >= holes_pos[h].y && misifu.y <= down_y) {
+                    misifu.state = CAT_IN_ROPE;
+                    misifu.draw_additional = h;
+                    misifu.x = holes_pos[h].x;
+                    misifu.y = holes_pos[h].y;
+                    
+                    if (misifu.x == 26 && misifu.y == 50) {
+                        blue_key = TRUE;                
+                        exit_misifu = MEXIT_SUCCESS;
+                    }                
+                }
+            }
+        }
+        if (key[KEY_SPACE] && misifu.state == CAT_IN_ROPE)  {
+            for (int ii = 0; ii < HOLES_CONN; ii++) {
+                if (misifu.draw_additional == holes_conn[ii].x) {
+                    int new_hole = holes_conn[ii].y;
+                    misifu.draw_additional = new_hole;
+                    misifu.x = holes_pos[new_hole].x;
+                    misifu.y = holes_pos[new_hole].y;
+                }
+            }
+        }
+    }
+    
+    if (next_level == level) {
+        misifu_output();
+        check_fsm();
+    } else {
+        stop_sample(dog_theme);
+        load_level();
     }
 
-    if (exit_misifu == 1) {
+    if (player.lives == 0) {
+        exit_misifu = MEXIT_END;
+    }
+    if (exit_misifu == MEXIT_SUCCESS) {
+        stop_sample(dog_theme);
+        clear_to_color(screen, 0);
+        for (int i = 0; i < 6; i++) {
+            exit_misifu = MEXIT_END;
+            draw_sprite(screen, heart, 82 , 170 - 24 * i);
+            draw_sprite(screen, heart, 110, 170 - 24 * i);
+            draw_sprite(screen, heart, 225, 170 - 24 * i);
+            draw_sprite(screen, heart, 253, 170 - 24 * i);
+            rest(100);
+            vsync();
+        }
+        rest(1000);
+    }
+
+    if (exit_misifu == MEXIT_END) {
+        stop_sample(dog_theme);
         destroy_misifu_data();
         next_level = 10;
         player.lives = original_lives;
@@ -672,7 +801,9 @@ void misifu_process() {
         FILE *file;
         char line[61];
         file = fopen("shareware.txt", "r");
-
+        if (!file) {
+            die("Cannot open file shareware.txt");
+        }
         set_gfx_mode(GFX_TEXT, 80, 25, 0, 0);
         while (fgets(line, sizeof(line), file)) {
             printf("\033[1;37;41m");
@@ -682,8 +813,8 @@ void misifu_process() {
             printf("\033[0m");
         }
         printf("\nPress ENTER to continue\n");
-        printf("C:\\>exit");
-        while (!key[KEY_ENTER]) {
+        printf("T:\\NOVELL\\MISIFU>exit");
+        while (!key[KEY_ENTER] && !key[KEY_SPACE] && !key[KEY_ESC]) {
             rest(1);
         }
 

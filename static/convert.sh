@@ -72,9 +72,12 @@ magick player_head.png -colors 256 -type truecolor LIVES.PCX
 magick lifebar.png -colors 16 -type truecolor LIFEBAR.PCX
 echo "Converting key..."
 magick key.png -colors 16 -type truecolor KEY.PCX
+magick blue_key.png -colors 16 -type truecolor BLUE_KEY.PCX
 
 echo "Converting misifu things..."
 magick alley.png -colors 256 -depth 8 ALLEY.PCX
+magick cheese.png -colors 256 -depth 8 CHEESE.PCX
+magick heart.png -colors 256 -depth 8 HEART.PCX
 magick clothes_sprites.png -colors 256 -type truecolor CLOTHES1.PCX
 magick clothes_sprites2.png -colors 256 -type truecolor CLOTHES2.PCX
 magick bincat.png -colors 256 -type truecolor BINCAT.PCX
@@ -107,7 +110,7 @@ magick bege.png -colors 256 -depth 8 bege.pcx
 
 pwd
 echo "Compress..."
-./dat2 bege.pcx main*.pcx enem*.pcx tiles.pcx bg*.tmx LIVES.PCX LIFEBAR.PCX GIRL1.PCX KEY.PCX ROGERR.MID alleycat.mid ALLEY.PCX CLOTHES*.PCX cat*.PCX dog*.PCX BINCAT.PCX PHONE.PCX alleytheme.wav hit.wav dog.wav shareware.txt levels.csv
+./dat2 bege.pcx main*.pcx enem*.pcx tiles.pcx bg*.tmx LIVES.PCX LIFEBAR.PCX GIRL1.PCX KEY.PCX BLUE_KEY.PCX ROGERR.MID alleycat.mid ALLEY.PCX CHEESE.PCX HEART.PCX CLOTHES*.PCX cat*.PCX dog*.PCX BINCAT.PCX PHONE.PCX alleytheme.wav hit.wav dog.wav shareware.txt levels.csv
 
 echo "Removing generated pcx"
 rm enem*.pcx
@@ -116,12 +119,14 @@ rm bege.pcx
 rm cat*.PCX
 rm CLOTHES*.PCX
 rm ALLEY.PCX
+rm CHEESE.PCX
 rm BINCAT.PCX
 rm KEY.PCX
+rm BLUE_KEY.PCX
 rm LIFEBAR.PCX
 rm LIVES.PCX
 rm GIRL1.PCX
 rm tiles.pcx
 rm dog*.PCX
 rm PHONE.PCX
-
+rm HEART.PCX

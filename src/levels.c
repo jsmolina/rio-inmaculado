@@ -39,7 +39,7 @@ inline unsigned char move_to_level_if_needed() {
     if (player.y < 142) {
         if (key[KEY_SPACE]) {
             // for doors stays on same level but with subdoors
-            if (is_on_door(curr_leveldata.door1Pos)) {
+            if (is_on_door(curr_leveldata.door1Pos) && (level != 10 || blue_key == TRUE)) {
                 next_level = curr_leveldata.door1;
                 
                 return TRUE;
@@ -277,12 +277,15 @@ void move_with_level_limits() {
                 maxY = 151;
             }
             break;
+        case 11:
+            minY = 120;
+            maxY = 151;
+        break;
         default:
             minY = 140;
             maxY = 151;            
     }
     if (level == 8 && !coursnave_completed) {
-        // TODO coursnave
         level8_coursnave();
         return;
     } else {

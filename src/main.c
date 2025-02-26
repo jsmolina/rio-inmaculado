@@ -60,7 +60,7 @@ static void fps_proc(void) {
 
 END_OF_STATIC_FUNCTION(fps_proc);
 
-
+// unos kinkis te han robado la vespino
 int main(int argc, const char **argv) {
     char file_buffer[14];
     BITMAP *bmp;
@@ -126,6 +126,7 @@ int main(int argc, const char **argv) {
     player_lifebar = load_pcx("LIFEBAR.PCX", NULL);
     girl = load_pcx("GIRL1.PCX", NULL);
     key_sprite = load_pcx( "KEY.PCX", NULL );
+    key_sprite_blue = load_pcx( "BLUE_KEY.PCX", NULL );
 
     // pre load enemies sprites
     init_level_enemies(0, 300, TRUE);
@@ -161,10 +162,10 @@ int main(int argc, const char **argv) {
 
         while (0 == update_count) {
             rest(0);
-            if (key[KEY_ESC]) {
+            /*if (key[KEY_ESC] && level != MISIFU_ALLEY && level != MISIFU_CHEESE) {
                 exit_game = 1;
                 break;
-            }
+            }*/
             vsync();
         }
         update_count = 0;
@@ -202,7 +203,7 @@ int main(int argc, const char **argv) {
             vsync();
         }
 
-        if (key[KEY_ESC]) {
+        if (key[KEY_ESC] && level != MISIFU_ALLEY && level != MISIFU_CHEESE) {
             exit_game = 1;
         }
 
@@ -216,6 +217,7 @@ int main(int argc, const char **argv) {
     destroy_bitmap(player_lifebar);
     destroy_bitmap(girl);
     destroy_bitmap(key_sprite);
+    destroy_bitmap(key_sprite_blue);
     destroy_sample(alleytheme);
     destroy_sample(hit);
     unload_enemies();
