@@ -52,3 +52,4 @@ clean:
 	rm -rf ${DISTDIR}
 	rm -f ${OBJS}
 	rm -rf ${STATICDIR}/*.pcx
+	touch ${STATICDIR}/data.dat

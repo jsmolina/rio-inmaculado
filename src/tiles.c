@@ -1,8 +1,15 @@
 #include "tiles.h"
+#include "helpers.h"
+#include "allegro/color.h"
 #include "allegro/gfx.h"
+#include "allegro/inline/draw.inl"
+#include "allegro/palette.h"
 #include "allegro/system.h"
 #include <stdio.h>
 #include <stdlib.h>
+
+PALETTE palette;
+
 
 struct coords get_tile_coords(int tile_number) {
     struct coords result;
@@ -11,9 +18,8 @@ struct coords get_tile_coords(int tile_number) {
 
     return result;
 }
-
 inline void load_tiles() {
-    tiles = load_pcx("tiles.pcx", NULL);
+    tiles = load_pcx("tiles.pcx", palette);
 }
 
 inline void destroy_tiles() {
@@ -22,12 +28,12 @@ inline void destroy_tiles() {
 
 BITMAP * load_background(char * filename) {
     BITMAP * background = create_bitmap(SCREEN_W, SCREEN_H);
+    rectfill(background, 0, 0, SCREEN_W, SCREEN_H, makecol(40, 40, 40));
     FILE *in_file  = fopen(filename, "r");
     char current;
 
     if (!in_file) { 
-        allegro_message("ops, file <%s> can't be read", filename);
-        exit(1); 
+        die("ops, file <%s> can't be read", filename);
     }
     
     short start_csv = 0;

@@ -2,7 +2,12 @@
 #include <allegro.h>
 #include <allegro/gfx.h>
 #include <math.h>
+#include <stdarg.h>
 #include <stdio.h>
+
+#include <pc.h>
+#include <dos.h>
+
 
 
 
@@ -38,23 +43,25 @@ char is_cpu_slow() {
     }
 }
 
-void cargar_niveles(const char* nombre_archivo) {
-    FILE* archivo = fopen(nombre_archivo, "r");
-    if (archivo == NULL) {
-        printf("No se pudo abrir el archivo %s\n", nombre_archivo);
-        return;
-    }
+void die(const char *format, ...) {
+    va_list args;
+    va_start(args, format);
+    vprintf(format, args);
+    va_end(args);
+    set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
+    chdir("..");
+    exit(1);
+}
 
-    /*while (fscanf(archivo, "%d,%d,%d,%d,%d,%d", 
-                  &niveles[total_niveles].nivel,
-                  &niveles[total_niveles].puertas[0],
-                  &niveles[total_niveles].puertas[1],
-                  &niveles[total_niveles].puertas[2],
-                  &niveles[total_niveles].puertas[3],
-                  &niveles[total_niveles].num_enemigos) == 6) {
-        total_niveles++;
-        if (total_niveles >= MAX_NIVELES) break;
-    }*/
-
-    fclose(archivo);
+void beep(int frequency, int duration) {
+    int div = 1193180 / frequency;
+    
+    outportb(0x43, 0xb6);
+    outportb(0x42, div & 0xff);
+    outportb(0x42, div >> 8);
+    
+    outportb(0x61, inportb(0x61) | 3);
+    
+    delay(duration);    
+    outportb(0x61, inportb(0x61) & 0xfc);
 }
