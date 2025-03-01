@@ -710,7 +710,8 @@ void destroy_misifu_data() {
         music = load_midi("ROGERR.MID");
         play_looped_midi(music, 0, -1);
     }
-    set_palette(palette);
+ 
+
 }
 
 /*
@@ -818,11 +819,11 @@ void misifu_process() {
             rest(1);
         }
 
-        set_color_depth(15);
-        //try GFX_MODEX
-        if(set_gfx_mode(GFX_AUTODETECT, 320, 240, 0, 0) != 0) {
+        set_color_depth(8);
+        if(set_gfx_mode(GFX_MODEX, 320, 240, 0, 0) != 0) {
             die("error setting 320x240 16bpp: %s", allegro_error);
         }
+        set_palette(palette);
 
         load_level();
         return;
