@@ -116,7 +116,7 @@ void increase_level_and_load() {
     coursnave_completed = FALSE;
     yellow_key = FALSE;
     blue_key = FALSE;
-    next_level = 10;
+    next_level = 1;
     load_level();
 }
 // draws current player lives
@@ -398,7 +398,11 @@ void load_level() {
     }
 
     if (next_level == 0) {
-        bg = load_pcx("bege.pcx", NULL);
+        //bg = load_pcx("bege.pcx", NULL);
+        bg = load_level_background(0);
+        textout_ex(bg, font, "Rio Immaculado", SCREEN_W / 2 - 40, 60, makecol(255, 255, 255), -1);
+        textout_ex(bg, font, "Space to start", SCREEN_W / 2 - 40, 80, makecol(156, 176, 239), -1);
+
         level_enemies = 0;
         player.lives = 3;
         player.lifebar = 10;

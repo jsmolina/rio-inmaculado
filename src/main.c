@@ -75,7 +75,7 @@ int main(int argc, const char **argv) {
     install_timer();
 
     //bmp = create_bitmap(640, 480);
-    set_color_conversion(COLORCONV_KEEP_ALPHA);
+    set_color_conversion(COLORCONV_NONE);
     // Switch to graphics mode, 320x200.
     set_color_depth(8);
 
@@ -88,15 +88,15 @@ int main(int argc, const char **argv) {
     //set_palette(desktop_palette);
 
     //set_color_depth(desktop_color_depth());
-    slow_cpu = is_cpu_slow();
+    slow_cpu = 1;
     clear_to_color(screen, 0);
     textout_centre_ex(screen, font, "Loading Instituto Rio Immaculado...", SCREEN_W / 2, SCREEN_H / 2, makecol(255,255,255), -1);
     extract_data(); // todo mover despues de textout
 
     load_levels();
-    set_color_depth(15);
+    set_color_depth(8);
     //try GFX_MODEX
-    if(set_gfx_mode(GFX_AUTODETECT, 320, 240, 0, 0) != 0) {
+    if(set_gfx_mode(GFX_MODEX, 320, 240, 0, 0) != 0) {
         die("error setting 320x240 16bpp: %s", allegro_error);
     }
 
@@ -113,6 +113,9 @@ int main(int argc, const char **argv) {
     srand(time(NULL));
     // load tilemap
     load_tiles();
+    palette[0].r = 10;
+    palette[0].g = 10;
+    palette[0].b = 10;
     set_pallete(palette);
 
     for (int i = 0; i < 12; i++) {
@@ -122,11 +125,27 @@ int main(int argc, const char **argv) {
             die("Cannot load %s", file_buffer);
         }
     }
-    player_head = load_pcx( "LIVES.PCX", NULL );
+    player_head = load_pcx( "HEAD.PCX", NULL );
     player_lifebar = load_pcx("LIFEBAR.PCX", NULL);
-    girl = load_pcx("GIRL1.PCX", NULL);
+    girl = load_pcx("GIRL.PCX", NULL);
     key_sprite = load_pcx( "KEY.PCX", NULL );
     key_sprite_blue = load_pcx( "BLUE_KEY.PCX", NULL );
+
+    if (!player_head) {
+        die("cannot load head");
+    }
+    if (!player_lifebar) {
+        die("cannot load player_lifebar");
+    }
+    if (!girl) {
+        die("cannot load girl");
+    }
+    if (!key_sprite) {
+        die("cannot load key_sprite");
+    }
+    if (!key_sprite_blue) {
+        die("cannot load key_sprite_blue");
+    }
 
     // pre load enemies sprites
     init_level_enemies(0, 300, TRUE);
