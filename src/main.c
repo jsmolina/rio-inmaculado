@@ -148,7 +148,7 @@ int main(int argc, const char **argv) {
     }
 
     // pre load enemies sprites
-    init_level_enemies(0, 300, TRUE);
+    init_level_enemies(300, TRUE);
     // will load menu
     next_level = 0;
     load_level();

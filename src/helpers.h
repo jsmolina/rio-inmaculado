@@ -95,7 +95,7 @@ typedef struct  {
     unsigned int left; 
     unsigned int right;
 
-    unsigned int total_enemies;
+    int total_enemies;
 
     unsigned int initialX;
     unsigned int initialY;

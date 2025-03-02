@@ -138,7 +138,6 @@ void level8_coursnave() {
         beep(2000, 20);
         rest(1000);
         next_level = 7;
-        load_level();
         return;
     } else if (missed_beeps == 4) {
         textout_ex(screen, font, "REPITES!", 180, 80, makecol(255,79, 0), makecol(0, 0, 0));
@@ -148,7 +147,6 @@ void level8_coursnave() {
         beep_count = -1;
         missed_beeps = 0;
         beep_side = IZQUIERDA;
-        load_level();
         return;
     }
 
@@ -314,11 +312,10 @@ void loop_castigo() {
     int index = 0;
     int key2;
     
-    clear_keybuf(); // Limpia el buffer del teclado
-    textout_ex(screen, font, "no entrare al de las chicas", 21, 35, makecol(194,106,228), -1);
+    textout_ex(screen, font, "no entrare al de las chicas", 21, 35, makecol(0,0,0), -1);
 
     char compar[] = "no entrare al de las chicas";
-    char buf[] =    "                           ";
+    char buf[] =    "                            ";
     while (index < 27) {
         if (keypressed()) {
             key2 = readkey();
@@ -336,12 +333,11 @@ void loop_castigo() {
   
         }
         
-        textout_ex(screen, font, buf, 21, 51, makecol(50,125,125), -1);
+        textout_ex(screen, font, buf, 21, 51, makecol(0,0,0), -1);
         rest(1); 
     }
     //castigo = CASTIGO_FINALIZADO;
     next_level = 3;
-    load_level();
     return;
 }
 
@@ -378,12 +374,11 @@ void level_processing() {
                         textout_centre_ex(screen, font, "vas a escribir 1 veces", SCREEN_W / 2, 76, makecol(194,106,228), makecol(0,0,0));
                         textout_centre_ex(screen, font, "no entrare al de las chicas", SCREEN_W / 2, 84, makecol(194,106,228), makecol(0,0,0));
                         ///
-                        rest(2000);
+                        rest(500);
                         while (key[KEY_SPACE]) {
                             rest(1); // Pequeña pausa para no saturar el CPU
                         }
                         next_level = 12;
-                        load_level();
                         return;
                     }
 
@@ -409,7 +404,6 @@ void level_processing() {
             //76, 84, 92
             if (player.y < 147 && player.x >= 28 && player.x <= 252) {
                 next_level = MISIFU_ALLEY;
-                load_level();
                 return;
             }
         }

@@ -23,7 +23,6 @@ extern unsigned char level;
 extern unsigned char sub_level;
 extern unsigned char next_level;
 extern unsigned char starting_level_counter;
-extern unsigned char level_enemies;
 extern spritePos player;
 extern char locked_elevator;
 extern char urinated;
