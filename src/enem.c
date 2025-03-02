@@ -43,7 +43,7 @@ void unload_enemies() {
     }
 }
 
-void init_level_enemies(int maxX, char first_load) {
+void init_level_enemies(int maxX, int first_load) {
     for (int ec = 0; ec < MAX_ENEMIES; ec++) {
         if (ec < levels[level].total_enemies) {
             enemies[ec].is_active = TRUE;
