@@ -136,8 +136,7 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
 
     int random_choice = rand() % 50;
     char enem_has_moved = FALSE;
-    // remove TODO    
-    char buff[24];
+    // TODO: enemy should not tresspass hero
 
     if (point_distance(playr->x, enem->targetX) != FIGHT_DISTANCE || enem->targetX == FALSE) {
         if (random_choice == 8) {
