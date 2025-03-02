@@ -72,8 +72,8 @@ echo "Converting player head..."
 magick player_head.png -colors 256 -type truecolor LIVES.PCX
 magick lifebar.png -colors 16 -type truecolor LIFEBAR.PCX
 echo "Converting key..."
-magick key.png -colors 16 -type truecolor KEY.PCX
-magick blue_key.png -colors 16 -type truecolor BLUE_KEY.PCX
+#magick key.png -colors 16 -type truecolor KEY.PCX
+#magick blue_key.png -colors 16 -type truecolor BLUE_KEY.PCX
 
 echo "Converting misifu things..."
 #magick alley.png -colors 256 -depth 8 ALLEY.PCX
@@ -106,8 +106,8 @@ magick dog.pcx -crop 24x16+72+0 dog4.PCX
 echo "Converting tiles..."
 magick new_tiles.png -colors 256 -depth 8 tiles.pcx
 
-echo "Converting menu bg..."
-magick bege.png -colors 256 -depth 8 bege.pcx
+#echo "Converting menu bg..."
+#magick bege.png -colors 256 -depth 8 bege.pcx
 
 pwd
 echo "Compress..."
@@ -115,3 +115,9 @@ echo "Compress..."
 
 echo "Removing generated pcx"
 
+rm main1.pcx main2.pcx main3.pcx main4.pcx main5.pcx main6.pcx main7.pcx main8.pcx main9.pcx main10.pcx main11.pcx main12.pcx
+rm enem1_*.pcx
+rm enem2_*.pcx
+rm enem3_*.pcx
+rm cat1.PCX cat2.PCX cat3.PCX cat4.PCX cat5.PCX cat6.PCX cat7.PCX
+rm dog1.pcx dog2.pcx dog3.pcx dog4.pcx
