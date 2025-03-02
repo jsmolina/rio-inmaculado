@@ -24,14 +24,19 @@ unsigned char automatic_event = FALSE;
 
 
 // returns true if player is >= or <= a margin on a door
-inline unsigned char is_on_door(int door_x) {
+inline int is_on_door(int door_x) {
     if (door_x == 0) {
         return FALSE;
     }
-    return (player.x >= door_x && player.x <= (door_x + 50));
+    int res = (player.x >= door_x && player.x <= (door_x + 50));
+    if (has_alive_enemies()) {
+        textout_ex(screen, font, "Cerrado", 90, SCREEN_H -20, makecol(255, 255, 255), -1);
+        return FALSE;
+    }
+    return res;
 }
 
-inline unsigned char move_to_level_if_needed() {
+inline int move_to_level_if_needed() {
     if (level == 0) {
         return FALSE;
     }
@@ -138,7 +143,6 @@ void level8_coursnave() {
         beep(2000, 20);
         rest(1000);
         next_level = 7;
-        load_level();
         return;
     } else if (missed_beeps == 4) {
         textout_ex(screen, font, "REPITES!", 180, 80, makecol(255,79, 0), makecol(0, 0, 0));
@@ -148,7 +152,6 @@ void level8_coursnave() {
         beep_count = -1;
         missed_beeps = 0;
         beep_side = IZQUIERDA;
-        load_level();
         return;
     }
 
@@ -291,11 +294,11 @@ void move_with_level_limits() {
     } else {
         // normal movement
         if (player.moving == MOVING_RIGHT && player.x < maxX) {
-            if (!enemy_on_path(player.x + 1, player.y)) {
+            if (!enemy_on_path(player.x + 1)) {
                     ++player.x;
             }
         } else if (player.moving == MOVING_LEFT && player.x > minX) {
-            if (!enemy_on_path(player.x - 1, player.y)) {
+            if (!enemy_on_path(player.x - 1)) {
                 --player.x;
             }
         }
@@ -314,11 +317,10 @@ void loop_castigo() {
     int index = 0;
     int key2;
     
-    clear_keybuf(); // Limpia el buffer del teclado
-    textout_ex(screen, font, "no entrare al de las chicas", 21, 35, makecol(194,106,228), -1);
+    textout_ex(screen, font, "no entrare al de las chicas", 21, 35, makecol(0,0,0), -1);
 
     char compar[] = "no entrare al de las chicas";
-    char buf[] =    "                           ";
+    char buf[] =    "                            ";
     while (index < 27) {
         if (keypressed()) {
             key2 = readkey();
@@ -336,12 +338,11 @@ void loop_castigo() {
   
         }
         
-        textout_ex(screen, font, buf, 21, 51, makecol(50,125,125), -1);
+        textout_ex(screen, font, buf, 21, 51, makecol(0,0,0), -1);
         rest(1); 
     }
     //castigo = CASTIGO_FINALIZADO;
     next_level = 3;
-    load_level();
     return;
 }
 
@@ -378,12 +379,11 @@ void level_processing() {
                         textout_centre_ex(screen, font, "vas a escribir 1 veces", SCREEN_W / 2, 76, makecol(194,106,228), makecol(0,0,0));
                         textout_centre_ex(screen, font, "no entrare al de las chicas", SCREEN_W / 2, 84, makecol(194,106,228), makecol(0,0,0));
                         ///
-                        rest(2000);
+                        rest(500);
                         while (key[KEY_SPACE]) {
                             rest(1); // Pequeña pausa para no saturar el CPU
                         }
                         next_level = 12;
-                        load_level();
                         return;
                     }
 
@@ -409,7 +409,6 @@ void level_processing() {
             //76, 84, 92
             if (player.y < 147 && player.x >= 28 && player.x <= 252) {
                 next_level = MISIFU_ALLEY;
-                load_level();
                 return;
             }
         }

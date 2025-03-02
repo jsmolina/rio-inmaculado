@@ -1,12 +1,24 @@
 #include "enem.h"
 #include "allegro/gfx.h"
+#include "allegro/platform/astdint.h"
 #include "allegro/text.h"
 #include "game.h"
 #include "helpers.h"
 #include <stdio.h>
 
 enemyData enemies[MAX_ENEMIES];
-char hitted_this_loop = FALSE;
+int hitted_this_loop = FALSE;
+int alive_enemies[TOTAL_LEVELS][MAX_ENEMIES];
+int attack_variant = 0;
+
+int has_alive_enemies() {
+    for (int i = 0; i < levels[level].total_enemies; i++) {
+        if (alive_enemies[level][i] == TRUE) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 void eies_sprite(enemyData *enem, unsigned int variant) {
     char file_buffer[14];
@@ -31,26 +43,31 @@ void unload_enemies() {
     }
 }
 
-void init_level_enemies(int total_enemies, int maxX, char first_load) {
-    int i;
-    for (int i = 0; i < MAX_ENEMIES; i++) {
-        if (i < total_enemies) {
-            enemies[i].is_active = TRUE;
-            enemies[i].x = maxX - 60 - i * 15; // it should vary per level
-            enemies[i].y = 150 + ((i %2) * 3); // it should vary per enemy
-            enemies[i].targetX = 0;
-            enemies[i].targetY = 0;
-            enemies[i].curr_sprite = 0;
-            enemies[i].is_hit = FALSE;
-            enemies[i].is_floor = FALSE;
-            enemies[i].is_punching = FALSE;
-            enemies[i].received_hits = 0;
-            enemies[i].is_active = FALSE;
-        } else {
-            enemies[i].is_active = FALSE;
-            if (first_load == TRUE) {
-                eies_sprite(&enemies[i], i % 3 + 1);
+void init_level_enemies(int maxX, int first_load) {
+    for (int ec = 0; ec < MAX_ENEMIES; ec++) {
+        if (ec < levels[level].total_enemies) {
+            enemies[ec].is_active = TRUE;
+            enemies[ec].x = maxX - 60 - ec * 15; // it should vary per level
+            enemies[ec].y = 150 + ((ec %2) * 3); // it should vary per enemy
+            enemies[ec].targetX = 0;
+            enemies[ec].targetY = 0;
+            enemies[ec].curr_sprite = 0;
+            enemies[ec].is_hit = FALSE;
+            if (alive_enemies[level][ec] == TRUE) {
+                enemies[ec].is_floor = FALSE;
+            } else {
+                enemies[ec].is_floor = HIT_DURATION;
             }
+            enemies[ec].is_punching = FALSE;
+            enemies[ec].received_hits = 0;
+            enemies[ec].is_active = FALSE;
+            
+        } else {
+            enemies[ec].is_active = FALSE;
+            if (first_load == TRUE) {
+                eies_sprite(&enemies[ec], ec % 3 + 1);
+            }
+            alive_enemies[level][ec] = FALSE;
         }
     }
 }
@@ -87,20 +104,21 @@ void enemy_animation(enemyData *enem) {
     }
 }
 
-inline void enemy_decision(enemyData *enem, spritePos *playr) {
+int enemy_decision(enemyData *enem, spritePos *playr) {
     int distance;
     int x_distance;
     int y_distance;
     // TODO return;
-    // do not take decisions: you are hitted
-    if (enem->is_hit > 0) {
-        hitted_this_loop = TRUE;
-        return;
-    }
+
 
     // no decisions in floor, sir
     if (enem->is_floor != FALSE) {
-        return;
+        return FALSE;
+    }
+    // do not take decisions: you are hitted
+    if (enem->is_hit > 0) {
+        hitted_this_loop = TRUE;
+        return FALSE;
     }
 
     x_distance = point_distance(playr->x, enem->x);
@@ -123,6 +141,7 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
             enem->moving = MOVING_RIGHT;
             enem->floor_times++;
             enem->received_hits = 0;
+            return TRUE;
         }
     }
 
@@ -130,20 +149,24 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
         if (x_distance > 10) {
             enem->is_punching = FALSE;
         }
-        return;
+        return FALSE;
     }
-
 
     int random_choice = rand() % 50;
     char enem_has_moved = FALSE;
-    // remove TODO    
-    char buff[24];
+    // TODO: enemy should not tresspass hero
 
     if (point_distance(playr->x, enem->targetX) != FIGHT_DISTANCE || enem->targetX == FALSE) {
-        if (random_choice == 8) {
+        if (random_choice == (8 + enem->variant)) {
 
             switch (enem->variant) {
                 case ALEX:
+                    if (playr->x < 320) {
+                        enem->targetX = playr->x + FIGHT_DISTANCE - 10;
+                    } else {
+                        enem->targetX = playr->x - FIGHT_DISTANCE + 10;
+                    }
+                break;
                 case JOHNY:
                     if (playr->x < 320) {
                         enem->targetX = playr->x + FIGHT_DISTANCE;
@@ -194,7 +217,7 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
                 enem->moving = STOP_RIGHT;
                 enem->targetX = FALSE;
             }
-            if (counter % 30 == 0 && playr->is_floor == FALSE && (point_distance(playr->x, enem->x) <= FIGHT_DISTANCE)) {
+            if (counter % 30 == 0 && random_choice > 20 && playr->is_floor == FALSE && (point_distance(playr->x, enem->x) <= FIGHT_DISTANCE)) {
                 if (enem->moving == STOP_LEFT || enem->moving == STOP_RIGHT) {
                     // TODO think on punch
                     if (enem->x > playr->x) {
@@ -306,6 +329,7 @@ inline void enemy_decision(enemyData *enem, spritePos *playr) {
     if (!enem_has_moved && (enem->moving == MOVING_LEFT || enem->moving == MOVING_RIGHT)) {
         enem->moving = STOP_LEFT;
     }
+    return FALSE;
 }
 
 inline void draw_enemy(enemyData *enem) {
@@ -337,15 +361,17 @@ inline void draw_enemy(enemyData *enem) {
 }
 
 void all_enemy_animations() {
-    for (int i = 0; i < level_enemies; i++) {
+    for (int i = 0; i < levels[level].total_enemies; i++) {
         enemy_animation(&enemies[i]);
     }
 }
 
 void all_enemy_decisions(spritePos *playr) {
     hitted_this_loop = FALSE;
-    for (int i = 0; i < level_enemies; i++) {
-        enemy_decision(&enemies[i], playr);
+    for (int i = 0; i < levels[level].total_enemies; i++) {
+        if (enemy_decision(&enemies[i], playr) == TRUE) {
+            alive_enemies[level][i] = FALSE;
+        }
     }
 }
 int enemies_y_comp(const void *a, const void *b) {
@@ -355,36 +381,36 @@ int enemies_y_comp(const void *a, const void *b) {
 }
 
 void all_draw_enemies() {
-    qsort(enemies, level_enemies, sizeof(enemyData), enemies_y_comp);
+    qsort(enemies, levels[level].total_enemies, sizeof(enemyData), enemies_y_comp);
 
-    for (int i = 0; i < level_enemies; i++) {
+    for (int i = 0; i < levels[level].total_enemies; i++) {
         draw_enemy(&enemies[i]);
     }
 }
 
 void redraw_bg_enemy_positions() {
-    for (int i = 0; i < level_enemies; i++) {
+    for (int i = 0; i < levels[level].total_enemies; i++) {
         blit(bg, screen, enemies[i].x, 120, enemies[i].x, 120, 40, 80);
     }
 }
 
-char player_over_all_enemies(int player_y) {
+int player_over_all_enemies() {
     char player_under_enemies = FALSE;
-    for (int i = 0; i < level_enemies; i++) {
-        if (player_y < enemies[i].y) {
+    for (int i = 0; i < levels[level].total_enemies; i++) {
+        if (player.y < enemies[i].y) {
             player_under_enemies = TRUE;
         }
     }
     return player_under_enemies;
 }
 
-char enemy_on_path(int new_player_x, int play_y) {
-    for (int i = 0; i < level_enemies; i++) {
+int enemy_on_path(unsigned int new_player_x) {
+    for (int i = 0; i < levels[level].total_enemies; i++) {
         if (enemies[i].is_floor != FALSE) {
             continue;
         }
         int x_distance = point_distance(new_player_x, enemies[i].x);        
-        int y_distance = point_distance(play_y, enemies[i].y);
+        int y_distance = point_distance(player.y, enemies[i].y);
 
         if (y_distance < 2 && x_distance < 8) {
             return TRUE;

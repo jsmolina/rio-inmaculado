@@ -15,7 +15,7 @@ extern char beep_side;
 
 void level_processing();
 BITMAP * load_level_background(unsigned char lvl);
-unsigned char move_to_level_if_needed();
-inline unsigned char is_on_door(int door_x);
+inline int move_to_level_if_needed();
+inline int is_on_door(int door_x);
 void move_with_level_limits();
 #endif

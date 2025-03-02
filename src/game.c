@@ -19,7 +19,6 @@ spritePos player;
 
 unsigned char level = 0;
 unsigned char next_level = FALSE;
-unsigned char level_enemies = 0;
 unsigned char starting_level_counter = 0;
 char coursnave_completed = FALSE;
 char yellow_key = FALSE;
@@ -116,7 +115,12 @@ void increase_level_and_load() {
     coursnave_completed = FALSE;
     yellow_key = FALSE;
     blue_key = FALSE;
-    next_level = 10;
+    next_level = 1;
+    for (int i = 0; i < TOTAL_LEVELS; i++) {
+        for (int j=0; j < MAX_ENEMIES; j++) {
+            alive_enemies[i][j] = TRUE;
+        }
+    }
     load_level();
 }
 // draws current player lives
@@ -146,11 +150,10 @@ void process() {
 
     move_with_level_limits();
 
+
     // check door opening or side moving
-    if (move_to_level_if_needed()) {
-        load_level();
-        return;
-    }
+    move_to_level_if_needed();
+
     if (key[KEY_0]) {
         next_level = GAME_OVER;
         level = GAME_OVER;
@@ -180,6 +183,11 @@ void process() {
     }
 
     level_processing();
+        
+    if (next_level != level) {
+        load_level();
+        return;
+    }
 
     if (player.is_hit > 0) {
         player.curr_sprite = ANIM_HITTED;
@@ -251,6 +259,9 @@ void draw_player() {
 
 void output() {
     counter++;
+    if (counter > 32765) {
+        counter = 0;
+    }
     if (level == MISIFU_ALLEY || level ==  MISIFU_CHEESE) {
         return;
     }
@@ -398,8 +409,12 @@ void load_level() {
     }
 
     if (next_level == 0) {
-        bg = load_pcx("bege.pcx", NULL);
-        level_enemies = 0;
+        //bg = load_pcx("bege.pcx", NULL);
+        bg = load_level_background(0);
+        textout_ex(bg, font, "MSDOS CLUB", SCREEN_H - 20, 40, makecol(100, 100, 100), -1);
+        textout_ex(bg, font, "Rio Immaculado", SCREEN_W / 2 - 55, 140, makecol(255, 255, 255), -1);
+        textout_ex(bg, font, "Space to start", SCREEN_W / 2 - 40, 80, makecol(156, 176, 239), -1);
+        textout_ex(bg, font, "Dedicated to Claudia", 70, SCREEN_H - 30, makecol(255, 176, 239), -1);
         player.lives = 3;
         player.lifebar = 10;
         player.floor_times = 0;
@@ -456,8 +471,7 @@ void load_level() {
         }
         player.curr_sprite = ANIM_WALK1;
 
-        level_enemies = curr_leveldata.total_enemies;
-        init_level_enemies(level_enemies, curr_leveldata.maxX, FALSE);
+        init_level_enemies(curr_leveldata.maxX, FALSE);
     }
     if (!bg) {
         die("Cannot load graphic");        

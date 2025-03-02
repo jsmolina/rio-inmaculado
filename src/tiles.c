@@ -20,6 +20,9 @@ struct coords get_tile_coords(int tile_number) {
 }
 inline void load_tiles() {
     tiles = load_pcx("tiles.pcx", palette);
+    if(!tiles) {
+        die("cannot load tiles");
+    }
 }
 
 inline void destroy_tiles() {

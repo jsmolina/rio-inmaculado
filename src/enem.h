@@ -12,9 +12,10 @@
 #define FIGHT_DISTANCE 20
 
 extern enemyData enemies[MAX_ENEMIES];
+extern int alive_enemies[TOTAL_LEVELS][MAX_ENEMIES];
 
 // initializes enemies on level
-void init_level_enemies(int total_enemies, int maxX, char first_load);
+void init_level_enemies(int maxX, int first_load);
 // Animations for all enemies
 void all_enemy_animations();
 // AI for all enemies
@@ -22,12 +23,15 @@ void all_enemy_decisions(spritePos * playr);
 // draw all enemies
 void all_draw_enemies();
 // returns true if player has Y upper than all enemies
-char player_over_all_enemies(int player_y);
+int player_over_all_enemies();
 // true if has any enemy on path
-char enemy_on_path(int new_player_x, int play_y);
+int enemy_on_path(unsigned int new_player_x);
 // redraws background over all the enemy positions
 void redraw_bg_enemy_positions();
 // frees up memory sprites for enemies
 void unload_enemies();
+
+// returns TRUE if has active enemies in current level
+int has_alive_enemies();
 
 #endif

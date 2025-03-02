@@ -308,12 +308,12 @@ void check_fsm() {
             misifu.offset = OFF_JUMPING;
         }
 
-        if (misifu.y <= 12) {
+        /*if (misifu.y <= 12) {
             misifu.y = 12;
             misifu.offset = OFF_HANGING;
             misifu.state = CAT_IN_ROPE;
             misifu.draw_additional = CAT_IN_ROPE3;
-        }
+        }*/
         //}
 
         stop_jump_if_needed(35);
@@ -531,7 +531,7 @@ inline void anim_windows() {
         struct coord window_coords = get_window_coords();
         if (misifu.state == M_FALLING || misifu.state == M_JUMPING) {
             int normalized_window_y = window_coords.y - 15;
-            if (misifu.y >= normalized_window_y && misifu.y <= (normalized_window_y + 24) && misifu.x >= window_coords.x && misifu.x <= (window_coords.x+31)) {
+            if (misifu.initial_jump_y <= 100 && misifu.y >= normalized_window_y && misifu.y <= (normalized_window_y + 24) && misifu.x >= window_coords.x && misifu.x <= (window_coords.x+31)) {
                 next_level = MISIFU_CHEESE;
                 return;
             }
@@ -710,7 +710,8 @@ void destroy_misifu_data() {
         music = load_midi("ROGERR.MID");
         play_looped_midi(music, 0, -1);
     }
-    set_palette(palette);
+ 
+
 }
 
 /*
@@ -818,11 +819,11 @@ void misifu_process() {
             rest(1);
         }
 
-        set_color_depth(15);
-        //try GFX_MODEX
-        if(set_gfx_mode(GFX_AUTODETECT, 320, 240, 0, 0) != 0) {
+        set_color_depth(8);
+        if(set_gfx_mode(GFX_MODEX, 320, 240, 0, 0) != 0) {
             die("error setting 320x240 16bpp: %s", allegro_error);
         }
+        set_palette(palette);
 
         load_level();
         return;
