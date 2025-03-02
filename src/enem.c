@@ -7,7 +7,7 @@
 #include <stdio.h>
 
 enemyData enemies[MAX_ENEMIES];
-char hitted_this_loop = FALSE;
+int hitted_this_loop = FALSE;
 int alive_enemies[TOTAL_LEVELS][MAX_ENEMIES];
 int attack_variant = 0;
 
@@ -100,14 +100,15 @@ int enemy_decision(enemyData *enem, spritePos *playr) {
     int x_distance;
     int y_distance;
     // TODO return;
-    // do not take decisions: you are hitted
-    if (enem->is_hit > 0) {
-        hitted_this_loop = TRUE;
-        return FALSE;
-    }
+
 
     // no decisions in floor, sir
     if (enem->is_floor != FALSE) {
+        return FALSE;
+    }
+    // do not take decisions: you are hitted
+    if (enem->is_hit > 0) {
+        hitted_this_loop = TRUE;
         return FALSE;
     }
 
@@ -147,7 +148,7 @@ int enemy_decision(enemyData *enem, spritePos *playr) {
     // TODO: enemy should not tresspass hero
 
     if (point_distance(playr->x, enem->targetX) != FIGHT_DISTANCE || enem->targetX == FALSE) {
-        if (random_choice == 8) {
+        if (random_choice == (8 + enem->variant)) {
 
             switch (enem->variant) {
                 case ALEX:
@@ -384,23 +385,23 @@ void redraw_bg_enemy_positions() {
     }
 }
 
-char player_over_all_enemies(int player_y) {
+int player_over_all_enemies() {
     char player_under_enemies = FALSE;
     for (int i = 0; i < levels[level].total_enemies; i++) {
-        if (player_y < enemies[i].y) {
+        if (player.y < enemies[i].y) {
             player_under_enemies = TRUE;
         }
     }
     return player_under_enemies;
 }
 
-char enemy_on_path(int new_player_x, int play_y) {
+int enemy_on_path(unsigned int new_player_x) {
     for (int i = 0; i < levels[level].total_enemies; i++) {
         if (enemies[i].is_floor != FALSE) {
             continue;
         }
         int x_distance = point_distance(new_player_x, enemies[i].x);        
-        int y_distance = point_distance(play_y, enemies[i].y);
+        int y_distance = point_distance(player.y, enemies[i].y);
 
         if (y_distance < 2 && x_distance < 8) {
             return TRUE;

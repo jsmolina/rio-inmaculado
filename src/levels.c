@@ -289,11 +289,11 @@ void move_with_level_limits() {
     } else {
         // normal movement
         if (player.moving == MOVING_RIGHT && player.x < maxX) {
-            if (!enemy_on_path(player.x + 1, player.y)) {
+            if (!enemy_on_path(player.x + 1)) {
                     ++player.x;
             }
         } else if (player.moving == MOVING_LEFT && player.x > minX) {
-            if (!enemy_on_path(player.x - 1, player.y)) {
+            if (!enemy_on_path(player.x - 1)) {
                 --player.x;
             }
         }

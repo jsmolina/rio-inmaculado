@@ -55,13 +55,13 @@ typedef struct  {
     unsigned int moving;
     unsigned int y_moving;
     unsigned int curr_sprite;
-    unsigned char is_hit;
-    unsigned char is_floor;
+    int is_hit;
+    int is_floor;
     unsigned char lives;
     unsigned char lifebar;
     unsigned char received_hits;
     unsigned char floor_times;
-    char is_punching;
+    int is_punching;
 } spritePos;
 
 typedef struct  {
@@ -73,13 +73,13 @@ typedef struct  {
     unsigned int targetX;
     unsigned int targetY;
     unsigned int curr_sprite;
-    char is_hit;
-    char is_punching;
+    int is_hit;
+    int is_punching;
     unsigned char received_hits;
-    unsigned char is_floor;
+    int is_floor;
     unsigned char floor_times;
-    char is_active;
-    unsigned char variant; // which enemy are we painting?
+    int is_active;
+    int variant; // which enemy are we painting?
 } enemyData;
 
 typedef struct  {
