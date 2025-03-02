@@ -29,8 +29,10 @@ inline int is_on_door(int door_x) {
         return FALSE;
     }
     int res = (player.x >= door_x && player.x <= (door_x + 50));
-    if (has_alive_enemies()) {
-        textout_ex(screen, font, "Cerrado", 90, SCREEN_H -20, makecol(255, 255, 255), -1);
+    if (res && has_alive_enemies()) {
+        textout_ex(screen, font, "Cerrado", 120, SCREEN_H - 34, makecol(100,255,255), getpixel(screen, 319, 239));               
+        rest(500);
+        textout_ex(screen, font, "       ", 120, SCREEN_H - 34, makecol(100,255,255), getpixel(screen, 319, 239));               
         return FALSE;
     }
     return res;
@@ -353,7 +355,7 @@ void level_processing() {
             if (key[KEY_SPACE]) {
                 //76, 84, 92
                 if (player.y < 142 && player.x >= 204 && player.x <= 219) {
-                    textout_ex(screen, font, "bedel?", 120, SCREEN_H - 34, makecol(100,255,255), makecol(0,0,0));               
+                    textout_ex(screen, font, "bedel?        ", 120, SCREEN_H - 34, makecol(100,255,255), makecol(0,0,0));               
                     textout_ex(screen, font, "quien eres tu?", 120, SCREEN_H - 26, makecol(255,255,255), makecol(0,0,0));
                     textout_ex(screen, font, "arregla el ascensor!", 120, SCREEN_H - 18, makecol(100,255,255), makecol(0,0,0));
                     locked_elevator = FALSE;
