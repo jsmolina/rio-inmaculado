@@ -76,28 +76,28 @@ magick key.png -colors 16 -type truecolor KEY.PCX
 magick blue_key.png -colors 16 -type truecolor BLUE_KEY.PCX
 
 echo "Converting misifu things..."
-magick alley.png -colors 256 -depth 8 ALLEY.PCX
-magick cheese.png -colors 256 -depth 8 CHEESE.PCX
-magick heart.png -colors 256 -depth 8 HEART.PCX
-magick clothes_sprites.png -colors 256 -type truecolor CLOTHES1.PCX
-magick clothes_sprites2.png -colors 256 -type truecolor CLOTHES2.PCX
-magick bincat.png -colors 256 -type truecolor BINCAT.PCX
-magick phone.png -colors 256 -type truecolor PHONE.PCX
+#magick alley.png -colors 256 -depth 8 ALLEY.PCX
+#magick cheese.png -colors 256 -depth 8 CHEESE.PCX
+#magick heart.png -colors 256 -depth 8 HEART.PCX
+#magick clothes_sprites.png -colors 256 -type truecolor CLOTHES1.PCX
+#magick clothes_sprites2.png -colors 256 -type truecolor CLOTHES2.PCX
+#magick phone.png -colors 256 -type truecolor PHONE.PCX
 
 echo "Converting cat sprites..."
-magick cat_sprites.png -crop 24x24+0+0 -colors 256 -type truecolor  cat1.PCX
-magick cat_sprites.png -crop 24x24+24+0 -colors 256 -type truecolor  cat2.PCX
-magick cat_sprites.png -crop 24x24+120+0 -colors 256 -type truecolor  cat3.PCX
-magick cat_sprites.png -crop 24x24+144+0 -colors 256 -type truecolor  cat4.PCX
-magick cat_sprites.png -crop 24x24+168+0 -colors 256 -type truecolor  cat5.PCX
-magick cat_sprites.png -crop 24x24+192+0 -colors 256 -type truecolor  cat6.PCX
-magick cat_sprites.png -crop 24x24+216+0 -colors 256 -type truecolor  cat7.PCX
+magick cat.pcx -crop 24x24+0+0 cat1.PCX
+magick cat.pcx -crop 24x24+24+0 cat2.PCX
+magick cat.pcx -crop 24x24+120+0 cat3.PCX
+magick cat.pcx -crop 24x24+144+0 cat4.PCX
+magick cat.pcx -crop 24x24+168+0  cat5.PCX
+magick cat.pcx -crop 24x24+192+0  cat6.PCX
+magick cat.pcx -crop 24x24+216+0   cat7.PCX
+
 
 echo "Converting dog sprites..."
-magick dog_sprites.png -crop 24x16+0+0 -colors 256 -type truecolor  dog1.PCX
-magick dog_sprites.png -crop 24x16+24+0 -colors 256 -type truecolor  dog2.PCX
-magick dog_sprites.png -crop 24x16+48+0 -colors 256 -type truecolor  dog3.PCX
-magick dog_sprites.png -crop 24x16+72+0 -colors 256 -type truecolor  dog4.PCX
+magick dog.pcx -crop 24x16+0+0  dog1.PCX
+magick dog.pcx -crop 24x16+24+0 dog2.PCX
+magick dog.pcx -crop 24x16+48+0 dog3.PCX
+magick dog.pcx -crop 24x16+72+0 dog4.PCX
 
 #   magick miguel_sprites.png -crop 40x40+440+0 -colors 256 -type truecolor miguel11.pcx
 #magick background.png -colors 256 -type truecolor bg.pcx
