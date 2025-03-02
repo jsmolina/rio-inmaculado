@@ -31,4 +31,7 @@ void redraw_bg_enemy_positions();
 // frees up memory sprites for enemies
 void unload_enemies();
 
+// returns TRUE if has active enemies in current level
+int has_alive_enemies();
+
 #endif

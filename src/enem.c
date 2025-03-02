@@ -11,6 +11,15 @@ int hitted_this_loop = FALSE;
 int alive_enemies[TOTAL_LEVELS][MAX_ENEMIES];
 int attack_variant = 0;
 
+int has_alive_enemies() {
+    for (int i = 0; i < levels[level].total_enemies; i++) {
+        if (alive_enemies[level][i] == TRUE) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 void eies_sprite(enemyData *enem, unsigned int variant) {
     char file_buffer[14];
     // load enemy1

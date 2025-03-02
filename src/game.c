@@ -115,7 +115,7 @@ void increase_level_and_load() {
     coursnave_completed = FALSE;
     yellow_key = FALSE;
     blue_key = FALSE;
-    next_level = 11;
+    next_level = 1;
     for (int i = 0; i < TOTAL_LEVELS; i++) {
         for (int j=0; j < MAX_ENEMIES; j++) {
             alive_enemies[i][j] = TRUE;

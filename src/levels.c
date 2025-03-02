@@ -24,14 +24,19 @@ unsigned char automatic_event = FALSE;
 
 
 // returns true if player is >= or <= a margin on a door
-inline unsigned char is_on_door(int door_x) {
+inline int is_on_door(int door_x) {
     if (door_x == 0) {
         return FALSE;
     }
-    return (player.x >= door_x && player.x <= (door_x + 50));
+    int res = (player.x >= door_x && player.x <= (door_x + 50));
+    if (has_alive_enemies()) {
+        textout_ex(screen, font, "Cerrado", 90, SCREEN_H -20, makecol(255, 255, 255), -1);
+        return FALSE;
+    }
+    return res;
 }
 
-inline unsigned char move_to_level_if_needed() {
+inline int move_to_level_if_needed() {
     if (level == 0) {
         return FALSE;
     }
