@@ -37,6 +37,7 @@
 #define ANIM_HITTED 6
 #define ANIM_ESPALDA 11
 #define HIT_DURATION 4
+#define HIT_DURATION_ENEM 2
 #define FLOOR_DURATION 18
 
 #define TOTAL_LEVELS 12
@@ -78,7 +79,7 @@ typedef struct  {
     unsigned char received_hits;
     int is_floor;
     unsigned char floor_times;
-    int is_active;
+    int counter_for_state;
     int variant; // which enemy are we painting?
 } enemyData;
 

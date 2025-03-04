@@ -30,11 +30,12 @@ extern char coursnave_completed;
 extern char yellow_key;
 extern char blue_key;
 extern LevelData levels[TOTAL_LEVELS];
-extern BITMAP *player_head, *player_lifebar, *girl, *key_sprite, *key_sprite_blue;
+extern BITMAP *player_head, *player_lifebar, *girl, *key_sprite, *key_sprite_blue, *vespino, *vespino2;
 extern MIDI *music;
 extern SAMPLE *alleytheme;
 extern SAMPLE *hit;
 extern SAMPLE *dog_theme;
+extern SAMPLE *punch, *fall, *punch2, *die_sample;
 
 extern int counter;
 extern BITMAP *bg;

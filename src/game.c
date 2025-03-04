@@ -34,12 +34,15 @@ BITMAP *bg;
 BITMAP *tiles;
 BITMAP *player_head;
 BITMAP *girl;
+BITMAP *vespino, *vespino2;
 BITMAP *key_sprite;
 BITMAP *key_sprite_blue;
 BITMAP *player_lifebar;
 SAMPLE *alleytheme;
 SAMPLE *dog_theme;
 SAMPLE *hit;
+SAMPLE *punch, *punch2;
+SAMPLE *fall, *die_sample;
 char slow_cpu;
 LevelData levels[TOTAL_LEVELS];
 
@@ -105,8 +108,19 @@ void increase_level_and_load() {
         return;
     }
     clear_to_color(screen, 0);
-    textout_centre_ex(screen, font, "Loading Level...", SCREEN_W / 2,
+    textout_centre_ex(screen, font, "El JONNY te ha robado la vespino.", SCREEN_W / 2,
                       SCREEN_H / 2, makecol(255, 255, 255), -1);
+    textout_centre_ex(screen, font, "La JESSI te ha dicho que la tiene", SCREEN_W / 2,
+        SCREEN_H / 2 + 40, makecol(255, 255, 255), -1);
+    textout_centre_ex(screen, font, "en el parking del insti.", SCREEN_W / 2,
+            SCREEN_H / 2 + 60, makecol(255, 255, 255), -1);
+    
+    textout_centre_ex(screen, font, "SUS AMIGOS TE ESPERAN", SCREEN_W / 2,
+        SCREEN_H / 2 + 80, makecol(255, 255, 255), -1);
+
+    
+
+    draw_sprite(screen, player.sprite[0], 40, 60);
     locked_elevator = TRUE;
     urinated = FALSE;
     beep_count = -1;
@@ -116,10 +130,19 @@ void increase_level_and_load() {
     yellow_key = FALSE;
     blue_key = FALSE;
     next_level = 1;
+    int x_moto = 0;
     for (int i = 0; i < TOTAL_LEVELS; i++) {
         for (int j=0; j < MAX_ENEMIES; j++) {
             alive_enemies[i][j] = TRUE;
-        }
+        }        
+    }
+
+    for (int i = 0; i < 25; i++) {
+        x_moto = 88 + 5 * i;
+        rectfill(screen, x_moto - 5, 50, x_moto + 54, 99, 0);
+        draw_sprite(screen, vespino2, x_moto, 50);
+        rest(150);
+        vsync();
     }
     load_level();
 }
@@ -164,10 +187,13 @@ void process() {
 
     if (player.received_hits == 5) {
         player.is_floor = FLOOR_DURATION;
+        player.moving = STOPPOS;
+        play_sample(fall, 255, 127, 1000, 0);  
         player.received_hits = 0;
     }
     if (player.lifebar == 0) {
         player.lives--;
+        play_sample(die_sample, 255, 127, 1000, 0); 
         player.is_floor = FLOOR_DURATION;
         player.lifebar = LIFEBAR;
         draw_lives();
