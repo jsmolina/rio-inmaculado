@@ -359,12 +359,16 @@ void level_processing() {
                     textout_ex(screen, font, "bedel?        ", 120, SCREEN_H - 34, makecol(100,255,255), makecol(0,0,0));               
                     textout_ex(screen, font, "quien eres tu?", 120, SCREEN_H - 26, makecol(255,255,255), makecol(0,0,0));
                     textout_ex(screen, font, "arregla el ascensor!", 120, SCREEN_H - 18, makecol(100,255,255), makecol(0,0,0));
-                    locked_elevator = FALSE;
+                    if (locked_elevator != FALSE) {
+                        while(key[KEY_SPACE]) {
+                            rest(1);
+                        }
+                        score += 20;
+                    }
+
+                    locked_elevator = FALSE;                    
                 }
-                while(key[KEY_SPACE]) {
-                    rest(1);
-                }
-                score += 20;
+                
             }
         break;
         case 4:

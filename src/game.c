@@ -139,12 +139,19 @@ void increase_level_and_load() {
         }        
     }
 
+    while(key[KEY_SPACE]) {
+        rest(1);
+    }
+
     for (int i = 0; i < 25; i++) {
         x_moto = 88 + 5 * i;
         rectfill(screen, x_moto - 5, 50, x_moto + 54, 99, 0);
         draw_sprite(screen, vespino2, x_moto, 50);
         rest(150);
         vsync();
+        if (key[KEY_SPACE]) {
+            break;
+        } 
     }
     load_level();
 }
@@ -513,15 +520,14 @@ void load_level() {
         die("Cannot load graphic");        
     }
     //blit(bg, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
-    if (slow_cpu) {
+    if (!(next_level == 6 && level == 5)) {
         fade_out(16);
-        blit(bg, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
-        fade_in(palette, 16);
-    } else {
-        if (!(next_level == 6 && level == 5)) {
-            show_bg();
-        }
     }
+    blit(bg, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+    if (!(next_level == 6 && level == 5)) {
+        fade_in(palette, 16);
+    }
+    
 
     //rectfill(screen, 0, 200, 320, 240, makecol(0, 0, 0));
     if (level != 0) {
