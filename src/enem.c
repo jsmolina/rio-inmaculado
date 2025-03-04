@@ -14,7 +14,7 @@ int attack_variant = 0;
 
 int has_alive_enemies() {
     for (int i = 0; i < levels[level].total_enemies; i++) {
-        if (alive_enemies[level][i] == TRUE) {
+        if (enemies[i].is_floor == FALSE) {
             return 1;
         }
     }
@@ -76,8 +76,10 @@ void init_level_enemies(int maxX, int first_load) {
 void enemy_animation(enemyData *enem) {
 
     if (enem->is_floor != FALSE) {
+        enem->curr_sprite = 0;
         return;
     }
+
 
     if (enem->is_hit > 0) {
         enem->curr_sprite = ANIM_HITTED;
@@ -126,25 +128,25 @@ int enemy_decision(enemyData *enem, spritePos *playr) {
     y_distance = point_distance(playr->y, enem->y);
     // check hits
     if (x_distance <= 24 && y_distance <= 2) {
-        if (playr->moving == PUNCH_LEFT && enem->x <= playr->x && !hitted_this_loop) {
+        if (playr->moving == PUNCH_LEFT && enem->x <= playr->x && !hitted_this_loop && counter != 100) {
             play_sample(punch, 200, 80, 1200 + counter % 100, 0);  
-            enem->is_hit = HIT_DURATION;
-            enem->received_hits++;
+            enem->is_hit = HIT_DURATION_ENEM;
+            ++enem->received_hits;
             hitted_this_loop = TRUE;
         }
-        if (playr->moving == PUNCH_RIGHT && player.x <= enem->x && !hitted_this_loop) {
+        if (playr->moving == PUNCH_RIGHT && player.x <= enem->x && !hitted_this_loop && counter != 100) {
             play_sample(punch, 200, 155, 1200 + counter % 100, 0);  
-            enem->is_hit = HIT_DURATION;
-            enem->received_hits++;
+            enem->is_hit = HIT_DURATION_ENEM;
+            ++enem->received_hits;
             hitted_this_loop = TRUE;
         }
 
-        if (enem->received_hits == 6) {
+        if (enem->received_hits == 8) {
             stop_sample(punch);
             play_sample(fall, 255, 127, 1000, 0);  
             enem->is_floor = FLOOR_DURATION;
             enem->moving = MOVING_RIGHT;
-            enem->floor_times++;
+            ++enem->floor_times;
             enem->received_hits = 0;
             return TRUE;
         }
@@ -222,7 +224,7 @@ int enemy_decision(enemyData *enem, spritePos *playr) {
                 enem->moving = STOP_RIGHT;
                 enem->targetX = FALSE;
             }
-            if (counter % 30 == 0 && random_choice > 20 && playr->is_floor == FALSE && (point_distance(playr->x, enem->x) <= FIGHT_DISTANCE)) {
+            if (counter % 30 == 0  && playr->is_floor == FALSE && (point_distance(playr->x, enem->x) <= FIGHT_DISTANCE)) {
                 if (enem->moving == STOP_LEFT || enem->moving == STOP_RIGHT) {
                     // TODO think on punch
                     if (enem->x > playr->x) {
