@@ -145,6 +145,7 @@ void level8_coursnave() {
         beep(2000, 20);
         rest(1000);
         next_level = 7;
+        score += 100;
         return;
     } else if (missed_beeps == 4) {
         textout_ex(screen, font, "REPITES!", 180, 80, makecol(255,79, 0), makecol(0, 0, 0));
@@ -360,6 +361,10 @@ void level_processing() {
                     textout_ex(screen, font, "arregla el ascensor!", 120, SCREEN_H - 18, makecol(100,255,255), makecol(0,0,0));
                     locked_elevator = FALSE;
                 }
+                while(key[KEY_SPACE]) {
+                    rest(1);
+                }
+                score += 20;
             }
         break;
         case 4:
@@ -372,6 +377,7 @@ void level_processing() {
                         textout_ex(screen, font, "ahhh, mejor asi!", 120, SCREEN_H - 34, makecol(100,255,255), makecol(0,0,0));               
                         textout_ex(screen, font, "largate o te castigo!", 120, SCREEN_H - 26, makecol(194,106,228), makecol(0,0,0));
                         urinated = TRUE;
+                        score += 20;
                         player.lifebar = LIFEBAR;
                         draw_lifebar();
                         while (key[KEY_SPACE]) {

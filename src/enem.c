@@ -130,11 +130,13 @@ int enemy_decision(enemyData *enem, spritePos *playr) {
     if (x_distance <= 24 && y_distance <= 2) {
         if (playr->moving == PUNCH_LEFT && enem->x <= playr->x && !hitted_this_loop && counter != 100) {
             play_sample(punch, 200, 80, 1200 + counter % 100, 0);  
+            score += 10;
             enem->is_hit = HIT_DURATION_ENEM;
             ++enem->received_hits;
             hitted_this_loop = TRUE;
         }
         if (playr->moving == PUNCH_RIGHT && player.x <= enem->x && !hitted_this_loop && counter != 100) {
+            score += 10;
             play_sample(punch, 200, 155, 1200 + counter % 100, 0);  
             enem->is_hit = HIT_DURATION_ENEM;
             ++enem->received_hits;

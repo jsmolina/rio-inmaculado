@@ -17,6 +17,7 @@
 int exit_game;
 spritePos player;
 
+unsigned int score;
 unsigned char level = 0;
 unsigned char next_level = FALSE;
 unsigned char starting_level_counter = 0;
@@ -129,6 +130,7 @@ void increase_level_and_load() {
     coursnave_completed = FALSE;
     yellow_key = FALSE;
     blue_key = FALSE;
+    score = 0;
     next_level = 1;
     int x_moto = 0;
     for (int i = 0; i < TOTAL_LEVELS; i++) {
@@ -154,6 +156,11 @@ void draw_lives() {
     for (i = 0; i < player.lives; i++) {
         draw_sprite(screen, player_head, 20 + i * 10, SCREEN_H - 30);
     }
+}
+
+void draw_score() {
+    rectfill(screen, 280, SCREEN_H - 30, 319, SCREEN_H - 20, makecol(40, 40, 40));
+    textprintf_ex(screen, font, 280, SCREEN_H - 30, makecol(255,255,255), -1, "%05d", score);
 }
 
 void game_over() {
@@ -290,6 +297,9 @@ void output() {
     }
     if (level == MISIFU_ALLEY || level ==  MISIFU_CHEESE) {
         return;
+    }
+    if ((counter % 4) == 0) {
+        draw_score();
     }
 
     if (level == 12) {
@@ -504,7 +514,9 @@ void load_level() {
     }
     //blit(bg, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
     if (slow_cpu) {
+        fade_out(16);
         blit(bg, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+        fade_in(palette, 16);
     } else {
         if (!(next_level == 6 && level == 5)) {
             show_bg();
@@ -515,6 +527,7 @@ void load_level() {
     if (level != 0) {
         draw_lives();
         draw_lifebar();
+        draw_score();
     }
 }
 

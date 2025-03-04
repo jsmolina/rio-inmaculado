@@ -20,6 +20,7 @@
 
 extern int exit_game; /* flag we'll set to end the game */
 extern unsigned char level;
+extern unsigned int score;
 extern unsigned char sub_level;
 extern unsigned char next_level;
 extern unsigned char starting_level_counter;
