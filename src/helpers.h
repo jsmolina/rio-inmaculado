@@ -78,7 +78,7 @@ typedef struct  {
     unsigned char received_hits;
     int is_floor;
     unsigned char floor_times;
-    int is_active;
+    int counter_for_state;
     int variant; // which enemy are we painting?
 } enemyData;
 

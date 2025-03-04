@@ -60,7 +60,6 @@ static void fps_proc(void) {
 
 END_OF_STATIC_FUNCTION(fps_proc);
 
-// unos kinkis te han robado la vespino
 int main(int argc, const char **argv) {
     char file_buffer[14];
     BITMAP *bmp;
@@ -103,7 +102,15 @@ int main(int argc, const char **argv) {
     music = load_midi("ROGERR.MID");
     alleytheme = load_wav("alleytheme.wav");
     hit = load_wav("hit.wav");
+    punch = load_wav("punch.wav");
+    punch2 = load_wav("punch2.wav");
     dog_theme = load_wav("dog.wav");
+    fall = load_wav("fall.wav");
+    die_sample = load_wav("die.wav");
+
+    if (!music || !alleytheme || !hit || !punch || !punch2 || !dog_theme || !fall || !die_sample) {
+        die("cannot load samples");
+    }
 
     if (install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, NULL) != 0) {
         die("Error: inicializando sistema de sonido\n%s\n", allegro_error);
@@ -130,6 +137,8 @@ int main(int argc, const char **argv) {
     girl = load_pcx("GIRL.PCX", NULL);
     key_sprite = load_pcx( "KEY.PCX", NULL );
     key_sprite_blue = load_pcx( "BLUE_KEY.PCX", NULL );
+    vespino = load_pcx("vespino.pcx", NULL);
+    vespino2 = load_pcx("vespino2.pcx", NULL);
 
     if (!player_head) {
         die("cannot load head");
@@ -237,8 +246,14 @@ int main(int argc, const char **argv) {
     destroy_bitmap(girl);
     destroy_bitmap(key_sprite);
     destroy_bitmap(key_sprite_blue);
+    destroy_bitmap(vespino);
+    destroy_bitmap(vespino2);
     destroy_sample(alleytheme);
     destroy_sample(hit);
+    destroy_sample(punch);
+    destroy_sample(punch2);
+    destroy_sample(fall);    
+    destroy_sample(die_sample);
     unload_enemies();
     destroy_tiles();
     cleanup_data();
