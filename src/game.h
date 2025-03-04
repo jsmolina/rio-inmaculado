@@ -17,7 +17,7 @@
 
 // TODO define maximum vertical distance to allow before two objects can no
 // longer interact
-
+extern time_t start_playing;
 extern int exit_game; /* flag we'll set to end the game */
 extern unsigned char level;
 extern unsigned int score;

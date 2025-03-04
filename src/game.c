@@ -17,6 +17,7 @@
 int exit_game;
 spritePos player;
 
+time_t start_playing;
 unsigned int score;
 unsigned char level = 0;
 unsigned char next_level = FALSE;
@@ -133,6 +134,7 @@ void increase_level_and_load() {
     score = 0;
     next_level = 1;
     int x_moto = 0;
+    start_playing = time(NULL);
     for (int i = 0; i < TOTAL_LEVELS; i++) {
         for (int j=0; j < MAX_ENEMIES; j++) {
             alive_enemies[i][j] = TRUE;
