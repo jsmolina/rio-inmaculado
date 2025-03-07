@@ -115,7 +115,7 @@ void level8_coursnave() {
     sprintf(missed, "FAIL: %01d", missed_beeps);
     textout_ex(screen, font, missed, 120, SCREEN_H - 26, makecol(255, 0, 0), makecol(0, 0, 0));
     sprintf(missed, "COURSE: %01d", beep_count);
-    textout_ex(screen, font, missed, 210, SCREEN_H - 26, makecol(0, 100, 255), makecol(0, 0, 0));
+    textout_ex(screen, font, missed, 200, SCREEN_H - 26, makecol(0, 100, 255), makecol(0, 0, 0));
 
     float tiempo_entre_beeps = (float)(tiempo_actual - ultimo_beep) / CLOCKS_PER_SEC;
     if (ultimo_beep == 0 || tiempo_entre_beeps > (4 - beep_count * 0.25)) {

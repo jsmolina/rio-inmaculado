@@ -345,36 +345,6 @@ void output() {
 }
 
 
-int show_bg() {
-   BITMAP *bmp, *buffer;
-   PALETTE pal;
-   int alpha;
-   
-   if (!bg)
-      return -1;
-
-   buffer = create_bitmap(SCREEN_W, SCREEN_H);
-   blit(screen, buffer, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
-
-   set_palette(pal);
-
-   /* fade it in on top of the previous picture */
-   for (alpha=100; alpha<256; alpha+=8) {
-      set_trans_blender(0, 0, 0, alpha);
-      draw_trans_sprite(buffer, bg,
-			(SCREEN_W-bg->w)/2, (SCREEN_H-bg->h)/2);
-      vsync();
-      blit(buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);      
-   }
-
-   blit(bg, screen, 0, 0, (SCREEN_W-bg->w)/2, (SCREEN_H-bg->h)/2,
-	bg->w, bg->h);
-    //rectfill(screen, 0, 200, 320, 240, makecol(0, 0, 0));
-
-
-   destroy_bitmap(buffer);
-}
-
 void init_level_variables(unsigned int initialX, unsigned int initialY) {
     player.x = initialX;
     player.y = initialY;
@@ -435,8 +405,8 @@ void load_levels() {
 
 
 void load_level() {
-
-    if (next_level == 6 && level == 5) {
+    unsigned char prev_level = level;
+    if (next_level == 6 && prev_level == 5) {
         BITMAP * bg2;
 
         bg2 = load_level_background(6);
@@ -522,11 +492,11 @@ void load_level() {
         die("Cannot load graphic");        
     }
     //blit(bg, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
-    if (!(next_level == 6 && level == 5)) {
+    if (!(level == 6 && prev_level == 5) && level != MISIFU_ALLEY) {
         fade_out(16);
     }
     blit(bg, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
-    if (!(next_level == 6 && level == 5)) {
+    if (!(level == 6 && prev_level == 5) && level != MISIFU_ALLEY) {
         fade_in(palette, 16);
     }
     

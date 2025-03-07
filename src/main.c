@@ -9,7 +9,9 @@
 #include "allegro/color.h"
 #include "allegro/datafile.h"
 #include "allegro/digi.h"
+#include "allegro/draw.h"
 #include "allegro/gfx.h"
+#include "allegro/inline/draw.inl"
 #include "allegro/keyboard.h"
 #include "allegro/system.h"
 #include "game.h"
@@ -60,6 +62,39 @@ static void fps_proc(void) {
 
 END_OF_STATIC_FUNCTION(fps_proc);
 
+void rotate_pal(int index1, int index2) {
+    int j;
+    int colors;
+
+   int auxColorR;
+   int auxColorG;
+   int auxColorB;
+
+
+   int firstIndex = index1*3;
+   int lastIndex = index2*3;
+   colors = index2-index1;
+
+   // first thing first...save last index colour
+ 	auxColorR = palette[lastIndex].r;
+  	auxColorG = palette[lastIndex].g;
+  	auxColorB = palette[lastIndex].b;
+
+   // rotate all colors
+  	for(j=0; j<colors; j++){
+		palette[lastIndex -(j*3)].r = palette[lastIndex -(j*3) -3].r;
+     	palette[lastIndex -(j*3)].g = palette[lastIndex -(j*3) -2].g;
+     	palette[lastIndex -(j*3)].b = palette[lastIndex -(j*3) -1].b;
+         set_pallete(palette);
+   }
+
+   // restore last index colour on first index
+	palette[firstIndex].r = auxColorR;
+	palette[firstIndex].g = auxColorG;
+	palette[firstIndex].b = auxColorB;
+    set_palette(palette);
+}
+
 int main(int argc, const char **argv) {
     char file_buffer[14];
     BITMAP *bmp;
@@ -78,7 +113,7 @@ int main(int argc, const char **argv) {
     // Switch to graphics mode, 320x200.
     set_color_depth(8);
 
-    if (set_gfx_mode(GFX_MODEX, 320, 200, 0, 0) != 0) {
+    if (set_gfx_mode(GFX_MODEX, 320, 240, 0, 0) != 0) {
         die("Cannot set graphics mode");
     }
 
@@ -89,15 +124,17 @@ int main(int argc, const char **argv) {
     //set_color_depth(desktop_color_depth());
     slow_cpu = 1;
     clear_to_color(screen, 0);
-    textout_centre_ex(screen, font, "Loading Instituto Rio Immaculado...", SCREEN_W / 2, SCREEN_H / 2, makecol(255,255,255), -1);
+    BITMAP *msdos;
+    msdos = load_pcx("msdos.pcx", palette);
+    set_pallete(palette);
+    blit(msdos, screen, 0, 0, 0, 0, 320, 240);    
+    destroy_bitmap(msdos);
+    textout_centre_ex(screen, font, "Loading Instituto Rio Immaculado...", SCREEN_W / 2, 30, makecol(255,255,255), -1);    
+    
     extract_data(); // todo mover despues de textout
 
     load_levels();
-    set_color_depth(8);
-    //try GFX_MODEX
-    if(set_gfx_mode(GFX_MODEX, 320, 240, 0, 0) != 0) {
-        die("error setting 320x240 16bpp: %s", allegro_error);
-    }
+
 
     music = load_midi("ROGERR.MID");
     alleytheme = load_wav("alleytheme.wav");
