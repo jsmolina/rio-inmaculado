@@ -173,7 +173,7 @@ void draw_score() {
 }
 
 void game_over() {
-    textout_centre_ex(screen, font, "GAME OVER", 120, SCREEN_H - 34, makecol(255, 255, 255), makecol(10, 10, 10));
+    textout_centre_ex(screen, font, "GAME OVER", 190, SCREEN_H - 34, makecol(255, 255, 255), makecol(10, 10, 10));
 }
 
 void draw_lifebar() {
