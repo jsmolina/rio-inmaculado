@@ -83,7 +83,7 @@ unsigned char original_lives;
 BITMAP *heart;
 
 struct holes holes_pos[HOLES_POS] = {
-    26,140, 
+    25,140, 
     42,122, 
     52,95, 
     90, 132, 

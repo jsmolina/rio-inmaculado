@@ -132,7 +132,7 @@ void increase_level_and_load() {
     yellow_key = FALSE;
     blue_key = FALSE;
     score = 0;
-    next_level = 1;
+    next_level = MISIFU_ALLEY;
     int x_moto = 0;
     start_playing = time(NULL);
     for (int i = 0; i < TOTAL_LEVELS; i++) {
@@ -492,11 +492,11 @@ void load_level() {
         die("Cannot load graphic");        
     }
     //blit(bg, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
-    if (!(level == 6 && prev_level == 5) && level != MISIFU_ALLEY) {
+    if (!(level == 6 && prev_level == 5) && level != MISIFU_ALLEY && level != MISIFU_CHEESE) {
         fade_out(16);
     }
     blit(bg, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
-    if (!(level == 6 && prev_level == 5) && level != MISIFU_ALLEY) {
+    if (!(level == 6 && prev_level == 5) && level != MISIFU_ALLEY && level != MISIFU_CHEESE) {
         fade_in(palette, 16);
     }
     
