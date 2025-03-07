@@ -132,7 +132,7 @@ void increase_level_and_load() {
     yellow_key = FALSE;
     blue_key = FALSE;
     score = 0;
-    next_level = MISIFU_ALLEY;
+    next_level = 1;
     int x_moto = 0;
     start_playing = time(NULL);
     for (int i = 0; i < TOTAL_LEVELS; i++) {
