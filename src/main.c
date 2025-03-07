@@ -126,10 +126,13 @@ int main(int argc, const char **argv) {
     clear_to_color(screen, 0);
     BITMAP *msdos;
     msdos = load_pcx("msdos.pcx", palette);
-    set_pallete(palette);
-    blit(msdos, screen, 0, 0, 0, 0, 320, 240);    
-    destroy_bitmap(msdos);
-    textout_centre_ex(screen, font, "Loading Instituto Rio Immaculado...", SCREEN_W / 2, 30, makecol(255,255,255), -1);    
+    if (msdos) {
+        set_pallete(palette);
+        blit(msdos, screen, 0, 0, 0, 0, 320, 240);    
+        destroy_bitmap(msdos);
+    }
+    
+    textout_centre_ex(screen, font, "Loading Instituto Rio Immaculado...", SCREEN_W / 2, 30, 200, -1);    
     
     extract_data(); // todo mover despues de textout
 
