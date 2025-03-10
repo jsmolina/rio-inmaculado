@@ -83,6 +83,16 @@ typedef struct  {
     int variant; // which enemy are we painting?
 } enemyData;
 
+typedef struct {
+    int x;
+    int y;
+    BITMAP *sprite[2];
+    unsigned int received_hits;
+    int is_floor;
+    int visible;
+    uint8_t direction;
+} vespinoData;
+
 typedef struct  {
     // TODO remove, just for helping
     unsigned int level; 

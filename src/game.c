@@ -36,7 +36,7 @@ BITMAP *bg;
 BITMAP *tiles;
 BITMAP *player_head;
 BITMAP *girl;
-BITMAP *vespino, *vespino2;
+BITMAP *vespino;
 BITMAP *key_sprite;
 BITMAP *key_sprite_blue;
 BITMAP *player_lifebar;
@@ -120,8 +120,6 @@ void increase_level_and_load() {
     textout_centre_ex(screen, font, "SUS AMIGOS TE ESPERAN", SCREEN_W / 2,
         SCREEN_H / 2 + 80, makecol(255, 255, 255), -1);
 
-    
-
     draw_sprite(screen, player.sprite[0], 40, 60);
     locked_elevator = TRUE;
     urinated = FALSE;
@@ -132,8 +130,13 @@ void increase_level_and_load() {
     yellow_key = FALSE;
     blue_key = FALSE;
     score = 0;
-    next_level = 1;
-    int x_moto = 0;
+    next_level = 11;
+    // last level starts with zero enemies
+    vespino_enemy.x = 290;
+    vespino_enemy.y = 110;
+    vespino_enemy.is_floor = FALSE;
+    vespino_enemy.direction = VESPINO_HIDDEN;
+
     start_playing = time(NULL);
     for (int i = 0; i < TOTAL_LEVELS; i++) {
         for (int j=0; j < MAX_ENEMIES; j++) {
@@ -144,11 +147,11 @@ void increase_level_and_load() {
     while(key[KEY_SPACE]) {
         rest(1);
     }
-
+    int x_moto = 0;
     for (int i = 0; i < 25; i++) {
         x_moto = 88 + 5 * i;
         rectfill(screen, x_moto - 5, 50, x_moto + 54, 99, 0);
-        draw_sprite(screen, vespino2, x_moto, 50);
+        draw_sprite(screen, vespino_enemy.sprite[0], x_moto, 50);
         rest(150);
         vsync();
         if (key[KEY_SPACE]) {
@@ -194,11 +197,8 @@ void process() {
     move_to_level_if_needed();
 
     if (key[KEY_0]) {
-        next_level = GAME_OVER;
-        level = GAME_OVER;
-        player.is_floor = FLOOR_DURATION;
-        game_over();
-        return;
+        levels[11].total_enemies = 2;
+        init_level_enemies();
     }
 
     if (player.received_hits == 5) {
@@ -331,7 +331,7 @@ void output() {
     }
 
     // draw in order depending on Y
-    if (player_over_all_enemies(player.y)) {
+    if (player_over_all_enemies()) {
         draw_player();
         all_draw_enemies();
     } else {
@@ -486,7 +486,7 @@ void load_level() {
         }
         player.curr_sprite = ANIM_WALK1;
 
-        init_level_enemies(curr_leveldata.maxX, FALSE);
+        init_level_enemies();
     }
     if (!bg) {
         die("Cannot load graphic");        

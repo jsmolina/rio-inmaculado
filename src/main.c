@@ -178,7 +178,6 @@ int main(int argc, const char **argv) {
     key_sprite = load_pcx( "KEY.PCX", NULL );
     key_sprite_blue = load_pcx( "BLUE_KEY.PCX", NULL );
     vespino = load_pcx("vespino.pcx", NULL);
-    vespino2 = load_pcx("vespino2.pcx", NULL);
 
     if (!player_head) {
         die("cannot load head");
@@ -195,9 +194,12 @@ int main(int argc, const char **argv) {
     if (!key_sprite_blue) {
         die("cannot load key_sprite_blue");
     }
+    if (!vespino) {
+        die("cannot load vespino");
+    }
 
     // pre load enemies sprites
-    init_level_enemies(300, TRUE);
+    init_enemies();
     // will load menu
     next_level = 0;
     load_level();
@@ -287,7 +289,6 @@ int main(int argc, const char **argv) {
     destroy_bitmap(key_sprite);
     destroy_bitmap(key_sprite_blue);
     destroy_bitmap(vespino);
-    destroy_bitmap(vespino2);
     destroy_sample(alleytheme);
     destroy_sample(hit);
     destroy_sample(punch);

@@ -1,6 +1,7 @@
 #include "enem.h"
 #include "allegro/digi.h"
 #include "allegro/gfx.h"
+#include "allegro/inline/draw.inl"
 #include "allegro/platform/astdint.h"
 #include "allegro/text.h"
 #include "game.h"
@@ -8,6 +9,8 @@
 #include <stdio.h>
 
 enemyData enemies[MAX_ENEMIES];
+vespinoData vespino_enemy;
+
 int hitted_this_loop = FALSE;
 int alive_enemies[TOTAL_LEVELS][MAX_ENEMIES];
 int attack_variant = 0;
@@ -42,34 +45,35 @@ void unload_enemies() {
             }
         }
     }
+    for (int i = 0; i < 2; i++) {
+        destroy_bitmap(vespino_enemy.sprite[i]);
+    }
 }
 
-void init_level_enemies(int maxX, int first_load) {
+void init_enemies() {
     for (int ec = 0; ec < MAX_ENEMIES; ec++) {
-        if (ec < levels[level].total_enemies) {
-            //enemies[ec].is_active = TRUE;
-            enemies[ec].x = maxX - 60 - ec * 15; // it should vary per level
-            enemies[ec].y = 150 + ((ec %2) * 3); // it should vary per enemy
-            enemies[ec].targetX = 0;
-            enemies[ec].targetY = 0;
-            enemies[ec].curr_sprite = 0;
-            enemies[ec].is_hit = FALSE;
-            if (alive_enemies[level][ec] == TRUE) {
-                enemies[ec].is_floor = FALSE;
-            } else {
-                enemies[ec].is_floor = HIT_DURATION;
-            }
-            enemies[ec].is_punching = FALSE;
-            enemies[ec].received_hits = 0;
-            //enemies[ec].is_active = FALSE;
-            
+        eies_sprite(&enemies[ec], ec % 3 + 1);
+        alive_enemies[level][ec] = FALSE;
+    }
+    vespino_enemy.sprite[0] = load_pcx("vespino2.pcx", NULL);
+    vespino_enemy.sprite[1] = load_pcx("vespino3.pcx", NULL);
+}
+
+void init_level_enemies() {
+    for (int ec = 0; ec < levels[level].total_enemies; ec++) {
+        enemies[ec].x = levels[level].maxX - 60 - ec * 15; // it should vary per level
+        enemies[ec].y = 150 + ((ec % 2) * 3); // it should vary per enemy
+        enemies[ec].targetX = 0;
+        enemies[ec].targetY = 0;
+        enemies[ec].curr_sprite = 0;
+        enemies[ec].is_hit = FALSE;
+        if (alive_enemies[level][ec] == TRUE) {
+            enemies[ec].is_floor = FALSE;
         } else {
-            //enemies[ec].is_active = FALSE;
-            if (first_load == TRUE) {
-                eies_sprite(&enemies[ec], ec % 3 + 1);
-            }
-            alive_enemies[level][ec] = FALSE;
+            enemies[ec].is_floor = HIT_DURATION;
         }
+        enemies[ec].is_punching = FALSE;
+        enemies[ec].received_hits = 0;
     }
 }
 
@@ -367,13 +371,15 @@ inline void draw_enemy(enemyData *enem) {
             draw_sprite(screen, enem->sprite[enem->curr_sprite], enem->x, enem->y);
         }
     }
-
 }
 
 void all_enemy_animations() {
     for (int i = 0; i < levels[level].total_enemies; i++) {
         enemy_animation(&enemies[i]);
     }
+}
+void clean_vespino() {
+    blit(bg, screen, vespino_enemy.x - 3, vespino_enemy.y, vespino_enemy.x-3, vespino_enemy.y, 55, 50);
 }
 
 void all_enemy_decisions(spritePos *playr) {
@@ -383,7 +389,35 @@ void all_enemy_decisions(spritePos *playr) {
             alive_enemies[level][i] = FALSE;
         }
     }
+
+    if (vespino_enemy.direction == VESPINO_HIDDEN && counter == 100) {
+        vespino_enemy.y = player.y - 5;
+        if (vespino_enemy.x > 210) {
+            vespino_enemy.direction = VESPINO_LEFT;
+        } 
+        if (vespino_enemy.x < 15) {
+            vespino_enemy.direction = VESPINO_RIGHT;
+        }
+    } else { 
+        if (vespino_enemy.direction == VESPINO_LEFT) {
+            vespino_enemy.x -= VESPINO_SPEED;
+        } else if (vespino_enemy.direction == VESPINO_RIGHT) {
+            vespino_enemy.x += VESPINO_SPEED;                    
+        }
+        // avoid overflows
+        if (vespino_enemy.x < 5) {
+            vespino_enemy.direction = VESPINO_HIDDEN;
+            clean_vespino();
+        }
+        if (vespino_enemy.x > 290) {
+            vespino_enemy.direction = VESPINO_HIDDEN;
+            clean_vespino();
+        }
+    }
+      
+    
 }
+
 int enemies_y_comp(const void *a, const void *b) {
     enemyData *enemyA = (enemyData *)a;
     enemyData *enemyB = (enemyData *)b;
@@ -396,11 +430,29 @@ void all_draw_enemies() {
     for (int i = 0; i < levels[level].total_enemies; i++) {
         draw_enemy(&enemies[i]);
     }
+
+    if (level == 11) {
+        int offset;
+        if ((vespino_enemy.x / 4) % 2 == 0) {
+            offset = 1;            
+        } else {
+            offset = 0;
+        }
+        
+        if (vespino_enemy.direction == VESPINO_LEFT) {
+            draw_sprite_h_flip(screen, vespino_enemy.sprite[offset], vespino_enemy.x, vespino_enemy.y);
+        } else if (vespino_enemy.direction == VESPINO_RIGHT) {
+            draw_sprite(screen, vespino_enemy.sprite[offset], vespino_enemy.x, vespino_enemy.y);
+        }
+    }
 }
 
 void redraw_bg_enemy_positions() {
     for (int i = 0; i < levels[level].total_enemies; i++) {
         blit(bg, screen, enemies[i].x, 120, enemies[i].x, 120, 40, 80);
+    }
+    if (vespino_enemy.direction != VESPINO_HIDDEN) {
+        clean_vespino();
     }
 }
 
