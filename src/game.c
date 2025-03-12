@@ -311,12 +311,21 @@ void draw_player() {
     }
 }
 
+typedef struct  {
+    unsigned int y;
+    int argument;
+} yPositions;
+
+
+int y_comp(const void *a, const void *b) {
+    yPositions *elemA = (yPositions *)a;
+    yPositions *elemB = (yPositions *)b;
+    return (elemA->y - elemB->y);
+}
 
 void output() {
     counter++;
-    if (counter > 32765) {
-        counter = 0;
-    }
+
     if (level == MISIFU_ALLEY || level ==  MISIFU_CHEESE) {
         return;
     }
@@ -344,12 +353,29 @@ void output() {
     }
 
     // draw in order depending on Y
-    if (player_over_all_enemies()) {
-        draw_player();
-        all_draw_enemies();
-    } else {
-        all_draw_enemies();
-        draw_player();
+
+    yPositions drawn_items[5] = {
+        {enemies[0].y,  JOHNY_INDEX},
+        {enemies[1].y,  PETER_INDEX},
+        {enemies[2].y, ALEX_INDEX},
+        {player.y,  PLAYER_INDEX},
+        {vespino_enemy.y,  VESPINO_INDEX}
+    };
+    
+    qsort(drawn_items, 5, sizeof(yPositions), y_comp);
+    for (int i = 0; i < 5; i++) {
+        if(drawn_items[i].argument <= ALEX_INDEX) {
+            draw_enemy(drawn_items[i].argument);
+        } else if (drawn_items[i].argument == PLAYER_INDEX) {
+            draw_player();
+        } else {
+            draw_vespino();
+        }
+    }
+
+    if(level == 4 && urinated != FALSE) {
+        // draw teacher
+        draw_sprite(screen, girl, 42, 145);
     }
 
     if (counter > 319) {

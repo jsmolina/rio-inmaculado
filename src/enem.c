@@ -148,7 +148,7 @@ int enemy_decision(enemyData *enem) {
             ++enem->received_hits;
             hitted_this_loop = TRUE;
         }
-        if (player.moving == PUNCH_RIGHT && player.x <= enem->x && !hitted_this_loop && counter != 100) {
+        if (player.moving == PUNCH_RIGHT && player.x <= enem->x && !hitted_this_loop && counter % 10 == 0) {
             score += 10;
             play_sample(punch, 200, 155, 1200 + counter % 100, 0);  
             enem->is_hit = HIT_DURATION_ENEM;
@@ -359,27 +359,27 @@ int enemy_decision(enemyData *enem) {
     return FALSE;
 }
 
-inline void draw_enemy(enemyData *enem) {
+void draw_enemy(int index) {
+    if ((index + 1) > levels[level].total_enemies) {
+        return; 
+    }
 
-    if(level == 4 && urinated != FALSE) {
-        // draw teacher
-        draw_sprite(screen, girl, 42, 145);
-    } 
-
-    if (enem->is_floor != FALSE) {
-        if (enem->moving & 1) {
-            draw_sprite(screen, enem->sprite[11], enem->x, enem->y + 30);
+    if (enemies[index].is_floor != FALSE) {
+        if (enemies[index].moving & 1) {
+            draw_sprite(screen, enemies[index].sprite[11], enemies[index].x, enemies[index].y + 30);
         } else {
-            draw_sprite_h_flip(screen, enem->sprite[11], enem->x, enem->y + 30);
+            draw_sprite_h_flip(screen, enemies[index].sprite[11], enemies[index].x, enemies[index].y + 30);
         }
 
     } else {
+        if (!enemies[index].sprite[enemies[index].curr_sprite]) {
+            return;
+        }
         // redraw pair or impair?
-        if (enem->moving & 1) {
-            draw_sprite_h_flip(screen, enem->sprite[enem->curr_sprite], enem->x,
-                            enem->y);
+        if (enemies[index].moving & 1) {
+            draw_sprite_h_flip(screen, enemies[index].sprite[enemies[index].curr_sprite], enemies[index].x, enemies[index].y);
         } else {
-            draw_sprite(screen, enem->sprite[enem->curr_sprite], enem->x, enem->y);
+            draw_sprite(screen, enemies[index].sprite[enemies[index].curr_sprite], enemies[index].x, enemies[index].y);
         }
     }
 }
@@ -459,19 +459,7 @@ void all_enemy_decisions() {
     
 }
 
-int enemies_y_comp(const void *a, const void *b) {
-    enemyData *enemyA = (enemyData *)a;
-    enemyData *enemyB = (enemyData *)b;
-    return (enemyA->y - enemyB->y);
-}
-
-void all_draw_enemies() {
-    qsort(enemies, levels[level].total_enemies, sizeof(enemyData), enemies_y_comp);
-
-    for (int i = 0; i < levels[level].total_enemies; i++) {
-        draw_enemy(&enemies[i]);
-    }
-
+void draw_vespino() {
     if (level == 11) {
         int offset;
         if ((vespino_enemy.x / 4) % 2 == 0) {
@@ -479,7 +467,9 @@ void all_draw_enemies() {
         } else {
             offset = 0;
         }
-        
+        if (!vespino_enemy.sprite[offset]) {
+            return;
+        }
         if (vespino_enemy.direction == VESPINO_LEFT) {
             draw_sprite_h_flip(screen, vespino_enemy.sprite[offset], vespino_enemy.x, vespino_enemy.y);
         } else if (vespino_enemy.direction == VESPINO_RIGHT) {
@@ -487,6 +477,7 @@ void all_draw_enemies() {
         }
     }
 }
+
 
 void redraw_bg_enemy_positions() {
     for (int i = 0; i < levels[level].total_enemies; i++) {

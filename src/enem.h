@@ -15,6 +15,12 @@
 
 #define FIGHT_DISTANCE 20
 
+#define JOHNY_INDEX 0
+#define PETER_INDEX 1
+#define ALEX_INDEX 2
+#define PLAYER_INDEX 3
+#define VESPINO_INDEX 4
+
 extern enemyData enemies[MAX_ENEMIES];
 extern int alive_enemies[TOTAL_LEVELS][MAX_ENEMIES];
 extern vespinoData vespino_enemy;
@@ -29,6 +35,9 @@ void all_enemy_decisions();
 void enem_resets();
 // draw all enemies
 void all_draw_enemies();
+void draw_enemy(int index);
+void draw_vespino();
+
 // returns true if player has Y upper than all enemies
 int player_over_all_enemies();
 // true if has any enemy on path
