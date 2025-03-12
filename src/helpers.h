@@ -89,7 +89,7 @@ typedef struct {
     BITMAP *sprite[2];
     unsigned int received_hits;
     int is_floor;
-    int visible;
+    int hit;
     uint8_t direction;
 } vespinoData;
 

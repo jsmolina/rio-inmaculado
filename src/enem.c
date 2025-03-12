@@ -345,15 +345,15 @@ void all_enemy_decisions() {
 
         if (player.is_floor == FALSE) {
 
-            if ((x_distance == 10 || x_distance == 9 || x_distance == 8) && y_distance < 8) { 
+            if (x_distance < 12 && x_distance >= 6) { 
                 if (player.moving == PUNCH_LEFT && player.x > vespino_enemy.x) {
-                    //("punched left");
+                    vespino_enemy.hit = 16;
                 } else  if (player.moving == PUNCH_RIGHT && player.x < vespino_enemy.x) {
-                    //("punched right");
+                    vespino_enemy.hit = 16;
                 }
             }
             
-            if (x_distance < 8 && y_distance < 8) {
+            if (x_distance < 6 && y_distance < 8) {
                 player.is_floor = FLOOR_DURATION / 2;
                 player.received_hits = MOTORBIKE_HIT;
                 
@@ -364,6 +364,11 @@ void all_enemy_decisions() {
                 }
                 draw_lifebar();
             }
+        }
+        
+        if (vespino_enemy.hit > 0) {
+            --vespino_enemy.hit;
+            return;
         }
 
         if (vespino_enemy.direction == VESPINO_LEFT) {
