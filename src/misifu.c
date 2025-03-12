@@ -471,8 +471,7 @@ inline void paint_clothes() {
             --clothes.frames_moving;
             move_clothes();
         }
-    }
-   
+    }   
 }
 
 

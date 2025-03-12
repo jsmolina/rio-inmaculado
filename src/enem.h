@@ -28,18 +28,18 @@ extern vespinoData vespino_enemy;
 // initializes enemies on level
 void init_level_enemies();
 void init_enemies();
+
 // Animations for all enemies
 void all_enemy_animations();
+
 // AI for all enemies
 void all_enemy_decisions();
 void enem_resets();
+
 // draw all enemies
-void all_draw_enemies();
 void draw_enemy(int index);
 void draw_vespino();
 
-// returns true if player has Y upper than all enemies
-int player_over_all_enemies();
 // true if has any enemy on path
 int enemy_on_path(unsigned int new_player_x);
 // redraws background over all the enemy positions

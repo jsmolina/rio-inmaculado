@@ -364,11 +364,11 @@ void output() {
     
     qsort(drawn_items, 5, sizeof(yPositions), y_comp);
     for (int i = 0; i < 5; i++) {
-        if(drawn_items[i].argument <= ALEX_INDEX) {
+        if (drawn_items[i].argument <= ALEX_INDEX) {
             draw_enemy(drawn_items[i].argument);
         } else if (drawn_items[i].argument == PLAYER_INDEX) {
             draw_player();
-        } else {
+        } else if (drawn_items[i].argument == VESPINO_INDEX && level == 11) {
             draw_vespino();
         }
     }

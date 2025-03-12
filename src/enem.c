@@ -266,93 +266,7 @@ int enemy_decision(enemyData *enem) {
         }
 
     }
-    
-    /*if (enem->variant == PETER) {
-               
-                sprintf(buff, "x: %d, tx: %d, enX: %d, %d", playr->x, enem->targetX, enem->x, random_choice);
-                textout_ex(screen, font, "                                             ", 0,
-                      50, makecol(0, 0, 0), makecol(255, 255, 255));
-                textout_ex(screen, font, buff, 0,
-                      50, makecol(0, 0, 0), makecol(255, 255, 255));
-    } else {
-        sprintf(buff, "x: %d, tx: %d, enX: %d", playr->x, enem->targetX, enem->x);
-                textout_ex(screen, font, "                                             ", 0,
-                      60, makecol(0, 0, 0), makecol(255, 255, 255));
-                textout_ex(screen, font, buff, 0,
-                      60, makecol(0, 0, 0), makecol(255, 255, 255));
-    }*/
-    
-/*
-    // check movements
-    if ((enem->variant == JOHNY && (enem->targetX < playr->x || enem->targetX > playr->x + 25)) 
-    || (enem->variant == PETER && (enem->targetX > playr->x || enem->targetX < (playr->x - 25)))) {    
-        if ((counter % 30) == 0) {
-            if (enem->variant == JOHNY) {
-                enem->targetX = playr->x + 25;
-            } else if (enem->variant == PETER) {                
-                if (playr->x > 25) {
-                    enem->targetX = playr->x - 25;
-                } else {
-                    enem->targetX = playr->x;
-                }
-            }   
-        }
-    } else if ((enem->variant == JOHNY && (enem->x < playr->x || enem->x > playr->x + 25)) 
-    || (enem->variant == PETER && (enem->x > playr->x || enem->x < playr->x - 25))) {
-        if (enem->targetX) {
-            if (enem->x > enem->targetX && enem->x > 0) {
-                enem->x--;
-                enem_has_moved = TRUE;
-                enem->moving = MOVING_LEFT;
-            } else if (enem->x < enem->targetX && enem->x < 320) {
-                enem->x++;
-                enem_has_moved = TRUE;
-                enem->moving = MOVING_RIGHT;
-            } else {
-                enem->moving = STOP_RIGHT;
-            }
-        } 
-    } else {
-        if (point_distance(playr->y, enem->y) >= 2 && (counter % 2) == 0) {
-            if (enem->y > playr->y) {
-                enem->y_moving = MOVING_UP;
-                enem->y--;
-            } else {
-                enem->y_moving = MOVING_DOWN;
-                enem->y++;
-            }
-            enem_has_moved = TRUE;
-        } else {
-            enem->y_moving = STOPPOS;
 
-            if (enem->moving == MOVING_LEFT || enem->moving == PUNCH_LEFT) {
-                enem->moving = STOP_LEFT;
-                enem->targetX = FALSE;
-            } else if (enem->moving == MOVING_RIGHT ||
-                       enem->moving == PUNCH_RIGHT) {
-                enem->moving = STOP_RIGHT;
-                enem->targetX = FALSE;
-            }
-            if (counter % 20 == 0 && playr->is_floor == FALSE) {
-                if (enem->moving == STOP_LEFT || enem->moving == STOP_RIGHT) {
-                    // TODO think on punch
-                    if (enem->x > playr->x) {
-                        enem->moving = PUNCH_LEFT;
-                    } else {
-                        enem->moving = PUNCH_RIGHT;
-                    }
-                    enem->is_punching = HIT_DURATION;
-                }
-
-                if ((enem->moving == PUNCH_LEFT && player.x <= enem->x) || (enem->moving == PUNCH_RIGHT && player.x >= enem->x))  {
-                    playr->is_hit = HIT_DURATION;
-                    playr->received_hits++;
-                    playr->lifebar--;                    
-                    draw_lifebar();
-                }
-            }
-        }
-    }*/
     if (!enem_has_moved && (enem->moving == MOVING_LEFT || enem->moving == MOVING_RIGHT)) {
         enem->moving = STOP_LEFT;
     }
@@ -389,6 +303,7 @@ void all_enemy_animations() {
         enemy_animation(&enemies[i]);
     }
 }
+
 void clean_vespino() {
     blit(bg, screen, vespino_enemy.x - 3, vespino_enemy.y, vespino_enemy.x-3, vespino_enemy.y, 55, 50);
 }
@@ -425,6 +340,32 @@ void all_enemy_decisions() {
             vespino_enemy.direction = VESPINO_RIGHT;
         }
     } else {
+        int x_distance = point_distance(vespino_enemy.x, player.x);        
+        int y_distance = point_distance(vespino_enemy.y, player.y);
+
+        if (player.is_floor == FALSE) {
+
+            if ((x_distance == 10 || x_distance == 9 || x_distance == 8) && y_distance < 8) { 
+                if (player.moving == PUNCH_LEFT && player.x > vespino_enemy.x) {
+                    //("punched left");
+                } else  if (player.moving == PUNCH_RIGHT && player.x < vespino_enemy.x) {
+                    //("punched right");
+                }
+            }
+            
+            if (x_distance < 8 && y_distance < 8) {
+                player.is_floor = FLOOR_DURATION / 2;
+                player.received_hits = MOTORBIKE_HIT;
+                
+                if (player.lifebar < 4) {
+                    player.lifebar = 0;
+                } else {
+                    player.lifebar -= 4;
+                }
+                draw_lifebar();
+            }
+        }
+
         if (vespino_enemy.direction == VESPINO_LEFT) {
             vespino_enemy.x -= VESPINO_SPEED;
         } else if (vespino_enemy.direction == VESPINO_RIGHT) {
@@ -439,42 +380,26 @@ void all_enemy_decisions() {
             vespino_enemy.direction = VESPINO_HIDDEN;
             clean_vespino();
         }
-        if (player.is_floor == FALSE) {
-            int x_distance = point_distance(vespino_enemy.x, player.x);        
-            int y_distance = point_distance(vespino_enemy.y, player.y);
-            if (x_distance < 8 && y_distance < 8) {
-                player.is_floor = FLOOR_DURATION / 2;
-                player.received_hits = MOTORBIKE_HIT;
-                
-                if (player.lifebar < 4) {
-                    player.lifebar = 0;
-                } else {
-                    player.lifebar -= 4;
-                }
-                draw_lifebar();
-            }
-        }
+        
     }
       
     
 }
 
 void draw_vespino() {
-    if (level == 11) {
-        int offset;
-        if ((vespino_enemy.x / 4) % 2 == 0) {
-            offset = 1;            
-        } else {
-            offset = 0;
-        }
-        if (!vespino_enemy.sprite[offset]) {
-            return;
-        }
-        if (vespino_enemy.direction == VESPINO_LEFT) {
-            draw_sprite_h_flip(screen, vespino_enemy.sprite[offset], vespino_enemy.x, vespino_enemy.y);
-        } else if (vespino_enemy.direction == VESPINO_RIGHT) {
-            draw_sprite(screen, vespino_enemy.sprite[offset], vespino_enemy.x, vespino_enemy.y);
-        }
+    int offset;
+    if ((vespino_enemy.x / 4) % 2 == 0) {
+        offset = 1;            
+    } else {
+        offset = 0;
+    }
+    if (!vespino_enemy.sprite[offset]) {
+        return;
+    }
+    if (vespino_enemy.direction == VESPINO_LEFT) {
+        draw_sprite_h_flip(screen, vespino_enemy.sprite[offset], vespino_enemy.x, vespino_enemy.y);
+    } else if (vespino_enemy.direction == VESPINO_RIGHT) {
+        draw_sprite(screen, vespino_enemy.sprite[offset], vespino_enemy.x, vespino_enemy.y);
     }
 }
 
@@ -488,15 +413,6 @@ void redraw_bg_enemy_positions() {
     }
 }
 
-int player_over_all_enemies() {
-    char player_under_enemies = FALSE;
-    for (int i = 0; i < levels[level].total_enemies; i++) {
-        if (player.y < enemies[i].y) {
-            player_under_enemies = TRUE;
-        }
-    }
-    return player_under_enemies;
-}
 
 int enemy_on_path(unsigned int new_player_x) {
     for (int i = 0; i < levels[level].total_enemies; i++) {
