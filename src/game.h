@@ -6,13 +6,15 @@
 #include <allegro/keyboard.h>
 
 #define TRANS makecol(255, 0, 255)
-#define LIFEBAR 11
+#define LIFEBAR 12
 #define MENU 0
 #define GAME_OVER 250
 #define MISIFU_ALLEY 15
 #define MISIFU_CHEESE 16
 #define CASTIGO_FINALIZADO 20
 #define MIGUEL_WALK_CYCLE 2
+#define MOTORBIKE_HIT 8
+#define HIT_KO 5
 
 
 // TODO define maximum vertical distance to allow before two objects can no

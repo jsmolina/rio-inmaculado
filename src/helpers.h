@@ -52,7 +52,7 @@ char is_cpu_slow();
 typedef struct  {
     unsigned int x;
     unsigned int y;
-    BITMAP *sprite[12];
+    BITMAP *sprite[13];
     unsigned int moving;
     unsigned int y_moving;
     unsigned int curr_sprite;
@@ -68,7 +68,7 @@ typedef struct  {
 typedef struct  {
     unsigned int x;
     unsigned int y;
-    BITMAP *sprite[11];
+    BITMAP *sprite[12];
     unsigned int moving;
     unsigned int y_moving;
     unsigned int targetX;

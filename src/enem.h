@@ -25,7 +25,7 @@ void init_enemies();
 // Animations for all enemies
 void all_enemy_animations();
 // AI for all enemies
-void all_enemy_decisions(spritePos * playr);
+void all_enemy_decisions();
 // draw all enemies
 void all_draw_enemies();
 // returns true if player has Y upper than all enemies

@@ -172,6 +172,10 @@ int main(int argc, const char **argv) {
             die("Cannot load %s", file_buffer);
         }
     }
+    player.sprite[12] = load_pcx("maind.pcx", NULL);
+    if (!player.sprite[12]) {
+        die("cannot load die sprite from player");
+    }
     player_head = load_pcx( "HEAD.PCX", NULL );
     player_lifebar = load_pcx("LIFEBAR.PCX", NULL);
     girl = load_pcx("GIRL.PCX", NULL);

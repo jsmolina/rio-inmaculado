@@ -201,12 +201,20 @@ void process() {
         init_level_enemies();
     }
 
-    if (player.received_hits == 5) {
+    if (player.received_hits == HIT_KO) {
         player.is_floor = FLOOR_DURATION;
         player.moving = STOPPOS;
         play_sample(fall, 255, 127, 1000, 0);  
         player.received_hits = 0;
     }
+
+    if (player.received_hits == MOTORBIKE_HIT) {
+        player.is_floor = FLOOR_DURATION / 2;
+        player.moving = STOPPOS;
+        play_sample(fall, 255, 127, 1000, 0);  
+        player.received_hits = 0;
+    }
+
     if (player.lifebar == 0) {
         player.lives--;
         play_sample(die_sample, 255, 127, 1000, 0); 
@@ -268,7 +276,7 @@ void process() {
         }
     }
     ///// ENEMY
-    all_enemy_decisions(&player);
+    all_enemy_decisions();
 
     if ((counter % 10) == 0) {
         all_enemy_animations();
@@ -280,11 +288,9 @@ void draw_player() {
 
     if (player.is_floor != FALSE) {
         if (player.moving & 1) {
-            rotate_sprite(screen, player.sprite[0], player.x, player.y + 10,
-                          itofix(1 * 64));
+            draw_sprite(screen, player.sprite[12], player.x, player.y + 30);
         } else {
-            rotate_sprite_v_flip(screen, player.sprite[0], player.x,
-                                 player.y + 10, itofix(1 * 64));
+            draw_sprite_h_flip(screen, player.sprite[12], player.x, player.y + 30);
         }
 
     } else {
