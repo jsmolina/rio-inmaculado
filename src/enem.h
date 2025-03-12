@@ -26,6 +26,7 @@ void init_enemies();
 void all_enemy_animations();
 // AI for all enemies
 void all_enemy_decisions();
+void enem_resets();
 // draw all enemies
 void all_draw_enemies();
 // returns true if player has Y upper than all enemies

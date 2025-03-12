@@ -263,7 +263,7 @@ int main(int argc, const char **argv) {
                 input();   /* get input */
                 process(); /* process it */
             } else {
-                if ((counter % 2) == 0) {
+                if ((counter & 1) == 0) {
                     player.y++;
                     if (counter % 10 == 0) {
                         player.curr_sprite ^= 1; // varies last digit 0/1, 1/0

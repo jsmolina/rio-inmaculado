@@ -202,6 +202,7 @@ void process() {
     }
 
     if (player.received_hits == HIT_KO) {
+        enem_resets();
         player.is_floor = FLOOR_DURATION;
         player.moving = STOPPOS;
         play_sample(fall, 255, 127, 1000, 0);  
@@ -209,6 +210,7 @@ void process() {
     }
 
     if (player.received_hits == MOTORBIKE_HIT) {
+        enem_resets();
         player.is_floor = FLOOR_DURATION / 2;
         player.moving = STOPPOS;
         play_sample(fall, 255, 127, 1000, 0);  
@@ -255,9 +257,14 @@ void process() {
             return;
         }
 
-        if (player.moving == MOVING_RIGHT || player.moving == MOVING_LEFT ||
-            player.y_moving == MOVING_UP || player.y_moving == MOVING_DOWN) {
+        if (player.moving == MOVING_RIGHT || player.moving == MOVING_LEFT) {
             if ((player.x / MIGUEL_WALK_CYCLE) % 2 == 0) {
+                player.curr_sprite = ANIM_WALK2;
+            } else {
+                player.curr_sprite = ANIM_WALK1;
+            }
+        } else if (player.y_moving == MOVING_UP || player.y_moving == MOVING_DOWN){
+            if (player.curr_sprite == ANIM_WALK1) {
                 player.curr_sprite = ANIM_WALK2;
             } else {
                 player.curr_sprite = ANIM_WALK1;

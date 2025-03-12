@@ -103,7 +103,7 @@ void enemy_animation(enemyData *enem) {
         enem->is_punching--;
     }
 
-    if (enem->moving == MOVING_RIGHT || enem->moving == MOVING_LEFT) {
+    if (enem->moving == MOVING_RIGHT || enem->moving == MOVING_LEFT || enem->y_moving == MOVING_UP|| enem->y_moving == MOVING_DOWN) {
         if (enem->curr_sprite == ANIM_WALK1) {
             enem->curr_sprite = ANIM_WALK2;
         } else {
@@ -141,7 +141,7 @@ int enemy_decision(enemyData *enem) {
     y_distance = point_distance(player.y, enem->y);
     // check hits
     if (x_distance <= 24 && y_distance <= 2) {
-        if (player.moving == PUNCH_LEFT && enem->x <= player.x && !hitted_this_loop && counter != 100) {
+        if (player.moving == PUNCH_LEFT && enem->x <= player.x && !hitted_this_loop && counter % 10 == 0) {
             play_sample(punch, 200, 80, 1200 + counter % 100, 0);  
             score += 10;
             enem->is_hit = HIT_DURATION_ENEM;
@@ -239,7 +239,7 @@ int enemy_decision(enemyData *enem) {
                 enem->moving = STOP_RIGHT;
                 enem->targetX = FALSE;
             }
-            if (counter % 30 == 0  && player.is_floor == FALSE && (point_distance(player.x, enem->x) <= FIGHT_DISTANCE)) {
+            if (counter % 30 == 0 && random_choice > 25 && player.is_floor == FALSE && (point_distance(player.x, enem->x) <= FIGHT_DISTANCE)) {
                 if (enem->moving == STOP_LEFT || enem->moving == STOP_RIGHT) {
                     // TODO think on punch
                     if (enem->x > player.x) {
@@ -254,6 +254,7 @@ int enemy_decision(enemyData *enem) {
                 || (enem->moving == PUNCH_RIGHT && player.x >= enem->x && x_distance <= FIGHT_DISTANCE))  {
                     player.is_hit = HIT_DURATION;
                     play_sample(punch2, 200, 127, 1200 + counter % 100, 0); 
+                    enem->is_punching = 0;
                     player.received_hits++;
                     if (player.lifebar > 0) {
                         player.lifebar--;
@@ -392,6 +393,21 @@ void clean_vespino() {
     blit(bg, screen, vespino_enemy.x - 3, vespino_enemy.y, vespino_enemy.x-3, vespino_enemy.y, 55, 50);
 }
 
+void enem_resets() {
+    for (int i = 0; i < levels[level].total_enemies; i++) {
+        enemies[i].is_punching = 0;
+        enemies[i].curr_sprite = 0;
+        enemies[i].targetX = 0;
+        enemies[i].targetY = 0;
+        if (player.x > enemies[i].x) {
+            enemies[i].moving = STOP_RIGHT;
+        } else {
+            enemies[i].moving = STOP_LEFT;
+        }
+    }
+}
+
+
 void all_enemy_decisions() {
     hitted_this_loop = FALSE;
     for (int i = 0; i < levels[level].total_enemies; i++) {
@@ -400,7 +416,7 @@ void all_enemy_decisions() {
         }
     }
 
-    if (vespino_enemy.direction == VESPINO_HIDDEN && counter == 100) {
+    if (vespino_enemy.direction == VESPINO_HIDDEN && (counter % 100) == 0) {
         vespino_enemy.y = player.y - 5;
         if (vespino_enemy.x > 210) {
             vespino_enemy.direction = VESPINO_LEFT;
