@@ -216,6 +216,9 @@ void process() {
     if (key[KEY_1] && key[KEY_2] && key[KEY_3]) {
         player.win = TRUE;
     }
+    if (key[KEY_Q]) {
+        player.lives = 0;
+    }
 
     if (player.received_hits == HIT_KO) {
         enem_resets();
