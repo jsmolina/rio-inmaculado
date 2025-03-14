@@ -18,4 +18,6 @@ BITMAP * load_level_background(unsigned char lvl);
 inline int move_to_level_if_needed();
 inline int is_on_door(int door_x);
 void move_with_level_limits();
+// level win
+void level_win();
 #endif

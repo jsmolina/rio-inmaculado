@@ -52,7 +52,7 @@ char is_cpu_slow();
 typedef struct  {
     unsigned int x;
     unsigned int y;
-    BITMAP *sprite[12];
+    BITMAP *sprite[13];
     unsigned int moving;
     unsigned int y_moving;
     unsigned int curr_sprite;
@@ -63,12 +63,13 @@ typedef struct  {
     unsigned char received_hits;
     unsigned char floor_times;
     int is_punching;
+    int win;
 } spritePos;
 
 typedef struct  {
     unsigned int x;
     unsigned int y;
-    BITMAP *sprite[11];
+    BITMAP *sprite[12];
     unsigned int moving;
     unsigned int y_moving;
     unsigned int targetX;
@@ -82,6 +83,16 @@ typedef struct  {
     int counter_for_state;
     int variant; // which enemy are we painting?
 } enemyData;
+
+typedef struct {
+    int x;
+    int y;
+    BITMAP *sprite[2];
+    unsigned int lifebar;
+    int is_floor;
+    int hit;
+    uint8_t direction;
+} vespinoData;
 
 typedef struct  {
     // TODO remove, just for helping

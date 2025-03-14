@@ -1,6 +1,11 @@
 #include <allegro.h>
+#include "allegro/alcompat.h"
+#include "allegro/color.h"
+#include "allegro/digi.h"
 #include "allegro/gfx.h"
 #include "allegro/keyboard.h"
+#include "allegro/midi.h"
+#include "allegro/palette.h"
 #include "allegro/text.h"
 #include <stdio.h>
 #include "game.h"
@@ -90,6 +95,37 @@ BITMAP * load_level_background(unsigned char lvl) {
     return load_background(level_filename);
 }
 
+inline void rotate_palette(PALETTE pal, int start, int end) {
+    RGB temp = pal[end]; // Guardamos el último color
+    for (int i = end; i > start; i--) {
+        pal[i] = pal[i - 1]; // Desplaza los colores
+    }
+    pal[start] = temp; // Coloca el último color al inicio
+    set_palette(pal); // Aplica la paleta rotada
+}
+
+void level_win() {
+    PALETTE palete_win;
+    bg = load_pcx("final.pcx", palete_win);
+    blit(bg, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+
+    stop_midi();
+    set_pallete(palete_win);
+    stop_sample(motorbike);
+    play_midi(final_music, 0);
+    int time = 0;
+    while(!key[KEY_SPACE] && !key[KEY_ESC] && time < 140) {
+        rest(200);
+        rotate_palette(palete_win, 33, 34);
+        ++time;
+    }
+    set_palette(palette);
+    level = GAME_OVER;
+    player.win = FALSE;
+    stop_midi();
+    return;
+}
+
 void level8_coursnave() {
     if (player.x < 39) {
         player.x += 1;
@@ -115,7 +151,7 @@ void level8_coursnave() {
     sprintf(missed, "FAIL: %01d", missed_beeps);
     textout_ex(screen, font, missed, 120, SCREEN_H - 26, makecol(255, 0, 0), makecol(0, 0, 0));
     sprintf(missed, "COURSE: %01d", beep_count);
-    textout_ex(screen, font, missed, 210, SCREEN_H - 26, makecol(0, 100, 255), makecol(0, 0, 0));
+    textout_ex(screen, font, missed, 200, SCREEN_H - 26, makecol(0, 100, 255), makecol(0, 0, 0));
 
     float tiempo_entre_beeps = (float)(tiempo_actual - ultimo_beep) / CLOCKS_PER_SEC;
     if (ultimo_beep == 0 || tiempo_entre_beeps > (4 - beep_count * 0.25)) {
@@ -139,12 +175,14 @@ void level8_coursnave() {
         }
     }
     if (beep_count == 8) {
+        player.lifebar = LIFEBAR;
         coursnave_completed = TRUE;
         textout_ex(screen, font, "COMPLETADO!", 180, 80, makecol(0, 255, 0), makecol(0, 0, 0));
         beep(2000, 20);
         beep(2000, 20);
         rest(1000);
         next_level = 7;
+        score += 100;
         return;
     } else if (missed_beeps == 4) {
         textout_ex(screen, font, "REPITES!", 180, 80, makecol(255,79, 0), makecol(0, 0, 0));
@@ -358,8 +396,16 @@ void level_processing() {
                     textout_ex(screen, font, "bedel?        ", 120, SCREEN_H - 34, makecol(100,255,255), makecol(0,0,0));               
                     textout_ex(screen, font, "quien eres tu?", 120, SCREEN_H - 26, makecol(255,255,255), makecol(0,0,0));
                     textout_ex(screen, font, "arregla el ascensor!", 120, SCREEN_H - 18, makecol(100,255,255), makecol(0,0,0));
-                    locked_elevator = FALSE;
+                    if (locked_elevator != FALSE) {
+                        while(key[KEY_SPACE]) {
+                            rest(1);
+                        }
+                        score += 20;
+                    }
+
+                    locked_elevator = FALSE;                    
                 }
+                
             }
         break;
         case 4:
@@ -372,6 +418,7 @@ void level_processing() {
                         textout_ex(screen, font, "ahhh, mejor asi!", 120, SCREEN_H - 34, makecol(100,255,255), makecol(0,0,0));               
                         textout_ex(screen, font, "largate o te castigo!", 120, SCREEN_H - 26, makecol(194,106,228), makecol(0,0,0));
                         urinated = TRUE;
+                        score += 20;
                         player.lifebar = LIFEBAR;
                         draw_lifebar();
                         while (key[KEY_SPACE]) {
@@ -414,6 +461,11 @@ void level_processing() {
                 return;
             }
         }
+        break;
+        case 11:
+            
+        break;
+        case WIN_LEVEL:
         break;
     }
     
