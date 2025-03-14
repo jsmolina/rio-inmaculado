@@ -8,5 +8,12 @@ What happens if you mix "River City" + "Target Renegade" + "an 80s kid"? This cr
 
 Just make. It will require allegro-4.2.2-xc in 'vendor'
 
+WHAT'S THIS?
+============
+Johnny’s stolen your beloved Vespino, and Jenny claims she knows where it’s parked — in the school lot! But beware, her friends aren’t going to make it easy for you to get it back. You’ll have to navigate through tricky situations, outsmart the gang, and reclaim your ride!
+
+This is an MS-DOS game, and it requires DOSBOX, or a PC with VGA 256 colors and a Sound Blaster card to experience the full retro glory. Are you ready for the challenge?
+
 Music by 'Roger'.
 Code by 'Jordi'
+Dedicated to G&C
