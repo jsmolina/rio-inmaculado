@@ -1,4 +1,4 @@
-RIO IMMACULADO
+RIO INMACULADO
 ==============
 Codebase structure inspired in https://github.com/msikma/allegro-4.2.2-xc by Michiel Sikma <michiel@sikma.org>
 
