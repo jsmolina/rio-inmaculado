@@ -111,7 +111,7 @@ magick new_tiles.png -colors 256 -depth 8 tiles.pcx
 
 pwd
 echo "Compress..."
-./dat2 palette.bmp enem1d.pcx enem2d.pcx enem3d.pcx maind.pcx vespino.pcx vespino2.pcx vespino3.pcx HEAD.PCX bege.pcx main*.pcx enem*.pcx tiles.pcx bg*.tmx LIVES.PCX LIFEBAR.PCX GIRL.PCX KEY.PCX BLUE_KEY.PCX ROGERR.MID alleycat.mid ALLEY.PCX CHEESE.PCX HEART.PCX CLOTHES*.PCX cat*.PCX dog*.PCX BINCAT.PCX PHONE.PCX alleytheme.wav hit.wav dog.wav punch.wav punch2.wav fall.wav die.wav shareware.txt levels.csv
+./dat2 win.mid final.pcx enem1d.pcx enem2d.pcx enem3d.pcx maind.pcx vespino.pcx vespino2.pcx vespino3.pcx HEAD.PCX bege.pcx main*.pcx enem*.pcx tiles.pcx bg*.tmx LIVES.PCX LIFEBAR.PCX GIRL.PCX KEY.PCX BLUE_KEY.PCX ROGERR.MID alleycat.mid ALLEY.PCX CHEESE.PCX HEART.PCX CLOTHES*.PCX cat*.PCX dog*.PCX BINCAT.PCX PHONE.PCX alleytheme.wav hit.wav dog.wav punch.wav punch2.wav fall.wav die.wav moto.wav metal.wav shareware.txt levels.csv
 
 echo "Removing generated pcx"
 

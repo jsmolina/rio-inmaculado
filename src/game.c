@@ -3,6 +3,7 @@
 #include "allegro/gfx.h"
 #include "allegro/inline/draw.inl"
 #include "allegro/keyboard.h"
+#include "allegro/midi.h"
 #include "allegro/text.h"
 #include "dat_manager.h"
 #include "enem.h"
@@ -28,6 +29,7 @@ char blue_key = FALSE;
 char locked_elevator;
 char urinated;
 MIDI *music;
+MIDI *final_music;
 int counter = 0;
 char space_was_pressed = FALSE;
 // BITMAP *player[11];
@@ -45,6 +47,7 @@ SAMPLE *dog_theme;
 SAMPLE *hit;
 SAMPLE *punch, *punch2;
 SAMPLE *fall, *die_sample;
+SAMPLE *motorbike, *metalhit;
 char slow_cpu;
 LevelData levels[TOTAL_LEVELS];
 
@@ -130,12 +133,17 @@ void increase_level_and_load() {
     yellow_key = FALSE;
     blue_key = FALSE;
     score = 0;
-    next_level = 11;
+    next_level = 1;
     // last level starts with zero enemies
     vespino_enemy.x = 290;
     vespino_enemy.y = 110;
     vespino_enemy.is_floor = FALSE;
     vespino_enemy.direction = VESPINO_HIDDEN;
+    vespino_enemy.lifebar = 15;
+    player.lives = 3;
+    player.win = FALSE;
+    player.lifebar = 10;
+    player.floor_times = 0;
 
     start_playing = time(NULL);
     for (int i = 0; i < TOTAL_LEVELS; i++) {
@@ -184,8 +192,17 @@ void draw_lifebar() {
     blit(player_lifebar, screen, 0, 0, 60, SCREEN_H -30, 2 * player.lifebar, 14);
 }
 
+void draw_lifebar_vespino_enemy() {
+    textout_ex(screen, font, "JOHNNY", SCREEN_W / 2 - 50, 230,
+               makecol(255, 255, 255), -1);
+    rectfill(screen, SCREEN_W / 2, 230, SCREEN_W / 2 + 30, 240,
+             makecol(40, 40, 40));
+    blit(player_lifebar, screen, 0, 0, SCREEN_W / 2, 230,
+         2 * vespino_enemy.lifebar, 14);
+}
+
 void process() {
-    if (level == MISIFU_ALLEY || level ==  MISIFU_CHEESE) {
+    if (level == MISIFU_ALLEY || level ==  MISIFU_CHEESE || level == WIN_LEVEL) {
         misifu_process();
         return;
     }
@@ -196,9 +213,8 @@ void process() {
     // check door opening or side moving
     move_to_level_if_needed();
 
-    if (key[KEY_0]) {
-        levels[11].total_enemies = 2;
-        init_level_enemies();
+    if (key[KEY_1] && key[KEY_2] && key[KEY_3]) {
+        player.win = TRUE;
     }
 
     if (player.received_hits == HIT_KO) {
@@ -223,14 +239,22 @@ void process() {
         player.is_floor = FLOOR_DURATION;
         player.lifebar = LIFEBAR;
         draw_lives();
+        draw_lifebar();
     }
 
     if (player.lives == 0) {
         next_level = GAME_OVER;
         level = GAME_OVER;        
         player.is_floor = FLOOR_DURATION;
+        stop_sample(motorbike);
+        stop_midi();
         game_over();
         
+        return;
+    }
+
+    if (player.win == TRUE) {
+        level_win();
         return;
     }
 
@@ -326,7 +350,7 @@ int y_comp(const void *a, const void *b) {
 void output() {
     counter++;
 
-    if (level == MISIFU_ALLEY || level ==  MISIFU_CHEESE) {
+    if (level == MISIFU_ALLEY || level ==  MISIFU_CHEESE || level == WIN_LEVEL) {
         return;
     }
     if ((counter % 4) == 0) {
@@ -359,7 +383,7 @@ void output() {
         {enemies[1].y,  PETER_INDEX},
         {enemies[2].y, ALEX_INDEX},
         {player.y,  PLAYER_INDEX},
-        {vespino_enemy.y,  VESPINO_INDEX}
+        {vespino_enemy.y + 10,  VESPINO_INDEX}
     };
     
     qsort(drawn_items, 5, sizeof(yPositions), y_comp);
@@ -468,13 +492,11 @@ void load_level() {
         textout_ex(bg, font, "MSDOS CLUB", SCREEN_H - 20, 40, makecol(100, 100, 100), -1);
         textout_ex(bg, font, "Rio Immaculado", SCREEN_W / 2 - 55, 140, makecol(255, 255, 255), -1);
         textout_ex(bg, font, "Space to start", SCREEN_W / 2 - 40, 80, makecol(156, 176, 239), -1);
-        textout_ex(bg, font, "Dedicated to Claudia", 70, SCREEN_H - 30, makecol(255, 176, 239), -1);
-        player.lives = 3;
-        player.lifebar = 10;
-        player.floor_times = 0;
+        textout_ex(bg, font, "Dedicated to G&C", 70, SCREEN_H - 30, makecol(255, 176, 239), -1);
+
     } else if (next_level == 12) {
         bg = load_level_background(next_level);
-        level = 12;
+        level = next_level;
     } else if (next_level == MISIFU_ALLEY) {
         bg = load_misifu_alley();
         level = next_level;
@@ -539,6 +561,9 @@ void load_level() {
         fade_in(palette, 16);
     }
     
+    if (level == 11) {
+        draw_lifebar_vespino_enemy();
+    }
 
     //rectfill(screen, 0, 200, 320, 240, makecol(0, 0, 0));
     if (level != 0) {

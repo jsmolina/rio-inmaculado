@@ -11,6 +11,7 @@
 #define GAME_OVER 250
 #define MISIFU_ALLEY 15
 #define MISIFU_CHEESE 16
+#define WIN_LEVEL 17
 #define CASTIGO_FINALIZADO 20
 #define MIGUEL_WALK_CYCLE 2
 #define MOTORBIKE_HIT 8
@@ -35,10 +36,11 @@ extern char blue_key;
 extern LevelData levels[TOTAL_LEVELS];
 extern BITMAP *player_head, *player_lifebar, *girl, *key_sprite, *key_sprite_blue, *vespino;
 extern MIDI *music;
+extern MIDI *final_music;
 extern SAMPLE *alleytheme;
 extern SAMPLE *hit;
 extern SAMPLE *dog_theme;
-extern SAMPLE *punch, *fall, *punch2, *die_sample;
+extern SAMPLE *punch, *fall, *punch2, *die_sample, *motorbike, *metalhit;
 
 extern int counter;
 extern BITMAP *bg;
@@ -59,6 +61,7 @@ void load_levels();
 void load_level();
 void draw_lives();
 void draw_lifebar();
+void draw_lifebar_vespino_enemy();
 
 #endif
 

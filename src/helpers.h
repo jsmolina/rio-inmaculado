@@ -63,6 +63,7 @@ typedef struct  {
     unsigned char received_hits;
     unsigned char floor_times;
     int is_punching;
+    int win;
 } spritePos;
 
 typedef struct  {
@@ -87,7 +88,7 @@ typedef struct {
     int x;
     int y;
     BITMAP *sprite[2];
-    unsigned int received_hits;
+    unsigned int lifebar;
     int is_floor;
     int hit;
     uint8_t direction;

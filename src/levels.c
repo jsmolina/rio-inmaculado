@@ -1,6 +1,11 @@
 #include <allegro.h>
+#include "allegro/alcompat.h"
+#include "allegro/color.h"
+#include "allegro/digi.h"
 #include "allegro/gfx.h"
 #include "allegro/keyboard.h"
+#include "allegro/midi.h"
+#include "allegro/palette.h"
 #include "allegro/text.h"
 #include <stdio.h>
 #include "game.h"
@@ -90,6 +95,37 @@ BITMAP * load_level_background(unsigned char lvl) {
     return load_background(level_filename);
 }
 
+inline void rotate_palette(PALETTE pal, int start, int end) {
+    RGB temp = pal[end]; // Guardamos el último color
+    for (int i = end; i > start; i--) {
+        pal[i] = pal[i - 1]; // Desplaza los colores
+    }
+    pal[start] = temp; // Coloca el último color al inicio
+    set_palette(pal); // Aplica la paleta rotada
+}
+
+void level_win() {
+    PALETTE palete_win;
+    bg = load_pcx("final.pcx", palete_win);
+    blit(bg, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+
+    stop_midi();
+    set_pallete(palete_win);
+    stop_sample(motorbike);
+    play_midi(final_music, 0);
+    int time = 0;
+    while(!key[KEY_SPACE] && !key[KEY_ESC] && time < 140) {
+        rest(200);
+        rotate_palette(palete_win, 33, 34);
+        ++time;
+    }
+    set_palette(palette);
+    level = GAME_OVER;
+    player.win = FALSE;
+    stop_midi();
+    return;
+}
+
 void level8_coursnave() {
     if (player.x < 39) {
         player.x += 1;
@@ -139,6 +175,7 @@ void level8_coursnave() {
         }
     }
     if (beep_count == 8) {
+        player.lifebar = LIFEBAR;
         coursnave_completed = TRUE;
         textout_ex(screen, font, "COMPLETADO!", 180, 80, makecol(0, 255, 0), makecol(0, 0, 0));
         beep(2000, 20);
@@ -427,6 +464,8 @@ void level_processing() {
         break;
         case 11:
             
+        break;
+        case WIN_LEVEL:
         break;
     }
     

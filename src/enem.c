@@ -322,6 +322,12 @@ void enem_resets() {
     }
 }
 
+void vespino_hitted() {
+    vespino_enemy.hit = 30;
+    --vespino_enemy.lifebar;
+    play_sample(metalhit, 100, 80, 1200, 0);
+    draw_lifebar_vespino_enemy();
+}
 
 void all_enemy_decisions() {
     hitted_this_loop = FALSE;
@@ -329,6 +335,9 @@ void all_enemy_decisions() {
         if (enemy_decision(&enemies[i]) == TRUE) {
             alive_enemies[level][i] = FALSE;
         }
+    }
+    if (level != 11) {
+        return;
     }
 
     if (vespino_enemy.direction == VESPINO_HIDDEN && (counter % 100) == 0) {
@@ -339,17 +348,28 @@ void all_enemy_decisions() {
         if (vespino_enemy.x < 15) {
             vespino_enemy.direction = VESPINO_RIGHT;
         }
+        play_sample(motorbike, 30, 80, 1200, 1); 
     } else {
         int x_distance = point_distance(vespino_enemy.x, player.x);        
         int y_distance = point_distance(vespino_enemy.y, player.y);
 
         if (player.is_floor == FALSE) {
+                    
+            if (vespino_enemy.hit > 0) {
+                --vespino_enemy.hit;
+                return;
+            }
 
-            if (x_distance < 12 && x_distance >= 6) { 
+            if (x_distance < 20 && x_distance >= 8) { 
                 if (player.moving == PUNCH_LEFT && player.x > vespino_enemy.x) {
-                    vespino_enemy.hit = 16;
+                    vespino_hitted();
                 } else  if (player.moving == PUNCH_RIGHT && player.x < vespino_enemy.x) {
-                    vespino_enemy.hit = 16;
+                    vespino_hitted();
+                    if (vespino_enemy.lifebar == 0) {
+                        player.win = TRUE;
+                        next_level = 0;
+                        return;
+                    }
                 }
             }
             
@@ -357,19 +377,15 @@ void all_enemy_decisions() {
                 player.is_floor = FLOOR_DURATION / 2;
                 player.received_hits = MOTORBIKE_HIT;
                 
-                if (player.lifebar < 4) {
+                if (player.lifebar < 2) {
                     player.lifebar = 0;
                 } else {
-                    player.lifebar -= 4;
+                    player.lifebar -= 2;
                 }
                 draw_lifebar();
             }
         }
-        
-        if (vespino_enemy.hit > 0) {
-            --vespino_enemy.hit;
-            return;
-        }
+
 
         if (vespino_enemy.direction == VESPINO_LEFT) {
             vespino_enemy.x -= VESPINO_SPEED;
@@ -377,14 +393,12 @@ void all_enemy_decisions() {
             vespino_enemy.x += VESPINO_SPEED;                    
         }
         // avoid overflows
-        if (vespino_enemy.x < 5) {
+        if (vespino_enemy.x < 5 || vespino_enemy.x > 290) {
             vespino_enemy.direction = VESPINO_HIDDEN;
             clean_vespino();
+            stop_sample(motorbike);
         }
-        if (vespino_enemy.x > 290) {
-            vespino_enemy.direction = VESPINO_HIDDEN;
-            clean_vespino();
-        }
+
         
     }
       

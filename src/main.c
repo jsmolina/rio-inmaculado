@@ -13,6 +13,7 @@
 #include "allegro/gfx.h"
 #include "allegro/inline/draw.inl"
 #include "allegro/keyboard.h"
+#include "allegro/midi.h"
 #include "allegro/system.h"
 #include "game.h"
 #include "helpers.h"
@@ -138,8 +139,8 @@ int main(int argc, const char **argv) {
 
     load_levels();
 
-
     music = load_midi("ROGERR.MID");
+    final_music = load_midi("WIN.MID");
     alleytheme = load_wav("alleytheme.wav");
     hit = load_wav("hit.wav");
     punch = load_wav("punch.wav");
@@ -147,8 +148,10 @@ int main(int argc, const char **argv) {
     dog_theme = load_wav("dog.wav");
     fall = load_wav("fall.wav");
     die_sample = load_wav("die.wav");
+    motorbike = load_wav("moto.wav");
+    metalhit = load_wav("metal.wav");
 
-    if (!music || !alleytheme || !hit || !punch || !punch2 || !dog_theme || !fall || !die_sample) {
+    if (!final_music || !music || !alleytheme || !hit || !punch || !punch2 || !dog_theme || !fall || !die_sample) {
         die("cannot load samples");
     }
 
@@ -253,11 +256,9 @@ int main(int argc, const char **argv) {
                 }
             }
         } else if (level == GAME_OVER) {
-            if (key[KEY_SPACE]) {
-                level = 0;
-                next_level = 0;
-                load_level();
-            }
+            level = 0;
+            next_level = 0;
+            load_level();
         } else {
             if (starting_level_counter == FALSE) {
                 input();   /* get input */
@@ -299,6 +300,8 @@ int main(int argc, const char **argv) {
     destroy_sample(punch2);
     destroy_sample(fall);    
     destroy_sample(die_sample);
+    destroy_sample(motorbike);
+    destroy_sample(metalhit);
     unload_enemies();
     destroy_tiles();
     cleanup_data();
