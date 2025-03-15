@@ -373,6 +373,7 @@ void loop_castigo() {
                 }
             }
             if (key[KEY_ESC]) {
+                next_level = 3;
                 return;
             }
   
