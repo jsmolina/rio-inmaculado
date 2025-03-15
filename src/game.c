@@ -201,6 +201,16 @@ void draw_lifebar_vespino_enemy() {
          2 * vespino_enemy.lifebar, 14);
 }
 
+void switch_walk() {
+    if (player.curr_sprite == ANIM_WALK1) {
+        player.curr_sprite = ANIM_WALK2;
+    } else if (player.curr_sprite == ANIM_WALK2) {
+        player.curr_sprite = ANIM_WALK3;
+    } else {
+        player.curr_sprite = ANIM_WALK1;
+    }
+}
+
 void process() {
     if (level == MISIFU_ALLEY || level ==  MISIFU_CHEESE || level == WIN_LEVEL) {
         misifu_process();
@@ -286,16 +296,12 @@ void process() {
 
         if (player.moving == MOVING_RIGHT || player.moving == MOVING_LEFT) {
             if ((player.x / MIGUEL_WALK_CYCLE) % 2 == 0) {
-                player.curr_sprite = ANIM_WALK2;
+                switch_walk();
             } else {
-                player.curr_sprite = ANIM_WALK1;
+                switch_walk();
             }
         } else if (player.y_moving == MOVING_UP || player.y_moving == MOVING_DOWN){
-            if (player.curr_sprite == ANIM_WALK1) {
-                player.curr_sprite = ANIM_WALK2;
-            } else {
-                player.curr_sprite = ANIM_WALK1;
-            }
+            switch_walk();
         } else if (player.moving == PUNCH_RIGHT ||
                    player.moving == PUNCH_LEFT) {
 

@@ -34,7 +34,9 @@
 #define ANIM_WALK2 5
 #define ANIM_PUNCH 1
 #define ANIM_PUNCH2 2
+#define ANIM_KICK 3
 #define ANIM_HITTED 6
+#define ANIM_WALK3 7
 #define ANIM_ESPALDA 11
 #define HIT_DURATION 4
 #define HIT_DURATION_ENEM 2
