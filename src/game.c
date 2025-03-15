@@ -59,7 +59,8 @@ void input() {
     }
     if (player.moving != LOOKING_WALL) {
         if (player.moving < STOPPOS) {
-            if (player.moving == MOVING_LEFT || player.moving == PUNCH_LEFT) {
+            if (player.moving == MOVING_LEFT || player.moving == PUNCH_LEFT 
+                || player.moving == KICK_LEFT) {
                 player.moving = STOP_LEFT;
             } else {
                 player.moving = STOP_RIGHT;
@@ -73,6 +74,13 @@ void input() {
 
     if (player.is_hit > 0 || player.is_floor > 0) {
         return;
+    }
+    if (key[KEY_ALT] || key[KEY_ALTGR]) {
+        if (player.moving == STOP_LEFT) {
+            player.moving = KICK_LEFT;
+        } else {
+            player.moving = KICK_RIGHT;
+        }
     }
     unsigned char pressing_control = key[KEY_RCONTROL] || key[KEY_LCONTROL];
     if (!pressing_control && player.is_punching > 0) {
@@ -311,6 +319,9 @@ void process() {
                 player.curr_sprite = ANIM_PUNCH;
             }
             // TODO 15/10: sprite de hit
+        } else if (player.moving == KICK_RIGHT ||
+            player.moving == KICK_LEFT) {
+            player.curr_sprite = ANIM_KICK;
         } else if (player.moving != LOOKING_WALL) {
             player.curr_sprite = 0;
         }
@@ -498,7 +509,7 @@ void load_level() {
     if (next_level == 0) {
         //bg = load_pcx("bege.pcx", NULL);
         bg = load_level_background(0);
-        textout_ex(bg, font, "V0.6", 60, 30, makecol(100, 100, 100), -1);
+        textout_ex(bg, font, "V0.7", 60, 30, makecol(100, 100, 100), -1);
         textout_ex(bg, font, "MSDOS CLUB", SCREEN_H - 20, 40, makecol(100, 100, 100), -1);
         textout_ex(bg, font, "Rio Immaculado", SCREEN_W / 2 - 55, 140, makecol(255, 255, 255), -1);
         textout_ex(bg, font, "Space to start", SCREEN_W / 2 - 40, 80, makecol(156, 176, 239), -1);

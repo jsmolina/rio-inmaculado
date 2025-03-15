@@ -141,14 +141,14 @@ int enemy_decision(enemyData *enem) {
     y_distance = point_distance(player.y, enem->y);
     // check hits
     if (x_distance <= 24 && y_distance <= 2) {
-        if (player.moving == PUNCH_LEFT && enem->x <= player.x && !hitted_this_loop && counter % 10 == 0) {
+        if ((player.moving == PUNCH_LEFT || player.moving == KICK_LEFT) && enem->x <= player.x && !hitted_this_loop && counter % 10 == 0) {
             play_sample(punch, 200, 80, 1200 + counter % 100, 0);  
             score += 10;
             enem->is_hit = HIT_DURATION_ENEM;
             ++enem->received_hits;
             hitted_this_loop = TRUE;
         }
-        if (player.moving == PUNCH_RIGHT && player.x <= enem->x && !hitted_this_loop && counter % 10 == 0) {
+        if ((player.moving == PUNCH_RIGHT || player.moving == KICK_RIGHT) && player.x <= enem->x && !hitted_this_loop && counter % 10 == 0) {
             score += 10;
             play_sample(punch, 200, 155, 1200 + counter % 100, 0);  
             enem->is_hit = HIT_DURATION_ENEM;
@@ -361,9 +361,9 @@ void all_enemy_decisions() {
             }
 
             if (x_distance < 20 && x_distance >= 8) { 
-                if (player.moving == PUNCH_LEFT && player.x > vespino_enemy.x) {
+                if ((player.moving == PUNCH_LEFT || player.moving == KICK_LEFT) && player.x > vespino_enemy.x) {
                     vespino_hitted();
-                } else  if (player.moving == PUNCH_RIGHT && player.x < vespino_enemy.x) {
+                } else  if ((player.moving == PUNCH_RIGHT || player.moving == KICK_RIGHT) && player.x < vespino_enemy.x) {
                     vespino_hitted();
                     if (vespino_enemy.lifebar == 0) {
                         player.win = TRUE;

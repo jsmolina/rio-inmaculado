@@ -18,6 +18,9 @@
 #define PUNCH_LEFT 5
 #define PUNCH_RIGHT 6
 
+#define KICK_LEFT 7
+#define KICK_RIGHT 8
+
 #define LOOKING_LEFT 1
 
 // moving Y states
