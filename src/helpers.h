@@ -18,6 +18,9 @@
 #define PUNCH_LEFT 5
 #define PUNCH_RIGHT 6
 
+#define KICK_LEFT 7
+#define KICK_RIGHT 8
+
 #define LOOKING_LEFT 1
 
 // moving Y states
@@ -34,7 +37,9 @@
 #define ANIM_WALK2 5
 #define ANIM_PUNCH 1
 #define ANIM_PUNCH2 2
+#define ANIM_KICK 3
 #define ANIM_HITTED 6
+#define ANIM_WALK3 7
 #define ANIM_ESPALDA 11
 #define HIT_DURATION 4
 #define HIT_DURATION_ENEM 2
@@ -63,6 +68,7 @@ typedef struct  {
     unsigned char received_hits;
     unsigned char floor_times;
     int is_punching;
+    int is_kicking;
     int win;
 } spritePos;
 
