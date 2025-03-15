@@ -68,6 +68,7 @@ typedef struct  {
     unsigned char received_hits;
     unsigned char floor_times;
     int is_punching;
+    int is_kicking;
     int win;
 } spritePos;
 

@@ -75,7 +75,16 @@ void input() {
     if (player.is_hit > 0 || player.is_floor > 0) {
         return;
     }
-    if (key[KEY_ALT] || key[KEY_ALTGR]) {
+    unsigned char pressing_alt = key[KEY_ALT] || key[KEY_ALTGR];
+    if (!pressing_alt && player.is_kicking > 0) {
+        player.is_kicking = 0;
+    }
+    if (pressing_alt) {
+        player.is_kicking++;
+        if (player.is_kicking > 20) {
+            return;
+        }
+
         if (player.moving == STOP_LEFT) {
             player.moving = KICK_LEFT;
         } else {
