@@ -8,6 +8,8 @@ What happens if you mix "River City" + "Target Renegade" + "an 80s kid"? This cr
 
 Just make. It will require allegro-4.2.2-xc in 'vendor' and djgpp compiler.
 
+![portada](https://github.com/user-attachments/assets/e8233e81-bf09-4aab-a854-d0fc941a6425)
+
 WHAT'S THIS?
 ============
 Johnny’s stolen your beloved Vespino, and Jenny claims she knows where it’s parked — in the school lot! But beware, Johnny’s friends aren’t going to make it easy for you to get it back. You’ll have to navigate through tricky situations, outsmart the gang, and reclaim your ride!
