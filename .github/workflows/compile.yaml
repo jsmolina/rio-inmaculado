@@ -20,13 +20,13 @@ jobs:
       
       - name: install djgpp
         run: |
-          git clone git@github.com:andrewwutw/build-djgpp.git
+          git clone https://github.com/andrewwutw/build-djgpp.git
           cd build-djgpp
           ./build-djgpp.sh 12.2.0
 
       - name: Clone Allegro 4
         run: |
-          git clone git@github.com:msikma/allegro-4.2.2-xc.git
+          git clone https://github.com/msikma/allegro-4.2.2-xc.git
           cd allegro-4.2.2-xc
 
       - name: Compile Allegro 4
