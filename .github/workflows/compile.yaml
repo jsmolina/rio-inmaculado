@@ -26,10 +26,11 @@ jobs:
       - name: Compile Allegro 4
         run: |
           cd allegro5
-          ./fix.sh unix
-          ./configure --prefix=/usr/local
+          mkdir build
+          cd build
+          cmake ..
           make
-          sudo make install
+          sudo make install DESTDIR=/usr/local
 
       - name: Compile your project
         run: |
