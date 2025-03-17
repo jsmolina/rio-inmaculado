@@ -18,8 +18,6 @@ magick main.pcx -crop 40x40+360+0 main10.pcx
 magick main.pcx -crop 40x40+400+0 main11.pcx
 magick main.pcx -crop 40x40+440+0 main12.pcx
 
-export MIGUEL_SPRITES=`printf 'MAIN%d.PCX ' {1..10}`
-
 
 # enemy sprites
 echo "Converting enemy1 character sprites..."
@@ -94,10 +92,10 @@ magick cat.pcx -crop 24x24+216+0   cat7.PCX
 
 
 echo "Converting dog sprites..."
-magick dog.pcx -crop 24x16+0+0  dog1.PCX
-magick dog.pcx -crop 24x16+24+0 dog2.PCX
-magick dog.pcx -crop 24x16+48+0 dog3.PCX
-magick dog.pcx -crop 24x16+72+0 dog4.PCX
+magick dog.pcx -crop 24x16+0+0  dog1.pcx
+magick dog.pcx -crop 24x16+24+0 dog2.pcx
+magick dog.pcx -crop 24x16+48+0 dog3.pcx
+magick dog.pcx -crop 24x16+72+0 dog4.pcx
 
 #   magick miguel_sprites.png -crop 40x40+440+0 -colors 256 -type truecolor miguel11.pcx
 #magick background.png -colors 256 -type truecolor bg.pcx
