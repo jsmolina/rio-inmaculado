@@ -38,6 +38,7 @@ jobs:
         run: |
           # Aquí van los comandos para compilar tu proyecto que utiliza Allegro 4
           cd vendor
+          rm -f allegro-4.2.2-xc
           ln -s ../allegro-4.2.2-xc allegro-4.2.2-xc
           cd ..
           make clean && make
