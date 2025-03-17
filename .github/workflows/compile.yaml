@@ -64,7 +64,7 @@ jobs:
           sudo ln -s /usr/bin/convert /usr/bin/magick
           make clean && make
       - name: Create Release
-        uses: marvinpinto/action-automatic-releases@latest
+        uses: ncipollo/release-action@v1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          extra_assets: "dist/*"
+          artifacts: "dist/*"
+          generateReleaseNotes: true
