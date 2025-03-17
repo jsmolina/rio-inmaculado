@@ -18,11 +18,9 @@ jobs:
           sudo apt-get install -y build-essential gcc
           sudo apt-get install bison flex curl gcc g++ make texinfo zlib1g-dev g++ unzip
       
-      - name: install djgpp
+      - name: Clone djgpp
         run: |
           git clone https://github.com/andrewwutw/build-djgpp.git
-          cd build-djgpp
-          sudo ./build-djgpp.sh 12.2.0
 
       - name: Clone Allegro 4
         run: |
@@ -38,6 +36,11 @@ jobs:
           key: ${{ runner.os }}-compilacion
           restore-keys: |
             ${{ runner.os }}-compilacion
+
+      - name: Compile djgpp
+        run: | 
+          cd build-djgpp
+          sudo ./build-djgpp.sh 12.2.0
 
       - name: Compile Allegro 4
         run: |
