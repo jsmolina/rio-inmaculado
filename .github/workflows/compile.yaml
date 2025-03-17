@@ -61,5 +61,5 @@ jobs:
           export DJDIR=/usr/local/djgpp/i586-pc-msdosdjgpp
           export DJGPP_CC=/usr/local/djgpp/bin/i586-pc-msdosdjgpp-gcc
           sudo apt-get install imagemagick
-          alias magick='convert'
+          sudo ln -s /usr/bin/convert /usr/bin/magick
           make clean && make
