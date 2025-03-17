@@ -16,23 +16,28 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential gcc
+          sudo apt-get install bison flex curl gcc g++ make texinfo zlib1g-dev g++ unzip
+      
+      - name: install djgpp
+        run: |
+          git clone git@github.com:andrewwutw/build-djgpp.git
+          cd build-djgpp
+          ./build-djgpp.sh 12.2.0
 
       - name: Clone Allegro 4
         run: |
-          git clone https://github.com/liballeg/allegro5.git
-          cd allegro5
-          git checkout allegro_4_0_branch
+          git clone git@github.com:msikma/allegro-4.2.2-xc.git
+          cd allegro-4.2.2-xc
 
       - name: Compile Allegro 4
         run: |
-          cd allegro5
-          ./fix.sh unix
-          autoconf
-          ./configure --prefix=/usr/local
-          make
-          sudo make install
+          cd allegro-4.2.2-xc
+          ./xmake.sh lib
 
       - name: Compile your project
         run: |
           # Aquí van los comandos para compilar tu proyecto que utiliza Allegro 4
+          cd vendor
+          ln -s ../allegro-4.2.2-xc allegro-4.2.2-xc
+          cd ..
           make clean && make
