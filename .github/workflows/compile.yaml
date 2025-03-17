@@ -29,6 +29,17 @@ jobs:
           git clone https://github.com/msikma/allegro-4.2.2-xc.git
           cd allegro-4.2.2-xc
 
+      - name: Cache compilations
+        id: cache-compilations
+        uses: actions/cache@v4
+        env:
+            cache-name: cache-djgpp
+            with:
+              path: |
+                ./build-djgpp
+                ./allegro-4.2.2-xc
+              key: cache-djgpp-allegro
+
       - name: Compile Allegro 4
         run: |
           cd allegro-4.2.2-xc
@@ -48,4 +59,5 @@ jobs:
           export DJDIR=/usr/local/djgpp/i586-pc-msdosdjgpp
           export DJGPP_CC=/usr/local/djgpp/bin/i586-pc-msdosdjgpp-gcc
           sudo apt-get install imagemagick
+          alias magick='convert'
           make clean && make
