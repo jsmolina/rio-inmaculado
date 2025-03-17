@@ -41,4 +41,7 @@ jobs:
           rm -f allegro-4.2.2-xc
           ln -s ../allegro-4.2.2-xc allegro-4.2.2-xc
           cd ..
+          export PATH=/usr/local/djgpp/i586-pc-msdosdjgpp/bin:$PATH
+          export DJDIR=/usr/local/djgpp/i586-pc-msdosdjgpp
+          export DJGPP_CC=/usr/local/djgpp/bin/i586-pc-msdosdjgpp-gcc
           make clean && make
