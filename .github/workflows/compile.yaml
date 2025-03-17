@@ -22,7 +22,7 @@ jobs:
         run: |
           git clone https://github.com/andrewwutw/build-djgpp.git
           cd build-djgpp
-          ./build-djgpp.sh 12.2.0
+          sudo ./build-djgpp.sh 12.2.0
 
       - name: Clone Allegro 4
         run: |
