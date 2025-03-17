@@ -2,7 +2,7 @@ name: Compile Allegro 4 Project
 
 on:
   push:
-    branches: [ feature/allegro-test ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -63,3 +63,8 @@ jobs:
           sudo apt-get install imagemagick
           sudo ln -s /usr/bin/convert /usr/bin/magick
           make clean && make
+      - name: Create Release
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          extra_assets: "dist/*"
