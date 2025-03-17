@@ -25,7 +25,7 @@ jobs:
 
       - name: Compile Allegro 4
         run: |
-          cd allegro
+          cd allegro5
           ./configure --prefix=/usr/local
           make
           sudo make install
