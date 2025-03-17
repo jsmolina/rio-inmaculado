@@ -1,0 +1,36 @@
+name: Compile Allegro 4 Project
+
+on:
+  push:
+    branches: [ feature/allegro-test ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential gcc
+
+      - name: Clone Allegro 4
+        run: |
+          git clone https://github.com/liballeg/allegro.git
+          cd allegro
+          git checkout 4.2.2
+
+      - name: Compile Allegro 4
+        run: |
+          cd allegro
+          ./configure --prefix=/usr/local
+          make
+          sudo make install
+
+      - name: Compile your project
+        run: |
+          # Aquí van los comandos para compilar tu proyecto que utiliza Allegro 4
+          make clean && make
