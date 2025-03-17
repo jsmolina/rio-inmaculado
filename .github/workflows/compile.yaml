@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -68,3 +70,4 @@ jobs:
         with:
           artifacts: "dist/*"
           generateReleaseNotes: true
+          token: ${{ secrets.GITHUB_TOKEN }}
