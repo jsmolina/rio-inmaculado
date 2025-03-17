@@ -19,9 +19,9 @@ jobs:
 
       - name: Clone Allegro 4
         run: |
-          git clone https://github.com/liballeg/allegro.git
+          git clone https://github.com/liballeg/allegro5.git
           cd allegro
-          git checkout 4.2.2
+          git checkout allegro_4_0_branch
 
       - name: Compile Allegro 4
         run: |
