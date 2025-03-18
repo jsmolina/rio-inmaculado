@@ -50,6 +50,7 @@ jobs:
         name: Compile djgpp
         run: | 
           cp buildj.sh ./build-djgpp          
+          cd build-djgpp
           sudo buildj.sh
 
       - if: steps.cache-compile.outputs.cache-hit != 'true'
