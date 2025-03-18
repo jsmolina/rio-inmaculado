@@ -67,15 +67,3 @@ jobs:
           sudo apt-get install imagemagick
           sudo ln -s /usr/bin/convert /usr/bin/magick
           make clean && make
-
-      - name: Create tag
-        id: tag_version
-        uses: mathieudutour/github-tag-action@v8.1.0
-
-      - name: Create Release
-        uses: ncipollo/release-action@v1
-        with:
-          tag: ${{ steps.tag_version.outputs.new_tag }}
-          artifacts: "dist/*"
-          generateReleaseNotes: true
-          token: ${{ secrets.GITHUB_TOKEN }}
