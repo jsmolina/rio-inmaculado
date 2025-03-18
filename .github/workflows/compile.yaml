@@ -30,6 +30,7 @@ jobs:
           cd allegro-4.2.2-xc
 
       - name: Cachear Directorios
+        id: cache-compile
         uses: actions/cache@v4
         with:
           path: |
@@ -39,13 +40,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-compilacion
 
-      - if: steps.cache-npm.outputs.cache-hit != 'true'
+      - if: steps.cache-compile.outputs.cache-hit != 'true'
         name: Compile djgpp
         run: | 
           cd build-djgpp
           sudo ./build-djgpp.sh 12.2.0
 
-      - if: steps.cache-npm.outputs.cache-hit != 'true'
+      - if: steps.cache-compile.outputs.cache-hit != 'true'
         name: Compile Allegro 4
         run: |
           cd allegro-4.2.2-xc
