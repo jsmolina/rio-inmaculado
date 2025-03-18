@@ -61,11 +61,6 @@ else
   SED_ARCHIVE=""
 fi
 
-# check zlib is installed
-if ! ${CC} test-zlib.c -o test-zlib -lz; then
-  echo "zlib not installed"
-  exit 1
-fi
 
 
 # djcross-gcc-X.XX-tar.* maybe moved from /djgpp/rpms/ to /djgpp/deleted/rpms/ directory.
