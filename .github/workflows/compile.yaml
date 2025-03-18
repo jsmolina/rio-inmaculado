@@ -2,7 +2,7 @@ name: Compile Allegro 4 Project
 
 on:
   push:
-    branches: [ main ]
+    branches: [ feature/allegro-test ]
   workflow_dispatch:
 
 jobs:
