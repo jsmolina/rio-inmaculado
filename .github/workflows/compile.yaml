@@ -49,7 +49,7 @@ jobs:
       - if: steps.cache-compile.outputs.cache-hit == 'true'
         name: Compile djgpp
         run: | 
-          cd build-djgpp
+          cd build-djgpp/build
           sudo make install
 
       - if: steps.cache-compile.outputs.cache-hit != 'true'
