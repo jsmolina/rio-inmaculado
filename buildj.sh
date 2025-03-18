@@ -34,22 +34,6 @@ MPC_ARCHIVE="${FTPMIRROR_GNU_DOWNLOAD_BASE}/mpc/mpc-${MPC_VERSION}.tar.gz"
 AUTOCONF_ARCHIVE="${FTP_GNU_DOWNLOAD_BASE}/autoconf/autoconf-${AUTOCONF_VERSION}.tar.xz"
 AUTOMAKE_ARCHIVE="${FTP_GNU_DOWNLOAD_BASE}/automake/automake-${AUTOMAKE_VERSION}.tar.xz"
 
-# check required programs
-REQ_PROG_LIST="${CXX} ${CC} unzip bison flex ${MAKE} makeinfo patch"
-
-# use curl or wget?
-if [ ! -z $USE_WGET ]; then
-  REQ_PROG_LIST+=" wget"
-else
-  REQ_PROG_LIST+=" curl"
-fi
-
-for REQ_PROG in $REQ_PROG_LIST; do
-  if ! which $REQ_PROG > /dev/null; then
-    echo "$REQ_PROG not installed"
-    exit 1
-  fi
-done
 
 # check GNU sed is installed or not.
 # It is for OSX, which doesn't ship with GNU sed.
