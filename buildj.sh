@@ -146,21 +146,18 @@ cd ..
 # djcrx done
 
 # build gcc
-tar -xjvf ../download/djcross-gcc-${GCC_VERSION}.tar.bz2 || exit 1
 cd djcross-gcc-${GCC_VERSION}/
 
 BUILDDIR=`pwd`
 
 echo "Building autoconf"
 cd $BUILDDIR
-tar xJf ../../download/autoconf-${AUTOCONF_VERSION}.tar.xz || exit 1
 cd autoconf-${AUTOCONF_VERSION}/
 ./configure --prefix=$BUILDDIR/tmpinst || exit 1
 ${MAKE} all install || exit 1
 
 echo "Building automake"
 cd $BUILDDIR
-tar xJf ../../download/automake-${AUTOMAKE_VERSION}.tar.xz || exit 1
 cd automake-${AUTOMAKE_VERSION}/
 PATH="$BUILDDIR//tmpinst/bin:$PATH" \
 ./configure --prefix=$BUILDDIR/tmpinst || exit 1
@@ -194,9 +191,7 @@ cd $BUILDDIR
 #   ( cd gnu && tar xJf $top/$archive && echo $archive >$top/s-sources )
 # to :
 #   ( cd gnu && tar xJf $top/$archive  --exclude=issue27836.dir && echo $archive >$top/s-sources )
-if uname|grep "^MINGW32" > /dev/null; then
-  $SED -i "s/\(cd gnu && tar [^\&]*\)/\1 --exclude=issue27836.dir /" unpack-gcc.sh || exit 1
-fi
+
 
 if [ `uname` = "FreeBSD" ]; then
   # The --verbose option is not recognized by BSD patch
