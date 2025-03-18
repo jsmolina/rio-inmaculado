@@ -49,8 +49,8 @@ jobs:
       - if: steps.cache-compile.outputs.cache-hit == 'true'
         name: Compile djgpp
         run: | 
-          cd build-djgpp/build
-          sudo make install
+          cp builddj.sh ./build-djgpp          
+          sudo builddj.sh
 
       - if: steps.cache-compile.outputs.cache-hit != 'true'
         name: Compile Allegro 4
