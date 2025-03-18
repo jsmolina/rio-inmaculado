@@ -360,16 +360,16 @@ void all_enemy_decisions() {
                 return;
             }
 
-            if (x_distance < 20 && x_distance >= 8) { 
+            if (x_distance < 20 && x_distance >= 8) {
                 if ((player.moving == PUNCH_LEFT || player.moving == KICK_LEFT) && player.x > vespino_enemy.x) {
-                    vespino_hitted();
+                    vespino_hitted();                   
                 } else  if ((player.moving == PUNCH_RIGHT || player.moving == KICK_RIGHT) && player.x < vespino_enemy.x) {
-                    vespino_hitted();
-                    if (vespino_enemy.lifebar == 0) {
-                        player.win = TRUE;
-                        next_level = 0;
-                        return;
-                    }
+                    vespino_hitted();                    
+                }
+                if (vespino_enemy.lifebar == 0) {
+                    player.win = TRUE;
+                    next_level = 0;
+                    return;
                 }
             }
             
