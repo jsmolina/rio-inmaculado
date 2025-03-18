@@ -40,21 +40,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-compilacion
 
-      - if: steps.cache-compile.outputs.cache-hit != 'true'
-        name: Compile djgpp
+      - name: Compile djgpp
         run: | 
           cd build-djgpp
           sudo ./build-djgpp.sh 12.2.0
-      
-      - if: steps.cache-compile.outputs.cache-hit == 'true'
-        name: Compile djgpp
-        run: | 
-          cp buildj.sh ./build-djgpp          
-          cd build-djgpp
-          sudo sh buildj.sh
 
-      - if: steps.cache-compile.outputs.cache-hit != 'true'
-        name: Compile Allegro 4
+
+      - name: Compile Allegro 4
         run: |
           cd allegro-4.2.2-xc
           ./xmake.sh lib
