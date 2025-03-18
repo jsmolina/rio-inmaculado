@@ -11,6 +11,9 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -42,9 +45,6 @@ jobs:
         run: | 
           cd build-djgpp
           sudo ./build-djgpp.sh 12.2.0
-
-      - name: Checkout code
-        uses: actions/checkout@v3
       
       - if: steps.cache-compile.outputs.cache-hit == 'true'
         name: Compile djgpp
