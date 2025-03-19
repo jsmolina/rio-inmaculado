@@ -151,7 +151,7 @@ void increase_level_and_load() {
     yellow_key = FALSE;
     blue_key = FALSE;
     score = 0;
-    next_level = 8;
+    next_level = 1;
     // last level starts with zero enemies
     vespino_enemy.x = 290;
     vespino_enemy.y = 110;

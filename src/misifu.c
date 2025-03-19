@@ -345,22 +345,6 @@ void check_keys() {
     if(misifu.state == M_FIGHTING) {
         return;
     }
-    if (key[KEY_4_PAD])  {
-        misifu.state = CAT_IN_ROPE;
-        --misifu.x;
-    }
-    if (key[KEY_6_PAD])  {
-        misifu.state = CAT_IN_ROPE;
-        ++misifu.x;
-    }
-    if (key[KEY_8_PAD]) {
-        misifu.state = CAT_IN_ROPE;
-        --misifu.y;
-    }
-    if (key[KEY_2_PAD]) {
-        misifu.state = CAT_IN_ROPE;
-        ++misifu.y;
-    }
 
     if((!(key[KEY_UP]) && !(key[KEY_DOWN]))) {
         misifu.last_key = NONE;

@@ -121,7 +121,7 @@ int main(int argc, const char **argv) {
     install_int(fps_proc, 1000);    
     // Print a single line of "hello world" on a white screen.
     //set_palette(desktop_palette);
-    double_buffer = create_bitmap(SCREEN_W, SCREEN_H);
+    double_buffer = create_video_bitmap(SCREEN_W, SCREEN_H);
     //set_color_depth(desktop_color_depth());
     slow_cpu = 1;
     clear_to_color(screen, 0);
@@ -264,6 +264,8 @@ int main(int argc, const char **argv) {
         }
         if ((counter & 1) == 0) {
             blit(double_buffer, screen, 0, 0, 0, 0, 320, 240);
+            //show_video_bitmap(double_buffer);
+            //request_video_bitmap()
         }
         vsync();
 
