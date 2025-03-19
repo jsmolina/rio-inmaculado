@@ -235,18 +235,16 @@ void switch_walk() {
 void process() {
     if (level == MISIFU_ALLEY || level ==  MISIFU_CHEESE || level == WIN_LEVEL) {
         misifu_process();
+        if (next_level == 10) {
+            load_level();
+        }
+     
         return;
     }
 
     // check door opening or side moving
-    move_to_level_if_needed();
-    if (level == MISIFU_ALLEY || level ==  MISIFU_CHEESE || level == WIN_LEVEL) {
-        return;
-    }
-
     move_with_level_limits();
-
-
+    move_to_level_if_needed();
 
 
     if (key[KEY_1] && key[KEY_2] && key[KEY_3]) {
@@ -595,12 +593,13 @@ void load_level() {
     if (!bg) {
         die("Cannot load graphic");        
     }
+
     //blit(bg, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
     if (!(level == 6 && prev_level == 5) && level != MISIFU_ALLEY && level != MISIFU_CHEESE) {
         fade_out(16);
     }
     blit(bg, double_buffer, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
-    blit(bg, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+    //blit(bg, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
     if (!(level == 6 && prev_level == 5) && level != MISIFU_ALLEY && level != MISIFU_CHEESE) {
         fade_in(palette, 16);
     }

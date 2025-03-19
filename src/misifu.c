@@ -758,13 +758,13 @@ void misifu_process() {
     }
     if (exit_misifu == MEXIT_SUCCESS) {
         stop_sample(dog_theme);
-        clear_to_color(double_buffer, 0);
+        clear_to_color(screen, 0);
         for (int i = 0; i < 6; i++) {
             exit_misifu = MEXIT_END;
-            draw_sprite(double_buffer, heart, 82 , 170 - 24 * i);
-            draw_sprite(double_buffer, heart, 110, 170 - 24 * i);
-            draw_sprite(double_buffer, heart, 225, 170 - 24 * i);
-            draw_sprite(double_buffer, heart, 253, 170 - 24 * i);
+            draw_sprite(screen, heart, 82 , 170 - 24 * i);
+            draw_sprite(screen, heart, 110, 170 - 24 * i);
+            draw_sprite(screen, heart, 225, 170 - 24 * i);
+            draw_sprite(screen, heart, 253, 170 - 24 * i);
             rest(100);
             vsync();
         }
@@ -800,9 +800,10 @@ void misifu_process() {
         set_color_depth(8);
         if(set_gfx_mode(GFX_MODEX, 320, 240, 0, 0) != 0) {
             die("error setting 320x240 16bpp: %s", allegro_error);
-        }
+        }        
         set_palette(palette);
-
+        // WARN! After a gfx mode set, requires setting video bitmap again
+        double_buffer = create_video_bitmap(SCREEN_W, SCREEN_H);
         return;
     }
 }
