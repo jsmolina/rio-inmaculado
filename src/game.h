@@ -44,6 +44,7 @@ extern SAMPLE *punch, *fall, *punch2, *die_sample, *motorbike, *metalhit;
 
 extern int counter;
 extern BITMAP *bg;
+extern BITMAP *double_buffer;
 extern char slow_cpu;
 
 

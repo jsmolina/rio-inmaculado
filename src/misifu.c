@@ -224,7 +224,7 @@ inline void check_bincat() {
         if (bincat.appears <= 1) {
             bincat.appears = NONE;
             bincat.in_bin = 0;
-            blit(bg, screen, bincat.x, bincat.y, bincat.x, bincat.y, 15, 12);
+            blit(bg, double_buffer, bincat.x, bincat.y, bincat.x, bincat.y, 15, 12);
         }
     }
 }
@@ -404,39 +404,39 @@ void check_keys() {
 
 void misifu_clean() {
     if (level == MISIFU_ALLEY) {
-        blit(bg, screen, clothes.row1_x, 50, clothes.row1_x, 50, 64, 20);
-        blit(bg, screen, clothes.row2_x, 82, clothes.row2_x, 82, 40, 20);
-        blit(bg, screen, object.x, object.y, object.x, object.y, 16, 14);
+        blit(bg, double_buffer, clothes.row1_x, 50, clothes.row1_x, 50, 64, 20);
+        blit(bg, double_buffer, clothes.row2_x, 82, clothes.row2_x, 82, 40, 20);
+        blit(bg, double_buffer, object.x, object.y, object.x, object.y, 16, 14);
 
     }
-    blit(bg, screen, misifu.x - 2, misifu.y -2, misifu.x - 2, misifu.y - 2, 32, 42);
-    blit(bg, screen, dog.x - 2, DOG_Y, dog.x - 2, DOG_Y, 30, 16);
+    blit(bg, double_buffer, misifu.x - 2, misifu.y -2, misifu.x - 2, misifu.y - 2, 32, 42);
+    blit(bg, double_buffer, dog.x - 2, DOG_Y, dog.x - 2, DOG_Y, 30, 16);
 }
 
 void misifu_output() {   
     if (level == MISIFU_ALLEY) {
-        draw_sprite(screen, clothes.sprite2, clothes.row1_x, 50);
-        draw_sprite(screen, clothes.sprite1, clothes.row2_x, 82);
+        draw_sprite(double_buffer, clothes.sprite2, clothes.row1_x, 50);
+        draw_sprite(double_buffer, clothes.sprite1, clothes.row2_x, 82);
     }
     if (bincat.appears != NONE) {
-        draw_sprite(screen, bincat.sprite, bincat.x, bincat.y);
+        draw_sprite(double_buffer, bincat.sprite, bincat.x, bincat.y);
     }
     if (misifu.state == M_WALKING_LEFT || misifu.draw_additional == M_JUMP_LEFT) {
-        draw_sprite_h_flip(screen, misifu.sprite[misifu.offset],
+        draw_sprite_h_flip(double_buffer, misifu.sprite[misifu.offset],
             misifu.x, misifu.y);
     } else {
-        draw_sprite(screen, misifu.sprite[misifu.offset],
+        draw_sprite(double_buffer, misifu.sprite[misifu.offset],
             misifu.x, misifu.y);
     }    
     if (dog.appears == TRUE) {
         if (dog.direction == MDIR_LEFT) {
-            draw_sprite(screen, dog.sprite[dog.offset], dog.x, DOG_Y);
+            draw_sprite(double_buffer, dog.sprite[dog.offset], dog.x, DOG_Y);
         } else {
-            draw_sprite_h_flip(screen, dog.sprite[dog.offset], dog.x, DOG_Y);
+            draw_sprite_h_flip(double_buffer, dog.sprite[dog.offset], dog.x, DOG_Y);
         }
     }
     if (object.direction != NONE) {
-        draw_sprite(screen, object.sprite, object.x, object.y);
+        draw_sprite(double_buffer, object.sprite, object.x, object.y);
     }
 
 }
@@ -487,7 +487,7 @@ void open_window(uint8_t height, char open_window) {
     struct coord window_coords = get_window_coords();
     
     if (open_window == TRUE) {
-        rectfill(screen, window_coords.x, window_coords.y, window_coords.x + 31, window_coords.y - height, makecol(41, 40, 41));
+        rectfill(double_buffer, window_coords.x, window_coords.y, window_coords.x + 31, window_coords.y - height, makecol(41, 40, 41));
         rectfill(bg, window_coords.x, window_coords.y, window_coords.x + 31, window_coords.y - height, makecol(41, 40, 41));
         if (height == 15 && misifu.y <= 100) {
             object.appears = TRUE;
@@ -507,10 +507,10 @@ void open_window(uint8_t height, char open_window) {
             }
         }
     } else {
-        rectfill(screen, window_coords.x, window_coords.y, window_coords.x + 31, window_coords.y - 8, makecol(86, 255, 255));
+        rectfill(double_buffer, window_coords.x, window_coords.y, window_coords.x + 31, window_coords.y - 8, makecol(86, 255, 255));
         rectfill(bg, window_coords.x, window_coords.y, window_coords.x + 31, window_coords.y - 8, makecol(86, 255, 255));
 
-        rectfill(screen, window_coords.x, window_coords.y - 8, window_coords.x + 31, window_coords.y - 15, makecol(64, 197, 197));
+        rectfill(double_buffer, window_coords.x, window_coords.y - 8, window_coords.x + 31, window_coords.y - 15, makecol(64, 197, 197));
         rectfill(bg, window_coords.x, window_coords.y - 8, window_coords.x + 31, window_coords.y - 15, makecol(64, 197, 197));
     }
 }
@@ -686,9 +686,6 @@ inline void alley_loop() {
     //detect_fall_in_window();
 }
 
-
-
-
 void destroy_misifu_data() {
     // todo destroy sprite
     for (int i = 0; i < 8; i++) {
@@ -709,8 +706,6 @@ void destroy_misifu_data() {
         music = load_midi("ROGERR.MID");
         play_looped_midi(music, 0, -1);
     }
- 
-
 }
 
 /*
@@ -779,13 +774,13 @@ void misifu_process() {
     }
     if (exit_misifu == MEXIT_SUCCESS) {
         stop_sample(dog_theme);
-        clear_to_color(screen, 0);
+        clear_to_color(double_buffer, 0);
         for (int i = 0; i < 6; i++) {
             exit_misifu = MEXIT_END;
-            draw_sprite(screen, heart, 82 , 170 - 24 * i);
-            draw_sprite(screen, heart, 110, 170 - 24 * i);
-            draw_sprite(screen, heart, 225, 170 - 24 * i);
-            draw_sprite(screen, heart, 253, 170 - 24 * i);
+            draw_sprite(double_buffer, heart, 82 , 170 - 24 * i);
+            draw_sprite(double_buffer, heart, 110, 170 - 24 * i);
+            draw_sprite(double_buffer, heart, 225, 170 - 24 * i);
+            draw_sprite(double_buffer, heart, 253, 170 - 24 * i);
             rest(100);
             vsync();
         }

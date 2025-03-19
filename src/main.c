@@ -37,7 +37,7 @@ void gfx_init_timer() {
     LOCK_VARIABLE(fps);
     LOCK_FUNCTION(gfx_timer_proc);
     LOCK_FUNCTION(gfx_fps_proc);
-    install_int_ex(gfx_timer_proc, BPS_TO_TIMER(70));
+    install_int_ex(gfx_timer_proc, BPS_TO_TIMER(60));
     install_int_ex(gfx_fps_proc, BPS_TO_TIMER(1));
 }
 static volatile long speed_counter = 0;
@@ -114,19 +114,18 @@ int main(int argc, const char **argv) {
     // Switch to graphics mode, 320x200.
     set_color_depth(8);
 
-    if (set_gfx_mode(GFX_MODEX, 320, 240, 640, 240) != 0) {
+    if (set_gfx_mode(GFX_MODEX, 320, 240, 0, 0) != 0) {
         die("Cannot set graphics mode");
     }
 
     install_int(fps_proc, 1000);    
     // Print a single line of "hello world" on a white screen.
     //set_palette(desktop_palette);
-
+    double_buffer = create_bitmap(SCREEN_W, SCREEN_H);
     //set_color_depth(desktop_color_depth());
     slow_cpu = 1;
     clear_to_color(screen, 0);
-    BITMAP *msdos;
-    msdos = load_pcx("msdos.pcx", palette);
+    BITMAP *msdos = load_pcx("msdos.pcx", palette);
     if (msdos) {
         set_pallete(palette);
         blit(msdos, screen, 0, 0, 0, 0, 320, 240);    
@@ -228,21 +227,9 @@ int main(int argc, const char **argv) {
     gfx_init_timer();
 
     do {
-        /*while (speed_counter > 0) {
-            rest(0);
-            if (key[KEY_ESC]) {
-                exit_game = 1;
-                break;
-            }
-            speed_counter--;
-        }*/
 
         while (0 == update_count) {
             rest(0);
-            /*if (key[KEY_ESC] && level != MISIFU_ALLEY && level != MISIFU_CHEESE) {
-                exit_game = 1;
-                break;
-            }*/
         }
         update_count = 0;
         frame_count++;
@@ -275,7 +262,9 @@ int main(int argc, const char **argv) {
                 output();  /* give output */
             }
         }
-        blit(screen, screen, 321, 0, 0, 0, 320, 200);
+        if ((counter & 1) == 0) {
+            blit(double_buffer, screen, 0, 0, 0, 0, 320, 240);
+        }
         vsync();
 
         if (key[KEY_ESC] && level != MISIFU_ALLEY && level != MISIFU_CHEESE) {
@@ -302,6 +291,7 @@ int main(int argc, const char **argv) {
     destroy_sample(die_sample);
     destroy_sample(motorbike);
     destroy_sample(metalhit);
+    destroy_bitmap(double_buffer);
     unload_enemies();
     destroy_tiles();
     cleanup_data();
