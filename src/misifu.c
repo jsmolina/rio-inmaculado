@@ -14,6 +14,7 @@
 #include "misifu.h"
 #include "allegro/datafile.h"
 #include "tiles.h"
+#include <conio.h>
 
 
 struct clothes {
@@ -703,6 +704,7 @@ if (misifu.draw_additional == CAT_IN_BIN && misifu.y < FLOOR_Y && misifu.in_bin 
 */
 
 
+
 void misifu_process() {
     random_value = rand() % 255;
 
@@ -785,12 +787,9 @@ void misifu_process() {
         }
         set_gfx_mode(GFX_TEXT, 80, 25, 0, 0);
         while (fgets(line, sizeof(line), file)) {
-            printf("\033[1;37;41m");
-            printf("  ");
             printf("%s", line);
-            
-            printf("\033[0m");
         }
+
         printf("\nPress ENTER to continue\n");
         printf("T:\\NOVELL\\MISIFU>exit");
         while (!key[KEY_ENTER] && !key[KEY_SPACE] && !key[KEY_ESC]) {

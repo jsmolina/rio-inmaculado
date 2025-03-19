@@ -256,7 +256,7 @@ int enemy_decision(enemyData *enem) {
                     play_sample(punch2, 200, 127, 1200 + counter % 100, 0); 
                     enem->is_punching = 0;
                     player.received_hits++;
-                    if (player.lifebar > 0) {
+                    if (player.lifebar > 0 && cheat_mode != 1) {
                         player.lifebar--;
                     }
                     
@@ -368,7 +368,7 @@ void all_enemy_decisions() {
                 return;
             }
 
-            if (x_distance < 20 && x_distance >= 8) {
+            if (x_distance < 20 && x_distance >= 8 && y_distance < 8) {
                 if ((player.moving == PUNCH_LEFT || player.moving == KICK_LEFT) && player.x > vespino_enemy.x) {
                     vespino_hitted();                   
                 } else  if ((player.moving == PUNCH_RIGHT || player.moving == KICK_RIGHT) && player.x < vespino_enemy.x) {

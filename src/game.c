@@ -31,6 +31,7 @@ char urinated;
 MIDI *music;
 MIDI *final_music;
 int counter = 0;
+char cheat_mode = 0;
 char space_was_pressed = FALSE;
 // BITMAP *player[11];
 // BITMAP *enemy1[11];
@@ -147,11 +148,11 @@ void increase_level_and_load() {
     beep_count = -1;
     missed_beeps = 0;
     beep_side = IZQUIERDA;
-    coursnave_completed = TRUE;
+    coursnave_completed = FALSE;
     yellow_key = FALSE;
     blue_key = FALSE;
     score = 0;
-    next_level = MISIFU_ALLEY;
+    next_level = 1;
     // last level starts with zero enemies
     vespino_enemy.x = 290;
     vespino_enemy.y = 110;

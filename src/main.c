@@ -223,6 +223,7 @@ int main(int argc, const char **argv) {
     player.received_hits = 0;
     player.lives = 3;
     player.floor_times = 0;
+    cheat_mode = 0;
 
     gfx_init_timer();
 
@@ -235,6 +236,10 @@ int main(int argc, const char **argv) {
         frame_count++;
         
         if (level == MENU) {
+            if (key[KEY_J] && key[KEY_S] && key[KEY_M]) {
+                beep(340, 10);
+                cheat_mode = 1;
+            }
             if (key[KEY_SPACE]) {
                 increase_level_and_load();
                 if (play_looped_midi(music, 0, -1) != 0) {
