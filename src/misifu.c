@@ -14,7 +14,6 @@
 #include "misifu.h"
 #include "allegro/datafile.h"
 #include "tiles.h"
-#include <conio.h>
 
 
 struct clothes {

@@ -280,10 +280,10 @@ void draw_enemy(int index) {
 
     if (enemies[index].is_floor != FALSE) {
         if (enemies[index].moving & 1) {
-            draw_sprite(double_buffer, enemies[index].sprite[11],
+            draw_sprite(screen, enemies[index].sprite[11],
                         enemies[index].x, enemies[index].y + 30);
         } else {
-            draw_sprite_h_flip(double_buffer, enemies[index].sprite[11],
+            draw_sprite_h_flip(screen, enemies[index].sprite[11],
                                enemies[index].x,
                                enemies[index].y + 30);
         }
@@ -295,10 +295,10 @@ void draw_enemy(int index) {
         // redraw pair or impair?
         if (enemies[index].moving & 1) {
             draw_sprite_h_flip(
-                double_buffer, enemies[index].sprite[enemies[index].curr_sprite],
+                screen, enemies[index].sprite[enemies[index].curr_sprite],
                 enemies[index].x, enemies[index].y);
         } else {
-            draw_sprite(double_buffer,
+            draw_sprite(screen,
                         enemies[index].sprite[enemies[index].curr_sprite],
                         enemies[index].x, enemies[index].y);
         }

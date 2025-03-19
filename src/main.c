@@ -37,7 +37,7 @@ void gfx_init_timer() {
     LOCK_VARIABLE(fps);
     LOCK_FUNCTION(gfx_timer_proc);
     LOCK_FUNCTION(gfx_fps_proc);
-    install_int_ex(gfx_timer_proc, BPS_TO_TIMER(60));
+    install_int_ex(gfx_timer_proc, BPS_TO_TIMER(70));
     install_int_ex(gfx_fps_proc, BPS_TO_TIMER(1));
 }
 static volatile long speed_counter = 0;
@@ -267,11 +267,7 @@ int main(int argc, const char **argv) {
                 output();  /* give output */
             }
         }
-        if ((counter & 1) == 0) {
-            blit(double_buffer, screen, 0, 0, 0, 0, 320, 240);
-            //show_video_bitmap(double_buffer);
-            //request_video_bitmap()
-        }
+        blit(double_buffer, screen, 0, 0, 0, 0, 320, 240);
         vsync();
 
         if (key[KEY_ESC] && level != MISIFU_ALLEY && level != MISIFU_CHEESE) {
