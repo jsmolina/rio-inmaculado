@@ -404,11 +404,11 @@ void output() {
         if (yellow_key == TRUE) {
             y_pos = SCREEN_H - 18;
         }
-        draw_sprite(screen, key_sprite + SCREEN_W, 34, y_pos);
+        draw_sprite(screen, key_sprite, 34 + SCREEN_W, y_pos);
     }
 
     if (blue_key == TRUE) {
-        draw_sprite(screen, key_sprite_blue + SCREEN_W, 64, SCREEN_H - 18);
+        draw_sprite(screen, key_sprite_blue, 64 + SCREEN_W, SCREEN_H - 18);
     }
 
     // draw in order depending on Y
