@@ -151,7 +151,7 @@ void increase_level_and_load() {
     yellow_key = FALSE;
     blue_key = FALSE;
     score = 0;
-    next_level = 1;
+    next_level = MISIFU_ALLEY;
     // last level starts with zero enemies
     vespino_enemy.x = 290;
     vespino_enemy.y = 110;
@@ -238,11 +238,16 @@ void process() {
         return;
     }
 
+    // check door opening or side moving
+    move_to_level_if_needed();
+    if (level == MISIFU_ALLEY || level ==  MISIFU_CHEESE || level == WIN_LEVEL) {
+        return;
+    }
+
     move_with_level_limits();
 
 
-    // check door opening or side moving
-    move_to_level_if_needed();
+
 
     if (key[KEY_1] && key[KEY_2] && key[KEY_3]) {
         player.win = TRUE;

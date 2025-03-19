@@ -803,7 +803,6 @@ void misifu_process() {
         }
         set_palette(palette);
 
-        load_level();
         return;
     }
 }
