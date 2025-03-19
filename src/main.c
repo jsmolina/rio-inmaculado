@@ -114,7 +114,7 @@ int main(int argc, const char **argv) {
     // Switch to graphics mode, 320x200.
     set_color_depth(8);
 
-    if (set_gfx_mode(GFX_MODEX, 320, 240, 0, 0) != 0) {
+    if (set_gfx_mode(GFX_MODEX, 320, 240, 640, 240) != 0) {
         die("Cannot set graphics mode");
     }
 
@@ -243,7 +243,6 @@ int main(int argc, const char **argv) {
                 exit_game = 1;
                 break;
             }*/
-            vsync();
         }
         update_count = 0;
         frame_count++;
@@ -275,8 +274,9 @@ int main(int argc, const char **argv) {
             if (level != MENU) {
                 output();  /* give output */
             }
-            vsync();
         }
+        blit(screen, screen, 321, 0, 0, 0, 320, 200);
+        vsync();
 
         if (key[KEY_ESC] && level != MISIFU_ALLEY && level != MISIFU_CHEESE) {
             exit_game = 1;

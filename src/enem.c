@@ -280,9 +280,12 @@ void draw_enemy(int index) {
 
     if (enemies[index].is_floor != FALSE) {
         if (enemies[index].moving & 1) {
-            draw_sprite(screen, enemies[index].sprite[11], enemies[index].x, enemies[index].y + 30);
+            draw_sprite(screen, enemies[index].sprite[11],
+                        enemies[index].x + SCREEN_W, enemies[index].y + 30);
         } else {
-            draw_sprite_h_flip(screen, enemies[index].sprite[11], enemies[index].x, enemies[index].y + 30);
+            draw_sprite_h_flip(screen, enemies[index].sprite[11],
+                               enemies[index].x + SCREEN_W,
+                               enemies[index].y + 30);
         }
 
     } else {
@@ -291,9 +294,13 @@ void draw_enemy(int index) {
         }
         // redraw pair or impair?
         if (enemies[index].moving & 1) {
-            draw_sprite_h_flip(screen, enemies[index].sprite[enemies[index].curr_sprite], enemies[index].x, enemies[index].y);
+            draw_sprite_h_flip(
+                screen, enemies[index].sprite[enemies[index].curr_sprite],
+                enemies[index].x + SCREEN_W, enemies[index].y);
         } else {
-            draw_sprite(screen, enemies[index].sprite[enemies[index].curr_sprite], enemies[index].x, enemies[index].y);
+            draw_sprite(screen,
+                        enemies[index].sprite[enemies[index].curr_sprite],
+                        enemies[index].x + SCREEN_W, enemies[index].y);
         }
     }
 }
@@ -305,7 +312,8 @@ void all_enemy_animations() {
 }
 
 void clean_vespino() {
-    blit(bg, screen, vespino_enemy.x - 3, vespino_enemy.y, vespino_enemy.x-3, vespino_enemy.y, 55, 50);
+    blit(bg, screen, vespino_enemy.x - 3, vespino_enemy.y,
+         vespino_enemy.x - 3 + SCREEN_W, vespino_enemy.y, 55, 50);
 }
 
 void enem_resets() {
@@ -425,7 +433,8 @@ void draw_vespino() {
 
 void redraw_bg_enemy_positions() {
     for (int i = 0; i < levels[level].total_enemies; i++) {
-        blit(bg, screen, enemies[i].x, 120, enemies[i].x, 120, 40, 80);
+        blit(bg, screen, enemies[i].x, 120,
+             enemies[i].x + SCREEN_W, 120, 40, 80);
     }
     if (vespino_enemy.direction != VESPINO_HIDDEN) {
         clean_vespino();
