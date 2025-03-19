@@ -256,7 +256,7 @@ int enemy_decision(enemyData *enem) {
                     play_sample(punch2, 200, 127, 1200 + counter % 100, 0); 
                     enem->is_punching = 0;
                     player.received_hits++;
-                    if (player.lifebar > 0) {
+                    if (player.lifebar > 0 && cheat_mode != 1) {
                         player.lifebar--;
                     }
                     
@@ -280,9 +280,12 @@ void draw_enemy(int index) {
 
     if (enemies[index].is_floor != FALSE) {
         if (enemies[index].moving & 1) {
-            draw_sprite(screen, enemies[index].sprite[11], enemies[index].x, enemies[index].y + 30);
+            draw_sprite(screen, enemies[index].sprite[11],
+                        enemies[index].x, enemies[index].y + 30);
         } else {
-            draw_sprite_h_flip(screen, enemies[index].sprite[11], enemies[index].x, enemies[index].y + 30);
+            draw_sprite_h_flip(screen, enemies[index].sprite[11],
+                               enemies[index].x,
+                               enemies[index].y + 30);
         }
 
     } else {
@@ -291,9 +294,13 @@ void draw_enemy(int index) {
         }
         // redraw pair or impair?
         if (enemies[index].moving & 1) {
-            draw_sprite_h_flip(screen, enemies[index].sprite[enemies[index].curr_sprite], enemies[index].x, enemies[index].y);
+            draw_sprite_h_flip(
+                screen, enemies[index].sprite[enemies[index].curr_sprite],
+                enemies[index].x, enemies[index].y);
         } else {
-            draw_sprite(screen, enemies[index].sprite[enemies[index].curr_sprite], enemies[index].x, enemies[index].y);
+            draw_sprite(screen,
+                        enemies[index].sprite[enemies[index].curr_sprite],
+                        enemies[index].x, enemies[index].y);
         }
     }
 }
@@ -305,7 +312,8 @@ void all_enemy_animations() {
 }
 
 void clean_vespino() {
-    blit(bg, screen, vespino_enemy.x - 3, vespino_enemy.y, vespino_enemy.x-3, vespino_enemy.y, 55, 50);
+    blit(bg, double_buffer, vespino_enemy.x - 3, vespino_enemy.y,
+         vespino_enemy.x - 3, vespino_enemy.y, 55, 50);
 }
 
 void enem_resets() {
@@ -360,7 +368,7 @@ void all_enemy_decisions() {
                 return;
             }
 
-            if (x_distance < 20 && x_distance >= 8) {
+            if (x_distance < 20 && x_distance >= 8 && y_distance < 8) {
                 if ((player.moving == PUNCH_LEFT || player.moving == KICK_LEFT) && player.x > vespino_enemy.x) {
                     vespino_hitted();                   
                 } else  if ((player.moving == PUNCH_RIGHT || player.moving == KICK_RIGHT) && player.x < vespino_enemy.x) {
@@ -425,7 +433,8 @@ void draw_vespino() {
 
 void redraw_bg_enemy_positions() {
     for (int i = 0; i < levels[level].total_enemies; i++) {
-        blit(bg, screen, enemies[i].x, 120, enemies[i].x, 120, 40, 80);
+        blit(bg, double_buffer, enemies[i].x, 120,
+             enemies[i].x, 120, 40, 80);
     }
     if (vespino_enemy.direction != VESPINO_HIDDEN) {
         clean_vespino();

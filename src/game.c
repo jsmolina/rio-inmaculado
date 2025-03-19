@@ -31,10 +31,12 @@ char urinated;
 MIDI *music;
 MIDI *final_music;
 int counter = 0;
+char cheat_mode = 0;
 char space_was_pressed = FALSE;
 // BITMAP *player[11];
 // BITMAP *enemy1[11];
 BITMAP *bg;
+BITMAP *double_buffer;
 BITMAP *tiles;
 BITMAP *player_head;
 BITMAP *girl;
@@ -188,57 +190,65 @@ void increase_level_and_load() {
 // draws current player lives
 void draw_lives() {
     //blit(bg, screen, 20, 20, 20, 20, 50, 20);
-    rectfill(screen, 20, SCREEN_H - 30, 55, SCREEN_H - 20, makecol(40, 40, 40));
+    rectfill(double_buffer, 20, SCREEN_H - 30, 55, SCREEN_H - 20, makecol(40, 40, 40));
     unsigned int i;
     for (i = 0; i < player.lives; i++) {
-        draw_sprite(screen, player_head, 20 + i * 10, SCREEN_H - 30);
+        draw_sprite(double_buffer, player_head, 20 + i * 10, SCREEN_H - 30);
     }
 }
 
 void draw_score() {
-    rectfill(screen, 280, SCREEN_H - 30, 319, SCREEN_H - 20, makecol(40, 40, 40));
-    textprintf_ex(screen, font, 280, SCREEN_H - 30, makecol(255,255,255), -1, "%05d", score);
+    rectfill(double_buffer, 280, SCREEN_H - 30, 319, SCREEN_H - 20, makecol(40, 40, 40));
+    textprintf_ex(double_buffer, font, 280, SCREEN_H - 30,
+                  makecol(255, 255, 255), -1, "%05d", score);
 }
 
 void game_over() {
-    textout_centre_ex(screen, font, "GAME OVER", 190, SCREEN_H - 34, makecol(255, 255, 255), makecol(10, 10, 10));
+    textout_centre_ex(double_buffer, font, "GAME OVER", 190, SCREEN_H - 34,
+                      makecol(255, 255, 255), makecol(10, 10, 10));
 }
 
 void draw_lifebar() {
     rectfill(screen, 60, SCREEN_H - 30, 88, SCREEN_H - 20, makecol(40, 40, 40));
-    blit(player_lifebar, screen, 0, 0, 60, SCREEN_H -30, 2 * player.lifebar, 14);
+    blit(player_lifebar, double_buffer, 0, 0, 60, SCREEN_H - 30,
+         2 * player.lifebar, 14);
 }
 
 void draw_lifebar_vespino_enemy() {
-    textout_ex(screen, font, "JOHNNY", SCREEN_W / 2 - 50, 230,
+    textout_ex(double_buffer, font, "JOHNNY", SCREEN_W / 2 - 50, 230,
                makecol(255, 255, 255), -1);
-    rectfill(screen, SCREEN_W / 2, 230, SCREEN_W / 2 + 30, 240,
+    rectfill(double_buffer, SCREEN_W / 2, 230, SCREEN_W / 2 + 30, 240,
              makecol(40, 40, 40));
-    blit(player_lifebar, screen, 0, 0, SCREEN_W / 2, 230,
+    blit(player_lifebar, double_buffer, 0, 0, SCREEN_W / 2, 230,
          2 * vespino_enemy.lifebar, 14);
 }
 
-void switch_walk() {
+void switch_walk(char var) {
+    // TODO: 1, 2, 1, 3, 1, 2, 1, 3
     if (player.curr_sprite == ANIM_WALK1) {
-        player.curr_sprite = ANIM_WALK2;
-    } else if (player.curr_sprite == ANIM_WALK2) {
-        player.curr_sprite = ANIM_WALK3;
+        if (var == 1)
+            player.curr_sprite = ANIM_WALK2;
+        else 
+            player.curr_sprite = ANIM_WALK3;
     } else {
         player.curr_sprite = ANIM_WALK1;
-    }
+    } 
 }
 
 void process() {
     if (level == MISIFU_ALLEY || level ==  MISIFU_CHEESE || level == WIN_LEVEL) {
         misifu_process();
+        if (next_level == 10) {
+            load_level();
+        }
+     
         return;
     }
 
-    move_with_level_limits();
-
-
     // check door opening or side moving
+    move_with_level_limits();
     move_to_level_if_needed();
+
 
     if (key[KEY_1] && key[KEY_2] && key[KEY_3]) {
         player.win = TRUE;
@@ -313,12 +323,12 @@ void process() {
 
         if (player.moving == MOVING_RIGHT || player.moving == MOVING_LEFT) {
             if ((player.x / MIGUEL_WALK_CYCLE) % 2 == 0) {
-                switch_walk();
+                switch_walk(1);
             } else {
-                switch_walk();
+                switch_walk(2);
             }
         } else if (player.y_moving == MOVING_UP || player.y_moving == MOVING_DOWN){
-            switch_walk();
+            switch_walk(1);
         } else if (player.moving == PUNCH_RIGHT ||
                    player.moving == PUNCH_LEFT) {
 
@@ -343,23 +353,25 @@ void process() {
     }
 }
 
-void draw_player() {
+inline void draw_player() {
     // redraw pair or impair?
 
     if (player.is_floor != FALSE) {
         if (player.moving & 1) {
-            draw_sprite(screen, player.sprite[12], player.x, player.y + 30);
+            draw_sprite(double_buffer, player.sprite[12], player.x,
+                        player.y + 30);
         } else {
-            draw_sprite_h_flip(screen, player.sprite[12], player.x, player.y + 30);
+            draw_sprite_h_flip(double_buffer, player.sprite[12], player.x,
+                               player.y + 30);
         }
 
     } else {
         if (player.moving & LOOKING_LEFT) {
-            draw_sprite_h_flip(screen, player.sprite[player.curr_sprite],
+            draw_sprite_h_flip(double_buffer, player.sprite[player.curr_sprite],
                                player.x, player.y);
         } else {
-            draw_sprite(screen, player.sprite[player.curr_sprite], player.x,
-                        player.y);
+            draw_sprite(double_buffer, player.sprite[player.curr_sprite],
+                        player.x, player.y);
         }
     }
 }
@@ -390,7 +402,8 @@ void output() {
         return;
     }
     // clean
-    blit(bg, screen, player.x-5, player.y - 10, player.x-5, player.y - 10, 45, 55);
+    blit(bg, double_buffer, player.x - 5, player.y - 10, player.x - 5,
+         player.y - 10, 45, 55);
     redraw_bg_enemy_positions();
 
     if (level == 9 || yellow_key == TRUE) {
@@ -398,11 +411,11 @@ void output() {
         if (yellow_key == TRUE) {
             y_pos = SCREEN_H - 18;
         }
-        draw_sprite(screen, key_sprite, 34, y_pos);
+        draw_sprite(double_buffer, key_sprite, 34, y_pos);
     }
 
     if (blue_key == TRUE) {
-        draw_sprite(screen, key_sprite_blue, 64, SCREEN_H - 18);
+        draw_sprite(double_buffer, key_sprite_blue, 64, SCREEN_H - 18);
     }
 
     // draw in order depending on Y
@@ -428,7 +441,7 @@ void output() {
 
     if(level == 4 && urinated != FALSE) {
         // draw teacher
-        draw_sprite(screen, girl, 42, 145);
+        draw_sprite(double_buffer, girl, 42, 145);
     }
 
     if (counter > 319) {
@@ -518,12 +531,13 @@ void load_level() {
     if (next_level == 0) {
         //bg = load_pcx("bege.pcx", NULL);
         bg = load_level_background(0);
-        textout_ex(bg, font, "V0.8", 60, 30, makecol(100, 100, 100), -1);
+        textout_ex(bg, font, "V0.999", 60, 30, makecol(100, 100, 100), -1);
         textout_ex(bg, font, "MSDOS CLUB", SCREEN_H - 20, 40, makecol(100, 100, 100), -1);
         textout_ex(bg, font, "Rio Immaculado", SCREEN_W / 2 - 55, 140, makecol(255, 255, 255), -1);
         textout_ex(bg, font, "Space to start", SCREEN_W / 2 - 40, 80, makecol(156, 176, 239), -1);
         textout_ex(bg, font, "Dedicated to G&C", 70, SCREEN_H - 30, makecol(255, 176, 239), -1);
-
+        blit(bg, double_buffer, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+        return;
     } else if (next_level == 12) {
         bg = load_level_background(next_level);
         level = next_level;
@@ -582,11 +596,13 @@ void load_level() {
     if (!bg) {
         die("Cannot load graphic");        
     }
+
     //blit(bg, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
     if (!(level == 6 && prev_level == 5) && level != MISIFU_ALLEY && level != MISIFU_CHEESE) {
         fade_out(16);
     }
-    blit(bg, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+    blit(bg, double_buffer, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+    //blit(bg, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
     if (!(level == 6 && prev_level == 5) && level != MISIFU_ALLEY && level != MISIFU_CHEESE) {
         fade_in(palette, 16);
     }

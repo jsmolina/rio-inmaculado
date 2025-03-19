@@ -224,7 +224,7 @@ inline void check_bincat() {
         if (bincat.appears <= 1) {
             bincat.appears = NONE;
             bincat.in_bin = 0;
-            blit(bg, screen, bincat.x, bincat.y, bincat.x, bincat.y, 15, 12);
+            blit(bg, double_buffer, bincat.x, bincat.y, bincat.x, bincat.y, 15, 12);
         }
     }
 }
@@ -345,22 +345,6 @@ void check_keys() {
     if(misifu.state == M_FIGHTING) {
         return;
     }
-    if (key[KEY_4_PAD])  {
-        misifu.state = CAT_IN_ROPE;
-        --misifu.x;
-    }
-    if (key[KEY_6_PAD])  {
-        misifu.state = CAT_IN_ROPE;
-        ++misifu.x;
-    }
-    if (key[KEY_8_PAD]) {
-        misifu.state = CAT_IN_ROPE;
-        --misifu.y;
-    }
-    if (key[KEY_2_PAD]) {
-        misifu.state = CAT_IN_ROPE;
-        ++misifu.y;
-    }
 
     if((!(key[KEY_UP]) && !(key[KEY_DOWN]))) {
         misifu.last_key = NONE;
@@ -404,39 +388,39 @@ void check_keys() {
 
 void misifu_clean() {
     if (level == MISIFU_ALLEY) {
-        blit(bg, screen, clothes.row1_x, 50, clothes.row1_x, 50, 64, 20);
-        blit(bg, screen, clothes.row2_x, 82, clothes.row2_x, 82, 40, 20);
-        blit(bg, screen, object.x, object.y, object.x, object.y, 16, 14);
+        blit(bg, double_buffer, clothes.row1_x, 50, clothes.row1_x, 50, 64, 20);
+        blit(bg, double_buffer, clothes.row2_x, 82, clothes.row2_x, 82, 40, 20);
+        blit(bg, double_buffer, object.x, object.y, object.x, object.y, 16, 14);
 
     }
-    blit(bg, screen, misifu.x - 2, misifu.y -2, misifu.x - 2, misifu.y - 2, 32, 42);
-    blit(bg, screen, dog.x - 2, DOG_Y, dog.x - 2, DOG_Y, 30, 16);
+    blit(bg, double_buffer, misifu.x - 2, misifu.y -2, misifu.x - 2, misifu.y - 2, 32, 42);
+    blit(bg, double_buffer, dog.x - 2, DOG_Y, dog.x - 2, DOG_Y, 30, 16);
 }
 
 void misifu_output() {   
     if (level == MISIFU_ALLEY) {
-        draw_sprite(screen, clothes.sprite2, clothes.row1_x, 50);
-        draw_sprite(screen, clothes.sprite1, clothes.row2_x, 82);
+        draw_sprite(double_buffer, clothes.sprite2, clothes.row1_x, 50);
+        draw_sprite(double_buffer, clothes.sprite1, clothes.row2_x, 82);
     }
     if (bincat.appears != NONE) {
-        draw_sprite(screen, bincat.sprite, bincat.x, bincat.y);
+        draw_sprite(double_buffer, bincat.sprite, bincat.x, bincat.y);
     }
     if (misifu.state == M_WALKING_LEFT || misifu.draw_additional == M_JUMP_LEFT) {
-        draw_sprite_h_flip(screen, misifu.sprite[misifu.offset],
+        draw_sprite_h_flip(double_buffer, misifu.sprite[misifu.offset],
             misifu.x, misifu.y);
     } else {
-        draw_sprite(screen, misifu.sprite[misifu.offset],
+        draw_sprite(double_buffer, misifu.sprite[misifu.offset],
             misifu.x, misifu.y);
     }    
     if (dog.appears == TRUE) {
         if (dog.direction == MDIR_LEFT) {
-            draw_sprite(screen, dog.sprite[dog.offset], dog.x, DOG_Y);
+            draw_sprite(double_buffer, dog.sprite[dog.offset], dog.x, DOG_Y);
         } else {
-            draw_sprite_h_flip(screen, dog.sprite[dog.offset], dog.x, DOG_Y);
+            draw_sprite_h_flip(double_buffer, dog.sprite[dog.offset], dog.x, DOG_Y);
         }
     }
     if (object.direction != NONE) {
-        draw_sprite(screen, object.sprite, object.x, object.y);
+        draw_sprite(double_buffer, object.sprite, object.x, object.y);
     }
 
 }
@@ -487,7 +471,7 @@ void open_window(uint8_t height, char open_window) {
     struct coord window_coords = get_window_coords();
     
     if (open_window == TRUE) {
-        rectfill(screen, window_coords.x, window_coords.y, window_coords.x + 31, window_coords.y - height, makecol(41, 40, 41));
+        rectfill(double_buffer, window_coords.x, window_coords.y, window_coords.x + 31, window_coords.y - height, makecol(41, 40, 41));
         rectfill(bg, window_coords.x, window_coords.y, window_coords.x + 31, window_coords.y - height, makecol(41, 40, 41));
         if (height == 15 && misifu.y <= 100) {
             object.appears = TRUE;
@@ -507,10 +491,10 @@ void open_window(uint8_t height, char open_window) {
             }
         }
     } else {
-        rectfill(screen, window_coords.x, window_coords.y, window_coords.x + 31, window_coords.y - 8, makecol(86, 255, 255));
+        rectfill(double_buffer, window_coords.x, window_coords.y, window_coords.x + 31, window_coords.y - 8, makecol(86, 255, 255));
         rectfill(bg, window_coords.x, window_coords.y, window_coords.x + 31, window_coords.y - 8, makecol(86, 255, 255));
 
-        rectfill(screen, window_coords.x, window_coords.y - 8, window_coords.x + 31, window_coords.y - 15, makecol(64, 197, 197));
+        rectfill(double_buffer, window_coords.x, window_coords.y - 8, window_coords.x + 31, window_coords.y - 15, makecol(64, 197, 197));
         rectfill(bg, window_coords.x, window_coords.y - 8, window_coords.x + 31, window_coords.y - 15, makecol(64, 197, 197));
     }
 }
@@ -686,9 +670,6 @@ inline void alley_loop() {
     //detect_fall_in_window();
 }
 
-
-
-
 void destroy_misifu_data() {
     // todo destroy sprite
     for (int i = 0; i < 8; i++) {
@@ -709,8 +690,6 @@ void destroy_misifu_data() {
         music = load_midi("ROGERR.MID");
         play_looped_midi(music, 0, -1);
     }
- 
-
 }
 
 /*
@@ -722,6 +701,7 @@ if (misifu.draw_additional == CAT_IN_BIN && misifu.y < FLOOR_Y && misifu.in_bin 
     }
 }
 */
+
 
 
 void misifu_process() {
@@ -806,12 +786,9 @@ void misifu_process() {
         }
         set_gfx_mode(GFX_TEXT, 80, 25, 0, 0);
         while (fgets(line, sizeof(line), file)) {
-            printf("\033[1;37;41m");
-            printf("  ");
             printf("%s", line);
-            
-            printf("\033[0m");
         }
+
         printf("\nPress ENTER to continue\n");
         printf("T:\\NOVELL\\MISIFU>exit");
         while (!key[KEY_ENTER] && !key[KEY_SPACE] && !key[KEY_ESC]) {
@@ -821,10 +798,10 @@ void misifu_process() {
         set_color_depth(8);
         if(set_gfx_mode(GFX_MODEX, 320, 240, 0, 0) != 0) {
             die("error setting 320x240 16bpp: %s", allegro_error);
-        }
+        }        
         set_palette(palette);
-
-        load_level();
+        // WARN! After a gfx mode set, requires setting video bitmap again
+        double_buffer = create_video_bitmap(SCREEN_W, SCREEN_H);
         return;
     }
 }

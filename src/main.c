@@ -121,12 +121,11 @@ int main(int argc, const char **argv) {
     install_int(fps_proc, 1000);    
     // Print a single line of "hello world" on a white screen.
     //set_palette(desktop_palette);
-
+    double_buffer = create_video_bitmap(SCREEN_W, SCREEN_H);
     //set_color_depth(desktop_color_depth());
     slow_cpu = 1;
     clear_to_color(screen, 0);
-    BITMAP *msdos;
-    msdos = load_pcx("msdos.pcx", palette);
+    BITMAP *msdos = load_pcx("msdos.pcx", palette);
     if (msdos) {
         set_pallete(palette);
         blit(msdos, screen, 0, 0, 0, 0, 320, 240);    
@@ -224,31 +223,23 @@ int main(int argc, const char **argv) {
     player.received_hits = 0;
     player.lives = 3;
     player.floor_times = 0;
+    cheat_mode = 0;
 
     gfx_init_timer();
 
     do {
-        /*while (speed_counter > 0) {
-            rest(0);
-            if (key[KEY_ESC]) {
-                exit_game = 1;
-                break;
-            }
-            speed_counter--;
-        }*/
 
         while (0 == update_count) {
             rest(0);
-            /*if (key[KEY_ESC] && level != MISIFU_ALLEY && level != MISIFU_CHEESE) {
-                exit_game = 1;
-                break;
-            }*/
-            vsync();
         }
         update_count = 0;
         frame_count++;
         
         if (level == MENU) {
+            if (key[KEY_J] && key[KEY_S] && key[KEY_M]) {
+                beep(340, 10);
+                cheat_mode = 1;
+            }
             if (key[KEY_SPACE]) {
                 increase_level_and_load();
                 if (play_looped_midi(music, 0, -1) != 0) {
@@ -275,8 +266,9 @@ int main(int argc, const char **argv) {
             if (level != MENU) {
                 output();  /* give output */
             }
-            vsync();
         }
+        blit(double_buffer, screen, 0, 0, 0, 0, 320, 240);
+        vsync();
 
         if (key[KEY_ESC] && level != MISIFU_ALLEY && level != MISIFU_CHEESE) {
             exit_game = 1;
@@ -302,6 +294,7 @@ int main(int argc, const char **argv) {
     destroy_sample(die_sample);
     destroy_sample(motorbike);
     destroy_sample(metalhit);
+    destroy_bitmap(double_buffer);
     unload_enemies();
     destroy_tiles();
     cleanup_data();
