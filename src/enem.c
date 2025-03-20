@@ -273,17 +273,18 @@ int enemy_decision(enemyData *enem) {
     return FALSE;
 }
 
-void draw_enemy(int index) {
+inline void draw_enemy(int index) {
     if ((index + 1) > levels[level].total_enemies) {
         return; 
     }
 
+
     if (enemies[index].is_floor != FALSE) {
         if (enemies[index].moving & 1) {
-            draw_sprite(screen, enemies[index].sprite[11],
+            draw_sprite(double_buffer, enemies[index].sprite[11],
                         enemies[index].x, enemies[index].y + 30);
         } else {
-            draw_sprite_h_flip(screen, enemies[index].sprite[11],
+            draw_sprite_h_flip(double_buffer, enemies[index].sprite[11],
                                enemies[index].x,
                                enemies[index].y + 30);
         }
@@ -295,10 +296,10 @@ void draw_enemy(int index) {
         // redraw pair or impair?
         if (enemies[index].moving & 1) {
             draw_sprite_h_flip(
-                screen, enemies[index].sprite[enemies[index].curr_sprite],
+                double_buffer, enemies[index].sprite[enemies[index].curr_sprite],
                 enemies[index].x, enemies[index].y);
         } else {
-            draw_sprite(screen,
+            draw_sprite(double_buffer,
                         enemies[index].sprite[enemies[index].curr_sprite],
                         enemies[index].x, enemies[index].y);
         }
@@ -415,6 +416,7 @@ void all_enemy_decisions() {
 
 void draw_vespino() {
     int offset;
+
     if ((vespino_enemy.x / 4) % 2 == 0) {
         offset = 1;            
     } else {
@@ -442,7 +444,7 @@ void redraw_bg_enemy_positions() {
 }
 
 
-int enemy_on_path(unsigned int new_player_x) {
+inline int enemy_on_path(unsigned int new_player_x) {
     for (int i = 0; i < levels[level].total_enemies; i++) {
         if (enemies[i].is_floor != FALSE) {
             continue;

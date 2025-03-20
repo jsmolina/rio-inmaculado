@@ -267,7 +267,6 @@ int main(int argc, const char **argv) {
                 output();  /* give output */
             }
         }
-        blit(double_buffer, screen, 0, 0, 0, 0, 320, 240);
         vsync();
 
         if (key[KEY_ESC] && level != MISIFU_ALLEY && level != MISIFU_CHEESE) {

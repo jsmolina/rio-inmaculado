@@ -46,6 +46,8 @@ extern char cheat_mode;
 extern int counter;
 extern BITMAP *bg;
 extern BITMAP *double_buffer;
+extern int current_page;
+extern BITMAP *video_page[2];
 extern char slow_cpu;
 
 

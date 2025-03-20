@@ -234,8 +234,13 @@ void switch_walk(char var) {
         player.curr_sprite = ANIM_WALK1;
     } 
 }
+unsigned int small_counter = 0;
 
 void process() {
+    ++small_counter;
+    if (small_counter == 11) {
+        small_counter = 0;
+    }
     if (level == MISIFU_ALLEY || level ==  MISIFU_CHEESE || level == WIN_LEVEL) {
         misifu_process();
         if (next_level == 10) {
@@ -355,7 +360,6 @@ void process() {
 
 inline void draw_player() {
     // redraw pair or impair?
-
     if (player.is_floor != FALSE) {
         if (player.moving & 1) {
             draw_sprite(double_buffer, player.sprite[12], player.x,
@@ -402,9 +406,6 @@ void output() {
         return;
     }
     // clean
-    blit(bg, double_buffer, player.x - 5, player.y - 10, player.x - 5,
-         player.y - 10, 45, 55);
-    redraw_bg_enemy_positions();
 
     if (level == 9 || yellow_key == TRUE) {
         unsigned char y_pos = 105;
@@ -429,6 +430,20 @@ void output() {
     };
     
     qsort(drawn_items, 5, sizeof(yPositions), y_comp);
+    // clean enemies
+    for (int i = 0; i < levels[level].total_enemies; i++) {
+        blit(bg, double_buffer, enemies[i].x, 120, enemies[i].x, 120, 40, 80);
+    }
+    // clean player
+    blit(bg, double_buffer, player.x - 5, player.y - 10, player.x - 5,
+        player.y - 10, 45, 55);
+    // clean vespino (if applies)
+    if (level == 11 && vespino_enemy.direction != VESPINO_HIDDEN) {
+        blit(bg, double_buffer, vespino_enemy.x - 3, vespino_enemy.y,
+            vespino_enemy.x - 3, vespino_enemy.y, 55, 50);
+    }
+    
+    //redraw_bg_enemy_positions();
     for (int i = 0; i < 5; i++) {
         if (drawn_items[i].argument <= ALEX_INDEX) {
             draw_enemy(drawn_items[i].argument);
@@ -443,6 +458,8 @@ void output() {
         // draw teacher
         draw_sprite(double_buffer, girl, 42, 145);
     }
+    blit(double_buffer, screen, 0, 0, 0, 0, 320, 240);
+
 
     if (counter > 319) {
         counter = 0;
