@@ -122,6 +122,8 @@ int main(int argc, const char **argv) {
     // Print a single line of "hello world" on a white screen.
     //set_palette(desktop_palette);
     double_buffer = create_video_bitmap(SCREEN_W, SCREEN_H);
+    bg_video = create_video_bitmap(SCREEN_W, SCREEN_H);
+
     //set_color_depth(desktop_color_depth());
     slow_cpu = 1;
     clear_to_color(screen, 0);
@@ -144,6 +146,7 @@ int main(int argc, const char **argv) {
     hit = load_wav("hit.wav");
     punch = load_wav("punch.wav");
     punch2 = load_wav("punch2.wav");
+    voice = load_wav("voice.wav");
     dog_theme = load_wav("dog.wav");
     fall = load_wav("fall.wav");
     die_sample = load_wav("die.wav");
@@ -229,16 +232,20 @@ int main(int argc, const char **argv) {
 
     do {
 
-        while (0 == update_count) {
+        /*while (0 == update_count) {
             rest(0);
-        }
+        }*/
         update_count = 0;
         frame_count++;
         
         if (level == MENU) {
-            if (key[KEY_J] && key[KEY_S] && key[KEY_M]) {
-                beep(340, 10);
+            if (key[KEY_J] && key[KEY_S]) {
+                play_sample(voice, 255, 127, 1000, 0); 
                 cheat_mode = 1;
+                rest(100);
+                while(key[KEY_S]) {
+                    rest(10);
+                }
             }
             if (key[KEY_SPACE]) {
                 increase_level_and_load();
@@ -253,9 +260,11 @@ int main(int argc, const char **argv) {
         } else {
             if (starting_level_counter == FALSE) {
                 input();   /* get input */
+                clean();
                 process(); /* process it */
             } else {
                 if ((counter & 1) == 0) {
+                    clean();
                     player.y++;
                     if (counter % 10 == 0) {
                         player.curr_sprite ^= 1; // varies last digit 0/1, 1/0
@@ -267,7 +276,6 @@ int main(int argc, const char **argv) {
                 output();  /* give output */
             }
         }
-        blit(double_buffer, screen, 0, 0, 0, 0, 320, 240);
         vsync();
 
         if (key[KEY_ESC] && level != MISIFU_ALLEY && level != MISIFU_CHEESE) {

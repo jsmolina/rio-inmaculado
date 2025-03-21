@@ -356,9 +356,9 @@ void move_with_level_limits() {
 void loop_castigo() {
     int index = 0;
     int key2;
-    
-    textout_ex(screen, font, "no entrare al de las chicas", 21, 35, makecol(0,0,0), -1);
 
+    textout_ex(double_buffer, font, "no entrare al de las chicas", 21, 35, makecol(0,0,0), -1);
+ 
     char compar[] = "no entrare al de las chicas";
     char buf[] =    "                            ";
     while (index < 27) {
@@ -379,7 +379,7 @@ void loop_castigo() {
   
         }
         
-        textout_ex(screen, font, buf, 21, 51, makecol(0,0,0), -1);
+        textout_ex(double_buffer, font, buf, 21, 51, makecol(0,0,0), -1);
         rest(1); 
     }
     //castigo = CASTIGO_FINALIZADO;

@@ -20,6 +20,7 @@ spritePos player;
 
 time_t start_playing;
 unsigned int score;
+unsigned int prev_score;
 unsigned char level = 0;
 unsigned char next_level = FALSE;
 unsigned char starting_level_counter = 0;
@@ -37,6 +38,7 @@ char space_was_pressed = FALSE;
 // BITMAP *enemy1[11];
 BITMAP *bg;
 BITMAP *double_buffer;
+BITMAP *bg_video;
 BITMAP *tiles;
 BITMAP *player_head;
 BITMAP *girl;
@@ -48,6 +50,7 @@ SAMPLE *alleytheme;
 SAMPLE *dog_theme;
 SAMPLE *hit;
 SAMPLE *punch, *punch2;
+SAMPLE *voice;
 SAMPLE *fall, *die_sample;
 SAMPLE *motorbike, *metalhit;
 char slow_cpu;
@@ -87,7 +90,7 @@ void input() {
             return;
         }
 
-        if (player.moving == STOP_LEFT) {
+        if (player.moving == STOP_LEFT || player.moving == PUNCH_LEFT) {
             player.moving = KICK_LEFT;
         } else {
             player.moving = KICK_RIGHT;
@@ -105,7 +108,7 @@ void input() {
             return;
         }
 
-        if (player.moving == STOP_LEFT) {
+        if (player.moving == STOP_LEFT || player.moving == KICK_LEFT) {
             player.moving = PUNCH_LEFT;
         } else {
             player.moving = PUNCH_RIGHT;
@@ -147,6 +150,7 @@ void increase_level_and_load() {
     urinated = FALSE;
     beep_count = -1;
     missed_beeps = 0;
+    prev_score = 0;
     beep_side = IZQUIERDA;
     coursnave_completed = FALSE;
     yellow_key = FALSE;
@@ -198,28 +202,29 @@ void draw_lives() {
 }
 
 void draw_score() {
-    rectfill(double_buffer, 280, SCREEN_H - 30, 319, SCREEN_H - 20, makecol(40, 40, 40));
-    textprintf_ex(double_buffer, font, 280, SCREEN_H - 30,
+    rectfill(screen, 280, SCREEN_H - 30, 319, SCREEN_H - 20, makecol(40, 40, 40));
+    textprintf_ex(screen, font, 280, SCREEN_H - 30,
                   makecol(255, 255, 255), -1, "%05d", score);
+    prev_score = score;
 }
 
 void game_over() {
-    textout_centre_ex(double_buffer, font, "GAME OVER", 190, SCREEN_H - 34,
+    textout_centre_ex(screen, font, "GAME OVER", 190, SCREEN_H - 34,
                       makecol(255, 255, 255), makecol(10, 10, 10));
 }
 
 void draw_lifebar() {
     rectfill(screen, 60, SCREEN_H - 30, 88, SCREEN_H - 20, makecol(40, 40, 40));
-    blit(player_lifebar, double_buffer, 0, 0, 60, SCREEN_H - 30,
+    blit(player_lifebar, screen, 0, 0, 60, SCREEN_H - 30,
          2 * player.lifebar, 14);
 }
 
 void draw_lifebar_vespino_enemy() {
-    textout_ex(double_buffer, font, "JOHNNY", SCREEN_W / 2 - 50, 230,
+    textout_ex(screen, font, "JOHNNY", SCREEN_W / 2 - 50, 230,
                makecol(255, 255, 255), -1);
-    rectfill(double_buffer, SCREEN_W / 2, 230, SCREEN_W / 2 + 30, 240,
+    rectfill(screen, SCREEN_W / 2, 230, SCREEN_W / 2 + 30, 240,
              makecol(40, 40, 40));
-    blit(player_lifebar, double_buffer, 0, 0, SCREEN_W / 2, 230,
+    blit(player_lifebar, screen, 0, 0, SCREEN_W / 2, 230,
          2 * vespino_enemy.lifebar, 14);
 }
 
@@ -234,8 +239,13 @@ void switch_walk(char var) {
         player.curr_sprite = ANIM_WALK1;
     } 
 }
+unsigned int small_counter = 0;
 
 void process() {
+    ++small_counter;
+    if (small_counter == 11) {
+        small_counter = 0;
+    }
     if (level == MISIFU_ALLEY || level ==  MISIFU_CHEESE || level == WIN_LEVEL) {
         misifu_process();
         if (next_level == 10) {
@@ -310,7 +320,7 @@ void process() {
     }
     
 
-    if ((counter % 10) == 0) {
+    if (small_counter == 10) {
         if (player.is_floor > 0) {
             player.is_floor--;
             return;
@@ -322,7 +332,7 @@ void process() {
         }
 
         if (player.moving == MOVING_RIGHT || player.moving == MOVING_LEFT) {
-            if ((player.x / MIGUEL_WALK_CYCLE) % 2 == 0) {
+            if (((player.x / MIGUEL_WALK_CYCLE)  & 1) == 0) {
                 switch_walk(1);
             } else {
                 switch_walk(2);
@@ -347,15 +357,13 @@ void process() {
     }
     ///// ENEMY
     all_enemy_decisions();
-
-    if ((counter % 10) == 0) {
+    if (small_counter == 10) {
         all_enemy_animations();
     }
 }
 
 inline void draw_player() {
     // redraw pair or impair?
-
     if (player.is_floor != FALSE) {
         if (player.moving & 1) {
             draw_sprite(double_buffer, player.sprite[12], player.x,
@@ -388,23 +396,39 @@ int y_comp(const void *a, const void *b) {
     return (elemA->y - elemB->y);
 }
 
-void output() {
+inline void clean() {
+    if (level > (TOTAL_LEVELS -1)) {
+        return;
+    }
+    // clean enemies
+    for (int i = 0; i < levels[level].total_enemies; i++) {
+        blit(bg_video, double_buffer, enemies[i].x, 120, enemies[i].x, 120, 40, 80);
+    }
+    // clean player
+    blit(bg_video, double_buffer, player.x - 5, player.y - 10, player.x - 5,
+        player.y - 10, 45, 55);
+    // clean vespino (if applies)
+    if (level == 11 && vespino_enemy.direction != VESPINO_HIDDEN) {
+        blit(bg_video, double_buffer, vespino_enemy.x - 3, vespino_enemy.y,
+            vespino_enemy.x - 3, vespino_enemy.y, 55, 50);
+    }
+    //blit(bg, double_buffer, 0, 0, 0, 0, 320, 200);
+}
+
+inline void output() {
     counter++;
 
     if (level == MISIFU_ALLEY || level ==  MISIFU_CHEESE || level == WIN_LEVEL) {
         return;
     }
-    if ((counter % 4) == 0) {
+    if (score != prev_score) {
         draw_score();
     }
 
-    if (level == 12) {
+    if (level > (TOTAL_LEVELS - 1)) {
         return;
     }
     // clean
-    blit(bg, double_buffer, player.x - 5, player.y - 10, player.x - 5,
-         player.y - 10, 45, 55);
-    redraw_bg_enemy_positions();
 
     if (level == 9 || yellow_key == TRUE) {
         unsigned char y_pos = 105;
@@ -429,6 +453,13 @@ void output() {
     };
     
     qsort(drawn_items, 5, sizeof(yPositions), y_comp);
+   
+
+    if(level == 4 && urinated != FALSE) {
+        // draw teacher
+        draw_sprite(double_buffer, girl, 42, 143);
+    }
+    //redraw_bg_enemy_positions();
     for (int i = 0; i < 5; i++) {
         if (drawn_items[i].argument <= ALEX_INDEX) {
             draw_enemy(drawn_items[i].argument);
@@ -438,11 +469,25 @@ void output() {
             draw_vespino();
         }
     }
-
-    if(level == 4 && urinated != FALSE) {
-        // draw teacher
-        draw_sprite(double_buffer, girl, 42, 145);
+    if(!double_buffer) {
+        die("double buffer empty");
     }
+
+    blit(double_buffer, screen, 0, 0, 0, 0, 320, 200);
+
+    for (int i = 0; i < levels[level].total_enemies; i++) {
+        // enemy hits player
+        if(enemies[i].enem_received_hit_sample == 1) {
+            enemies[i].enem_received_hit_sample = 0;            
+            play_sample(punch, 200, 155, 1200 +small_counter , 0);            
+        }         
+        // player hits enemy
+        if (enemies[i].enem_hitted_sample == 1) {
+            enemies[i].enem_hitted_sample= 0;
+            play_sample(punch2, 200, 80, 1200 +small_counter, 0);          
+        }
+    }
+
 
     if (counter > 319) {
         counter = 0;
@@ -531,7 +576,7 @@ void load_level() {
     if (next_level == 0) {
         //bg = load_pcx("bege.pcx", NULL);
         bg = load_level_background(0);
-        textout_ex(bg, font, "V0.999", 60, 30, makecol(100, 100, 100), -1);
+        textout_ex(bg, font, "v1.0", 60, 30, makecol(100, 100, 100), -1);
         textout_ex(bg, font, "MSDOS CLUB", SCREEN_H - 20, 40, makecol(100, 100, 100), -1);
         textout_ex(bg, font, "Rio Immaculado", SCREEN_W / 2 - 55, 140, makecol(255, 255, 255), -1);
         textout_ex(bg, font, "Space to start", SCREEN_W / 2 - 40, 80, makecol(156, 176, 239), -1);
@@ -602,6 +647,7 @@ void load_level() {
         fade_out(16);
     }
     blit(bg, double_buffer, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+    blit(bg, bg_video, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
     //blit(bg, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
     if (!(level == 6 && prev_level == 5) && level != MISIFU_ALLEY && level != MISIFU_CHEESE) {
         fade_in(palette, 16);
