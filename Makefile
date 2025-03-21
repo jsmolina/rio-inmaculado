@@ -33,10 +33,10 @@ ${DISTDIR}:
 	mkdir -p ${DISTDIR}
 
 %.o: %.c
-	${CC} -c -o $@ $? ${CFLAGS}
+	${CC} -c -o $@ $? ${CFLAGS} -O3
 
 ${DISTDIR}/${BIN}: ${OBJS}
-	${CC} -o ${DISTDIR}/${BIN} $+ ${LDFLAGS}
+	${CC} -o ${DISTDIR}/${BIN} $+ ${LDFLAGS} -O3
 
 ${STATICDEST}:
 	cd $(STATICDIR) && sh convert.sh	
