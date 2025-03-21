@@ -40,11 +40,12 @@ extern MIDI *final_music;
 extern SAMPLE *alleytheme;
 extern SAMPLE *hit;
 extern SAMPLE *dog_theme;
-extern SAMPLE *punch, *fall, *punch2, *die_sample, *motorbike, *metalhit;
+extern SAMPLE *punch, *fall, *punch2, *die_sample, *motorbike, *metalhit, *voice;
 
 extern char cheat_mode;
 extern int counter;
 extern BITMAP *bg;
+extern BITMAP *bg_video;
 extern BITMAP *double_buffer;
 extern int current_page;
 extern BITMAP *video_page[2];
@@ -55,8 +56,10 @@ extern char slow_cpu;
 void input();
 // processes state changes, e.g., based on user input
 void process();
+// cleans current screen
+inline void clean();
 // syncs current state to the screen
-void output();
+inline void output();
 // setups next level
 void increase_level_and_load();
 // opens the levels.nfo file which includes actionable parameters for each level

@@ -688,7 +688,6 @@ void destroy_misifu_data() {
         stop_midi();
         destroy_midi(music);
         music = load_midi("ROGERR.MID");
-        play_looped_midi(music, 0, -1);
     }
 }
 
@@ -759,6 +758,7 @@ void misifu_process() {
     }
     if (exit_misifu == MEXIT_SUCCESS) {
         stop_sample(dog_theme);
+        stop_midi();
         clear_to_color(screen, 0);
         for (int i = 0; i < 6; i++) {
             exit_misifu = MEXIT_END;
@@ -800,8 +800,11 @@ void misifu_process() {
             die("error setting 320x240 16bpp: %s", allegro_error);
         }        
         set_palette(palette);
+        play_looped_midi(music, 0, -1);
+
         // WARN! After a gfx mode set, requires setting video bitmap again
         double_buffer = create_video_bitmap(SCREEN_W, SCREEN_H);
+        bg_video = create_video_bitmap(SCREEN_W, SCREEN_H);
         return;
     }
 }

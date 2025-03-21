@@ -13,7 +13,7 @@
 #define VESPINO_RIGHT 2
 #define VESPINO_SPEED 3
 
-#define FIGHT_DISTANCE 20
+#define FIGHT_DISTANCE 22
 
 #define JOHNY_INDEX 0
 #define PETER_INDEX 1

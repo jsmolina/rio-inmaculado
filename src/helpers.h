@@ -42,7 +42,7 @@
 #define ANIM_WALK3 7
 #define ANIM_ESPALDA 11
 #define HIT_DURATION 4
-#define HIT_DURATION_ENEM 2
+#define HIT_DURATION_ENEM 1
 #define FLOOR_DURATION 18
 
 #define TOTAL_LEVELS 12
@@ -83,6 +83,9 @@ typedef struct  {
     unsigned int curr_sprite;
     int is_hit;
     int is_punching;
+    int punch_wait;
+    unsigned char enem_received_hit_sample;
+    unsigned char enem_hitted_sample;
     unsigned char received_hits;
     int is_floor;
     unsigned char floor_times;
@@ -97,6 +100,7 @@ typedef struct {
     unsigned int lifebar;
     int is_floor;
     int hit;
+    int offset;
     uint8_t direction;
 } vespinoData;
 
