@@ -265,7 +265,7 @@ int enemy_decision(enemyData *enem) {
                     enem->curr_sprite = ANIM_PUNCH;
                     enem->is_punching = HIT_DURATION;
                     enem->punch_wait = 2;
-                } else if (enem->is_punching != 0 
+                } else if (enem->is_punching != 0 && y_distance < 8
                     && ((enem->moving == PUNCH_LEFT && player.x <= enem->x && x_distance <= FIGHT_DISTANCE) 
                 || (enem->moving == PUNCH_RIGHT && player.x >= enem->x && x_distance <= FIGHT_DISTANCE)))  {
                     player.is_hit = HIT_DURATION;
