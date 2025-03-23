@@ -55,31 +55,43 @@ SAMPLE *fall, *die_sample;
 SAMPLE *motorbike, *metalhit;
 char slow_cpu;
 LevelData levels[TOTAL_LEVELS];
+unsigned char use_joystick;
+unsigned char no_music = 0;
+unsigned char joy_fire_1;
+unsigned char joy_fire_2;
+unsigned char joy_fire_3;
+char joy_x_axis;
+char joy_y_axis;
 
 void input() {
-    if (num_joysticks > 0) {
+    if (use_joystick && num_joysticks > 0) {
         poll_joystick();
+        joy_fire_1 = joy_fire_2 = joy_fire_3 = joy_x_axis = joy_y_axis = 0;
         if (joy[0].button[0].b) {
-            simulate_keypress(KEY_RCONTROL);
+            joy_fire_1 = 1;
         } 
         if (joy[0].button[1].b) {
-            simulate_keypress(KEY_ALT);
+            joy_fire_2 = 1;
         }
         if (joy[0].num_buttons > 2 && joy[0].button[2].b) {
-            simulate_keypress(KEY_SPACE);
+            joy_fire_3 = 1;
         }
 
-        if (joy[0].stick[0].axis[0].pos < 0) {
-            simulate_keypress(KEY_LEFT);
-        } else if (joy[0].stick[0].axis[0].pos > 0) {
-            simulate_keypress(KEY_RIGHT);
+        if (joy[0].stick[0].axis[0].d1) {
+            joy_x_axis = -1;
+        } else if (joy[0].stick[0].axis[0].d2) {
+            joy_x_axis = +1;
         }
 
-        if (joy[0].stick[0].axis[1].pos < 0) {
-            simulate_keypress(KEY_UP);
-        } else if (joy[0].stick[1].axis[0].pos > 0) {
-            simulate_keypress(KEY_DOWN);
+        if (joy[0].stick[0].axis[1].d1) {
+            joy_y_axis = -1;
+        } else if (joy[0].stick[0].axis[1].d2) {
+            joy_y_axis = +1;
         }
+    }
+    if (key[KEY_M]) {
+        no_music = 1;
+        stop_midi();
     }
 
     // readkey();
@@ -105,7 +117,7 @@ void input() {
     if (player.is_hit > 0 || player.is_floor > 0) {
         return;
     }
-    unsigned char pressing_alt = key[KEY_ALT] || key[KEY_ALTGR];
+    unsigned char pressing_alt = key[KEY_ALT] || key[KEY_ALTGR] || joy_fire_2 == 1;
     if (!pressing_alt && player.is_kicking > 0) {
         player.is_kicking = 0;
     }
@@ -121,7 +133,7 @@ void input() {
             player.moving = KICK_RIGHT;
         }
     }
-    unsigned char pressing_control = key[KEY_RCONTROL] || key[KEY_LCONTROL];
+    unsigned char pressing_control = key[KEY_RCONTROL] || key[KEY_LCONTROL] || joy_fire_1 == 1;
     if (!pressing_control && player.is_punching > 0) {
         player.is_punching = 0;
     }
@@ -140,15 +152,15 @@ void input() {
         }
     }
 
-    if (key[KEY_LEFT]) {
+    if (key[KEY_LEFT] || joy_x_axis == -1) {
         player.moving = MOVING_LEFT;
-    } else if (key[KEY_RIGHT]) {
+    } else if (key[KEY_RIGHT] || joy_x_axis == 1) {
         player.moving = MOVING_RIGHT;
     }
     
-    if (key[KEY_UP]) {
+    if (key[KEY_UP] || joy_y_axis == -1) {
         player.y_moving = MOVING_UP;
-    } else if (key[KEY_DOWN]) {
+    } else if (key[KEY_DOWN] || joy_y_axis == 1) {
         player.y_moving = MOVING_DOWN;
     }
     // TODO ALT/ALTGR for kicks
@@ -159,6 +171,7 @@ void increase_level_and_load() {
     if (level >= 1) {
         return;
     }
+    joy_fire_1 = joy_fire_2 = joy_fire_3 = joy_x_axis = joy_y_axis = 0;
     clear_to_color(screen, 0);
     textout_centre_ex(screen, font, "El JONNY te ha robado la vespino.", SCREEN_W / 2,
                       SCREEN_H / 2, makecol(255, 255, 255), -1);

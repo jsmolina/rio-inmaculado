@@ -231,6 +231,10 @@ int main(int argc, const char **argv) {
 
     gfx_init_timer();
     install_joystick(JOY_TYPE_AUTODETECT);
+    use_joystick = 0;
+    if (num_joysticks > 0) {
+        calibrate_joystick(0);
+    }
 
     do {
 
@@ -249,6 +253,18 @@ int main(int argc, const char **argv) {
                     rest(10);
                 }
             }
+            if (num_joysticks > 0) {
+                poll_joystick();
+
+                if (joy[0].button[0].b) {
+                    use_joystick = 1;
+                    increase_level_and_load();
+                    if (play_looped_midi(music, 0, -1) != 0) {
+                        die("Cant play music");
+                    }
+                }
+            }
+
             if (key[KEY_SPACE]) {
                 increase_level_and_load();
                 if (play_looped_midi(music, 0, -1) != 0) {
