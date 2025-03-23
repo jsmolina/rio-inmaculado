@@ -584,7 +584,7 @@ void load_level() {
     if (next_level == 0) {
         //bg = load_pcx("bege.pcx", NULL);
         bg = load_level_background(0);
-        textout_ex(bg, font, "v1.0", 60, 30, makecol(100, 100, 100), -1);
+        textout_ex(bg, font, "v1.1", 60, 30, makecol(100, 100, 100), -1);
         textout_ex(bg, font, "MSDOS CLUB", SCREEN_H - 20, 40, makecol(100, 100, 100), -1);
         textout_ex(bg, font, "Rio Immaculado", SCREEN_W / 2 - 55, 140, makecol(255, 255, 255), -1);
         textout_ex(bg, font, "Space to start", SCREEN_W / 2 - 40, 80, makecol(156, 176, 239), -1);
