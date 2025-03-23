@@ -12,6 +12,7 @@
 #include "allegro/draw.h"
 #include "allegro/gfx.h"
 #include "allegro/inline/draw.inl"
+#include "allegro/joystick.h"
 #include "allegro/keyboard.h"
 #include "allegro/midi.h"
 #include "allegro/system.h"
@@ -229,6 +230,7 @@ int main(int argc, const char **argv) {
     cheat_mode = 0;
 
     gfx_init_timer();
+    install_joystick(JOY_TYPE_AUTODETECT);
 
     do {
 

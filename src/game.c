@@ -57,6 +57,31 @@ char slow_cpu;
 LevelData levels[TOTAL_LEVELS];
 
 void input() {
+    if (num_joysticks > 0) {
+        poll_joystick();
+        if (joy[0].button[0].b) {
+            simulate_keypress(KEY_RCONTROL);
+        } 
+        if (joy[0].button[1].b) {
+            simulate_keypress(KEY_ALT);
+        }
+        if (joy[0].num_buttons > 2 && joy[0].button[2].b) {
+            simulate_keypress(KEY_SPACE);
+        }
+
+        if (joy[0].stick[0].axis[0].pos < 0) {
+            simulate_keypress(KEY_LEFT);
+        } else if (joy[0].stick[0].axis[0].pos > 0) {
+            simulate_keypress(KEY_RIGHT);
+        }
+
+        if (joy[0].stick[0].axis[1].pos < 0) {
+            simulate_keypress(KEY_UP);
+        } else if (joy[0].stick[1].axis[0].pos > 0) {
+            simulate_keypress(KEY_DOWN);
+        }
+    }
+
     // readkey();
     // end_game = 1;
     if (level == 12 || (level == 8 && !coursnave_completed)) {
@@ -104,7 +129,7 @@ void input() {
     // now check again keys
     if (pressing_control) {
         player.is_punching++;
-        if (player.is_punching > 20) {
+        if (player.is_punching > 10) {
             return;
         }
 
