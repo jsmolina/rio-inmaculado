@@ -50,8 +50,6 @@ extern BITMAP *double_buffer;
 extern int current_page;
 extern BITMAP *video_page[2];
 extern char slow_cpu;
-extern unsigned char use_joystick;
-extern unsigned char joy_fire_3;
 
 
 // processes user input

@@ -49,7 +49,7 @@ inline int move_to_level_if_needed() {
     }
     LevelData curr_leveldata = levels[level];
     if (player.y < 142) {
-        if (key[KEY_SPACE] || joy_fire_3) {
+        if (key[KEY_SPACE]) {
             // for doors stays on same level but with subdoors
             if (is_on_door(curr_leveldata.door1Pos) && (level != 10 || blue_key == TRUE)) {
                 next_level = curr_leveldata.door1;
@@ -391,7 +391,7 @@ void level_processing() {
 
     switch (level) {
         case 2:
-            if (locked_elevator != FALSE && (key[KEY_SPACE] || joy_fire_3)) {
+            if (locked_elevator != FALSE && (key[KEY_SPACE])) {
                 //76, 84, 92
                 if (player.y < 142 && player.x >= 204 && player.x <= 219) {
                     textout_ex(screen, font, "bedel?        ", 120, SCREEN_H - 34, makecol(100,255,255), makecol(0,0,0));               
@@ -446,14 +446,14 @@ void level_processing() {
             loop_castigo();
         break;
         case 9:
-        if ((key[KEY_SPACE] || joy_fire_3) && yellow_key != TRUE) {
+        if ((key[KEY_SPACE]) && yellow_key != TRUE) {
             if (player.y < 110 && player.x >= 20 && player.x <= 45) {
                 yellow_key = TRUE;
             }
         }
         break;
         case 10:
-        if (key[KEY_SPACE] || joy_fire_3) {
+        if (key[KEY_SPACE]) {
             //76, 84, 92
             if (player.y < 147 && player.x >= 28 && player.x <= 252) {
                 next_level = MISIFU_ALLEY;
