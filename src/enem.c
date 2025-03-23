@@ -123,6 +123,7 @@ void enemy_animation(enemyData *enem) {
         enem->curr_sprite = 0;
     }
 }
+int random_choice;
 
 int enemy_decision(enemyData *enem) {
     int distance;
@@ -160,7 +161,7 @@ int enemy_decision(enemyData *enem) {
             hitted_this_loop = TRUE;
         }
 
-        if (enem->received_hits == 8) {
+        if (enem->received_hits == 10) {
             stop_sample(punch);
             play_sample(fall, 255, 127, 1000, 0);  
             enem->is_floor = FLOOR_DURATION;
@@ -175,7 +176,6 @@ int enemy_decision(enemyData *enem) {
         return FALSE;
     }
 
-    int random_choice = rand() % 50;
     char enem_has_moved = FALSE;
     // TODO: enemy should not tresspass hero
 
@@ -235,7 +235,7 @@ int enemy_decision(enemyData *enem) {
             enem->moving = STOP_RIGHT;
         }
     } else {
-        if (random_choice > 35 && point_distance(player.y, enem->y) >= 2 /*&& (counter % 2) == 0*/) {
+        if (random_choice > 20 && point_distance(player.y, enem->y) >= 2 /*&& (counter % 2) == 0*/) {
             if (enem->y > player.y) {
                 enem->y_moving = MOVING_UP;
                 enem->y--;
@@ -365,6 +365,8 @@ void vespino_hitted() {
 }
 
 void all_enemy_decisions() {
+    random_choice = rand() % 50;
+
     hitted_this_loop = FALSE;
 
     alive_enemies_count = 0;

@@ -55,8 +55,16 @@ SAMPLE *fall, *die_sample;
 SAMPLE *motorbike, *metalhit;
 char slow_cpu;
 LevelData levels[TOTAL_LEVELS];
+unsigned char no_music = 0;
+
 
 void input() {
+
+    if (key[KEY_M]) {
+        no_music = 1;
+        stop_midi();
+    }
+
     // readkey();
     // end_game = 1;
     if (level == 12 || (level == 8 && !coursnave_completed)) {
@@ -104,7 +112,7 @@ void input() {
     // now check again keys
     if (pressing_control) {
         player.is_punching++;
-        if (player.is_punching > 20) {
+        if (player.is_punching > 10) {
             return;
         }
 

@@ -247,6 +247,8 @@ int main(int argc, const char **argv) {
                     rest(10);
                 }
             }
+
+
             if (key[KEY_SPACE]) {
                 increase_level_and_load();
                 if (play_looped_midi(music, 0, -1) != 0) {
