@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+  compile:
+    build: .
+    volumes:
+      - ./dist:/app/out
