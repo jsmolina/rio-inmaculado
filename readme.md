@@ -8,9 +8,10 @@ What happens if you mix "River City" + "Target Renegade" + "an 80s kid"? This cr
 
 Just use docker:
 
+```
 $ docker-compose build
 $ docker-compose up
-
+```
 
 ![portada](https://github.com/user-attachments/assets/e8233e81-bf09-4aab-a854-d0fc941a6425)
 
