@@ -18,7 +18,6 @@ magick main.pcx -crop 40x40+360+0 main10.pcx
 magick main.pcx -crop 40x40+400+0 main11.pcx
 magick main.pcx -crop 40x40+440+0 main12.pcx
 
-export MIGUEL_SPRITES=`printf 'MAIN%d.PCX ' {1..10}`
 
 
 # enemy sprites
@@ -94,10 +93,10 @@ magick cat.pcx -crop 24x24+216+0   cat7.PCX
 
 
 echo "Converting dog sprites..."
-magick dog.pcx -crop 24x16+0+0  dog1.PCX
-magick dog.pcx -crop 24x16+24+0 dog2.PCX
-magick dog.pcx -crop 24x16+48+0 dog3.PCX
-magick dog.pcx -crop 24x16+72+0 dog4.PCX
+magick dog.pcx -crop 24x16+0+0  dog1.pcx
+magick dog.pcx -crop 24x16+24+0 dog2.pcx
+magick dog.pcx -crop 24x16+48+0 dog3.pcx
+magick dog.pcx -crop 24x16+72+0 dog4.pcx
 
 #   magick miguel_sprites.png -crop 40x40+440+0 -colors 256 -type truecolor miguel11.pcx
 #magick background.png -colors 256 -type truecolor bg.pcx
@@ -111,13 +110,19 @@ magick new_tiles.png -colors 256 -depth 8 tiles.pcx
 
 pwd
 echo "Compress..."
-./dat2 win.mid final.pcx enem1d.pcx enem2d.pcx enem3d.pcx maind.pcx vespino.pcx vespino2.pcx vespino3.pcx HEAD.PCX bege.pcx main*.pcx enem*.pcx tiles.pcx bg*.tmx LIVES.PCX LIFEBAR.PCX GIRL.PCX KEY.PCX BLUE_KEY.PCX ROGERR.MID alleycat.mid ALLEY.PCX CHEESE.PCX HEART.PCX CLOTHES*.PCX cat*.PCX dog*.PCX BINCAT.PCX PHONE.PCX alleytheme.wav hit.wav dog.wav punch.wav punch2.wav fall.wav die.wav moto.wav metal.wav voice.wav shareware.txt levels.csv
+./dat2 win.mid final.pcx enem1d.pcx enem2d.pcx enem3d.pcx maind.pcx vespino.pcx vespino2.pcx vespino3.pcx HEAD.PCX bege.pcx main*.pcx enem*.pcx tiles.pcx bg*.tmx LIVES.PCX LIFEBAR.PCX girl.pcx KEY.PCX BLUE_KEY.PCX ROGERR.mid alleycat.mid ALLEY.PCX CHEESE.PCX HEART.PCX CLOTHES*.PCX cat*.PCX dog*.pcx BINCAT.PCX PHONE.PCX alleytheme.wav hit.wav dog.wav punch.wav punch2.wav fall.wav die.wav moto.wav metal.wav voice.wav shareware.txt levels.csv
 
+echo "foo"
 echo "Removing generated pcx"
-
+echo "-main"
 rm main1.pcx main2.pcx main3.pcx main4.pcx main5.pcx main6.pcx main7.pcx main8.pcx main9.pcx main10.pcx main11.pcx main12.pcx
+echo "-enem1"
 rm enem1_*.pcx
+echo "-enem2"
 rm enem2_*.pcx
+echo "-enem3"
 rm enem3_*.pcx
+echo "-cat"
 rm cat1.PCX cat2.PCX cat3.PCX cat4.PCX cat5.PCX cat6.PCX cat7.PCX
+echo "-dog"
 rm dog1.pcx dog2.pcx dog3.pcx dog4.pcx
