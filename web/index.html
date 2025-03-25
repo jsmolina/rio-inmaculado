@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MS-DOS Game</title>
+  <link rel="stylesheet" href="js-dos.css">
+  <script src="js-dos.js"></script>
+  <style>
+      #dosbox-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    </style>
+</head>
+<body>
+	<canvas id="dosbox-container" width="640" height="480"></canvas>
+  
+  <script>
+	  const canvas = document.getElementById("dosbox-container");
+	  Dos(canvas).ready((fs, main) => {
+  	   fs.createFile("dosbox.conf", "[sdl]\nscaler=scan3x\nfullresolution=640x480\naspect=true");
+	    fs.extract("rio.jsdos").then(() => {
+	      main(["-c", "MAIN.EXE"]); 
+	    });
+	  });
+  </script>
+</body>
+</html>
+
