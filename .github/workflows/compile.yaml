@@ -17,47 +17,25 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential gcc
-          sudo apt-get install bison flex curl gcc g++ make texinfo zlib1g-dev g++ unzip
+          sudo apt-get install -y wget build-essential bzip2 bison flex curl gcc g++ make texinfo unzip zlib1g-dev imagemagick git
       
-      - name: Clone djgpp
+      - name: Clone djgpp and symlink
         run: |
-          git clone https://github.com/andrewwutw/build-djgpp.git
+          cd vendor 
+          wget -c https://github.com/andrewwutw/build-djgpp/releases/download/v3.4/djgpp-linux64-gcc1220.tar.bz2 -O - | tar -xj 
+          sudo ln -s ./vendor/djgpp /usr/local/djgpp
 
-      - name: Clone Allegro 4
-        run: |
-          git clone https://github.com/msikma/allegro-4.2.2-xc.git
-          cd allegro-4.2.2-xc
-
-      - name: Cachear Directorios
-        id: cache-compile
-        uses: actions/cache@v4
-        with:
-          path: |
-            build-djgpp
-            allegro-4.2.2-xc
-          key: ${{ runner.os }}-compilacion
-          restore-keys: |
-            ${{ runner.os }}-compilacion
-
-      - name: Compile djgpp
-        run: | 
-          cd build-djgpp
-          sudo ./build-djgpp.sh 12.2.0
-
-
-      - name: Compile Allegro 4
-        run: |
-          cd allegro-4.2.2-xc
+      - name: Clone and Compile Allegro 4
+        run: |          
+          cd vendor 
+          rm -f allegro-4.2.2-xc 
+          git clone https://github.com/msikma/allegro-4.2.2-xc.git 
+          cd allegro-4.2.2-xc 
           ./xmake.sh lib
 
       - name: Compile your project
         run: |
           # Aquí van los comandos para compilar tu proyecto que utiliza Allegro 4
-          cd vendor
-          rm -f allegro-4.2.2-xc
-          ln -s ../allegro-4.2.2-xc allegro-4.2.2-xc
-          cd ..
           cd static
           gcc dat2.c -o dat2
           cd ..
