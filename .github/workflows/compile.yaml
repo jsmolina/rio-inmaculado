@@ -23,7 +23,7 @@ jobs:
         run: |
           cd vendor 
           wget -c https://github.com/andrewwutw/build-djgpp/releases/download/v3.4/djgpp-linux64-gcc1220.tar.bz2 -O - | tar -xj 
-          sudo ln -s ./vendor/djgpp /usr/local/djgpp
+          sudo mv ./djgpp /usr/local
 
       - name: Clone and Compile Allegro 4
         run: |          
