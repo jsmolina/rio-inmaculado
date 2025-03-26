@@ -1,0 +1,67 @@
+name: Compile Allegro 4 Project
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y zip libfl2 wget build-essential bzip2 bison flex curl gcc g++ make texinfo unzip zlib1g-dev imagemagick git
+      
+      - name: Clone djgpp and symlink
+        run: |
+          cd vendor 
+          wget -c https://github.com/andrewwutw/build-djgpp/releases/download/v3.4/djgpp-linux64-gcc1220.tar.bz2 -O - | tar -xj 
+          sudo mv ./djgpp /usr/local
+
+      - name: Clone and Compile Allegro 4
+        run: |          
+          cd vendor 
+          rm -f allegro-4.2.2-xc 
+          git clone https://github.com/msikma/allegro-4.2.2-xc.git 
+          cd allegro-4.2.2-xc 
+          ./xmake.sh lib
+
+      - name: Compile your project
+        run: |
+          # Aquí van los comandos para compilar tu proyecto que utiliza Allegro 4
+          cd static
+          gcc dat2.c -o dat2
+          cd ..
+          export PATH=/usr/local/djgpp/i586-pc-msdosdjgpp/bin:$PATH
+          export DJDIR=/usr/local/djgpp/i586-pc-msdosdjgpp
+          export DJGPP_CC=/usr/local/djgpp/bin/i586-pc-msdosdjgpp-gcc
+          sudo apt-get install imagemagick
+          sudo ln -s /usr/bin/convert /usr/bin/magick
+          make clean && make
+          zip -r -j rio.zip dist
+      
+      - name: Last tag
+        run: |
+          echo "Last tag: $(git describe --tags --abbrev=0)" > last_tag.txt
+
+      - name: Read Last tag
+        run: |
+          LAST_TAG=$(cat last_tag.txt)
+          echo "LAST_TAG=$LAST_TAG" >> $GITHUB_ENV
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Release ${{ steps.generate_release_tag.outputs.next_release_tag }}
+          token: ${{secrets.GITHUB_TOKEN}}
+          generate_release_notes: true
+          tag_name: ${{ env.LAST_TAG }}
+          files: rio.zip

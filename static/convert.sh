@@ -19,7 +19,6 @@ magick main.pcx -crop 40x40+400+0 main11.pcx
 magick main.pcx -crop 40x40+440+0 main12.pcx
 
 
-
 # enemy sprites
 echo "Converting enemy1 character sprites..."
 magick enemy1.pcx -crop 40x40+0+0 enem1_1.pcx
