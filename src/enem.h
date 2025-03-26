@@ -13,7 +13,7 @@
 #define VESPINO_RIGHT 2
 #define VESPINO_SPEED 3
 
-#define FIGHT_DISTANCE 20
+#define FIGHT_DISTANCE 22
 
 #define JOHNY_INDEX 0
 #define PETER_INDEX 1
@@ -37,11 +37,11 @@ void all_enemy_decisions();
 void enem_resets();
 
 // draw all enemies
-void draw_enemy(int index);
+inline void draw_enemy(int index);
 void draw_vespino();
 
 // true if has any enemy on path
-int enemy_on_path(unsigned int new_player_x);
+inline int enemy_on_path(unsigned int new_player_x);
 // redraws background over all the enemy positions
 void redraw_bg_enemy_positions();
 // frees up memory sprites for enemies
