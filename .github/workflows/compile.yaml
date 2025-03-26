@@ -45,7 +45,7 @@ jobs:
           sudo apt-get install imagemagick
           sudo ln -s /usr/bin/convert /usr/bin/magick
           make clean && make
-          zip -j rio.zip dist
+          zip -r -j rio.zip dist
 
 
       - name: Generate release tag
