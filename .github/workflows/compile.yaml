@@ -2,7 +2,8 @@ name: Compile Allegro 4 Project
 
 on:
   push:
-    branches: [ feature/allegro-test ]
+    tags:
+      - "v*.*.*"
   workflow_dispatch:
 
 jobs:
@@ -46,6 +47,15 @@ jobs:
           sudo ln -s /usr/bin/convert /usr/bin/magick
           make clean && make
           zip -r -j rio.zip dist
+      
+      - name: Last tag
+        run: |
+          echo "Last tag: $(git describe --tags --abbrev=0)" > last_tag.txt
+
+      - name: Read Last tag
+        run: |
+          LAST_TAG=$(cat last_tag.txt)
+          echo "LAST_TAG=$LAST_TAG" >> $GITHUB_ENV
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
@@ -53,4 +63,5 @@ jobs:
           name: Release ${{ steps.generate_release_tag.outputs.next_release_tag }}
           token: ${{secrets.GITHUB_TOKEN}}
           generate_release_notes: true
+          tag_name: ${{ env.LAST_TAG }}
           files: rio.zip
