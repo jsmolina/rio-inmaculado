@@ -179,11 +179,12 @@ static void stop_jump_if_needed(uint8_t max_jump) {
         misifu.draw_additional = NONE;
     }
 }
+int bin_positions[] = {29, 60, 93, 182, 215};
 
 inline unsigned char is_in_bin() {
-    uint8_t bin_positions[] = {29, 60, 93, 182, 215};
+    
 
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 5; i++) {
         if (misifu.x >= bin_positions[i] && misifu.x <= (bin_positions[i] + 24)) {
             return i + 1;
         }
@@ -221,10 +222,10 @@ inline void check_bincat() {
             //BEEPFX_HIT_2
         }
 
-        if (bincat.appears <= 1) {
+        if (bincat.appears == 1) {
             bincat.appears = NONE;
             bincat.in_bin = 0;
-            blit(bg, double_buffer, bincat.x, bincat.y, bincat.x, bincat.y, 15, 12);
+            blit(bg_video, double_buffer, bincat.x, bincat.y, bincat.x, bincat.y, 15, 12);
         }
     }
 }
@@ -388,13 +389,17 @@ void check_keys() {
 
 void misifu_clean() {
     if (level == MISIFU_ALLEY) {
-        blit(bg, double_buffer, clothes.row1_x, 50, clothes.row1_x, 50, 64, 20);
-        blit(bg, double_buffer, clothes.row2_x, 82, clothes.row2_x, 82, 40, 20);
-        blit(bg, double_buffer, object.x, object.y, object.x, object.y, 16, 14);
+        blit(bg_video, double_buffer, clothes.row1_x, 50, clothes.row1_x, 50, 64, 18);
+        blit(bg_video, double_buffer, clothes.row2_x, 82, clothes.row2_x, 82, 40, 18);
+        if (object.direction != NONE) {
+            blit(bg_video, double_buffer, object.x, object.y, object.x, object.y, 16, 14);
+        }
 
     }
-    blit(bg, double_buffer, misifu.x - 2, misifu.y -2, misifu.x - 2, misifu.y - 2, 32, 42);
-    blit(bg, double_buffer, dog.x - 2, DOG_Y, dog.x - 2, DOG_Y, 30, 16);
+    blit(bg_video, double_buffer, misifu.x - 2, misifu.y -2, misifu.x - 2, misifu.y - 2, 32, 42);
+    if (dog.appears == TRUE) {
+        blit(bg_video, double_buffer, dog.x - 2, DOG_Y, dog.x - 2, DOG_Y, 30, 16);
+    }
 }
 
 void misifu_output() {   
@@ -411,7 +416,7 @@ void misifu_output() {
     } else {
         draw_sprite(double_buffer, misifu.sprite[misifu.offset],
             misifu.x, misifu.y);
-    }    
+    }
     if (dog.appears == TRUE) {
         if (dog.direction == MDIR_LEFT) {
             draw_sprite(double_buffer, dog.sprite[dog.offset], dog.x, DOG_Y);
@@ -472,7 +477,7 @@ void open_window(uint8_t height, char open_window) {
     
     if (open_window == TRUE) {
         rectfill(double_buffer, window_coords.x, window_coords.y, window_coords.x + 31, window_coords.y - height, makecol(41, 40, 41));
-        rectfill(bg, window_coords.x, window_coords.y, window_coords.x + 31, window_coords.y - height, makecol(41, 40, 41));
+        rectfill(bg_video, window_coords.x, window_coords.y, window_coords.x + 31, window_coords.y - height, makecol(41, 40, 41));
         if (height == 15 && misifu.y <= 100) {
             object.appears = TRUE;
             object.x = window_coords.x;
@@ -492,10 +497,10 @@ void open_window(uint8_t height, char open_window) {
         }
     } else {
         rectfill(double_buffer, window_coords.x, window_coords.y, window_coords.x + 31, window_coords.y - 8, makecol(86, 255, 255));
-        rectfill(bg, window_coords.x, window_coords.y, window_coords.x + 31, window_coords.y - 8, makecol(86, 255, 255));
+        rectfill(bg_video, window_coords.x, window_coords.y, window_coords.x + 31, window_coords.y - 8, makecol(86, 255, 255));
 
         rectfill(double_buffer, window_coords.x, window_coords.y - 8, window_coords.x + 31, window_coords.y - 15, makecol(64, 197, 197));
-        rectfill(bg, window_coords.x, window_coords.y - 8, window_coords.x + 31, window_coords.y - 15, makecol(64, 197, 197));
+        rectfill(bg_video, window_coords.x, window_coords.y - 8, window_coords.x + 31, window_coords.y - 15, makecol(64, 197, 197));
     }
 }
 
@@ -611,7 +616,7 @@ inline void dog_checks() {
             }
         } 
 
-        if (dog.x <= LEVEL_MIN) {
+        if (dog.x <= LEVEL_MIN && dog.appears != FALSE) {
             dog.appears = FALSE;
             stop_sample(dog_theme);
             
@@ -624,12 +629,10 @@ inline void dog_checks() {
         }
     }
 
-    if (dog.appears != TRUE && (counter & 1) == 0) {
-        if (random_value > 250) {
-            play_sample(dog_theme, 50, 127, 1000, 1);
-            dog.appears = TRUE;
-            dog.x = LEVEL_MAX;
-        }
+    if (dog.appears != TRUE && (counter & 1) == 0 && random_value > 250) {
+        play_sample(dog_theme, 50, 127, 1000, 1);
+        dog.appears = TRUE;
+        dog.x = LEVEL_MAX;
     }
 }
 
@@ -660,7 +663,7 @@ inline void alley_loop() {
     if (misifu.state == M_FALLING) {
         detect_fall_in_bin();
     }
-    if (misifu.draw_additional == CAT_IN_BIN && misifu.y < FLOOR_Y && misifu.in_bin != NONE) {
+    if (misifu.draw_additional == CAT_IN_BIN && misifu.y < 164 && misifu.in_bin != NONE) {
         if (is_in_bin() == NONE) {
             misifu.state = M_FALLING;
             misifu.draw_additional = NONE;
