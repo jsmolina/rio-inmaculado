@@ -227,10 +227,13 @@ int enemy_decision(enemyData *enem) {
             enem->x--;
             enem_has_moved = TRUE;
             enem->moving = MOVING_LEFT;
-        } else if (enem->x < enem->targetX && enem->x < 320) {
+        } else if (enem->x < enem->targetX) {
             enem->x++;
             enem_has_moved = TRUE;
             enem->moving = MOVING_RIGHT;
+            if (enem->x >= levels[level].maxX) {
+                enem->targetX = 0;
+            }
         } else {
             enem->moving = STOP_RIGHT;
         }

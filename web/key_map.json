@@ -1,0 +1,98 @@
+{
+    "version": 2,
+    "layers": [
+        {
+            "grid": "honeycomb",
+            "title": "Layer#0",
+            "controls": [
+                {
+                    "row": 0,
+                    "column": 9,
+                    "symbol": "⚙",
+                    "type": "Options"
+                },
+                {
+                    "row": 4,
+                    "column": 1,
+                    "symbol": "↑",
+                    "type": "Key",
+                    "mapTo": [
+                        265
+                    ]
+                },
+                {
+                    "row": 6,
+                    "column": 1,
+                    "symbol": "↓",
+                    "type": "Key",
+                    "mapTo": [
+                        264
+                    ]
+                },
+                {
+                    "row": 5,
+                    "column": 0,
+                    "symbol": "←",
+                    "type": "Key",
+                    "mapTo": [
+                        263
+                    ]
+                },
+                {
+                    "row": 5,
+                    "column": 1,
+                    "symbol": "→",
+                    "type": "Key",
+                    "mapTo": [
+                        262
+                    ]
+                },
+                {
+                    "row": 6,
+                    "column": 8,
+                    "symbol": "rightalt",
+                    "type": "Key",
+                    "mapTo": [
+                        346
+                    ]
+                },
+                {
+                    "row": 6,
+                    "column": 7,
+                    "symbol": "rightctrl",
+                    "type": "Key",
+                    "mapTo": [
+                        345
+                    ]
+                },
+                {
+                    "row": 6,
+                    "column": 5,
+                    "symbol": "␠",
+                    "type": "Key",
+                    "mapTo": [
+                        32
+                    ]
+                },
+                {
+                    "row": 6,
+                    "column": 3,
+                    "symbol": "z",
+                    "type": "Key",
+                    "mapTo": [
+                        90
+                    ]
+                },
+                {
+                    "row": 6,
+                    "column": 4,
+                    "symbol": "x",
+                    "type": "Key",
+                    "mapTo": [
+                        88
+                    ]
+                }
+            ]
+        }
+    ]
+}
