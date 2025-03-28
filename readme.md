@@ -8,9 +8,16 @@ What happens if you mix "River City" + "Target Renegade" + "an 80s kid"? This cr
 
 Just use docker:
 
+Mac ARM processors:
 ```
 $ docker-compose build
 $ docker-compose up
+```
+
+OTHERS
+```
+docker-compose -f docker-compose2.yaml build
+docker-compose -f docker-compose2.yaml up
 ```
 
 ![portada](https://github.com/user-attachments/assets/e8233e81-bf09-4aab-a854-d0fc941a6425)
