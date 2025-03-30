@@ -618,6 +618,8 @@ inline void dog_checks() {
 
         if (dog.x <= LEVEL_MIN && dog.appears != FALSE) {
             dog.appears = FALSE;
+            // blit here
+            blit(bg_video, double_buffer, dog.x - 2, DOG_Y, dog.x - 2, DOG_Y, 30, 16);
             stop_sample(dog_theme);
             
             if (misifu.state == M_FIGHTING) {
