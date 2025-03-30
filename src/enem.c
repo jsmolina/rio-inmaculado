@@ -75,6 +75,7 @@ void init_level_enemies() {
         enemies[ec].y = 150 + ((ec % 2) * 3); // it should vary per enemy
         enemies[ec].targetX = 0;
         enemies[ec].targetY = 0;
+        enemies[ec].waitTarget = 0;
         enemies[ec].curr_sprite = 0;
         enemies[ec].is_hit = FALSE;
         enemies[ec].enem_received_hit_sample = 0;
