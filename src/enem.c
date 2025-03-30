@@ -179,7 +179,7 @@ int enemy_decision(enemyData *enem) {
     char enem_has_moved = FALSE;
     // TODO: enemy should not tresspass hero
 
-    if (point_distance(player.x, enem->targetX) != FIGHT_DISTANCE || enem->targetX == FALSE) {
+    if (point_distance(player.x, enem->targetX) >= FIGHT_DISTANCE || enem->targetX == FALSE) {
         if (random_choice == (8 + enem->variant)) {
             if (alive_enemies_count == 1) {
                 if ( enem->x > player.x) {
@@ -212,7 +212,7 @@ int enemy_decision(enemyData *enem) {
                         }
                         break;
                     case PETER:
-                        if (player.x > levels[level].minX) {
+                        if (player.x > FIGHT_DISTANCE) {
                             enem->targetX = player.x - FIGHT_DISTANCE;
                         } else {
                             enem->targetX = player.x + FIGHT_DISTANCE;
@@ -222,7 +222,21 @@ int enemy_decision(enemyData *enem) {
             }
         }
     } 
-    if (enem->targetX != FALSE && enem->targetX != enem->x) {
+    if (enem->targetY != FALSE && enem->targetY != enem->y) {
+        if (enem->waitTarget > 1) {
+            --enem->waitTarget;
+        } else {
+            if (enem->y > enem->targetY) {
+                enem->y_moving = MOVING_UP;
+                enem->y--;
+                enem->targetY = player.y;
+            } else {
+                enem->y_moving = MOVING_DOWN;
+                enem->y++;
+            }
+            enem_has_moved = TRUE;
+        }
+    } else if (enem->targetX != FALSE && enem->targetX != enem->x) {
         if (enem->x > enem->targetX && enem->x > 0) {
             enem->x--;
             enem_has_moved = TRUE;
@@ -238,15 +252,11 @@ int enemy_decision(enemyData *enem) {
             enem->moving = STOP_RIGHT;
         }
     } else {
-        if (random_choice > 20 && point_distance(player.y, enem->y) >= 2 /*&& (counter % 2) == 0*/) {
-            if (enem->y > player.y) {
-                enem->y_moving = MOVING_UP;
-                enem->y--;
-            } else {
-                enem->y_moving = MOVING_DOWN;
-                enem->y++;
+        if (point_distance(player.y, enem->y) >= 2 /*&& (counter % 2) == 0*/) {
+            if (random_choice > 55 && (counter & 1) == 0) {
+                enem->targetY = player.y; 
+                enem->waitTarget = 20;
             }
-            enem_has_moved = TRUE;
         } else {
             enem->y_moving = STOPPOS;
 
@@ -368,12 +378,12 @@ void vespino_hitted() {
 }
 
 void all_enemy_decisions() {
-    random_choice = rand() % 50;
 
     hitted_this_loop = FALSE;
 
     alive_enemies_count = 0;
     for (int i = 0; i < levels[level].total_enemies; i++) {
+        random_choice = rand() & 0b111111;
         if (alive_enemies[level][i] != FALSE) {
             ++alive_enemies_count;
         }
@@ -423,13 +433,14 @@ void all_enemy_decisions() {
             if (x_distance < 6 && y_distance < 8) {
                 player.is_floor = FLOOR_DURATION / 2;
                 player.received_hits = MOTORBIKE_HIT;
-                
-                if (player.lifebar < 2) {
-                    player.lifebar = 0;
-                } else {
-                    player.lifebar -= 2;
+                if (cheat_mode != 1) {
+                    if (player.lifebar < 2) {
+                        player.lifebar = 0;
+                    } else {
+                        player.lifebar -= 2;
+                    }
+                    draw_lifebar();
                 }
-                draw_lifebar();
             }
         }
 

@@ -217,8 +217,11 @@ void draw_score() {
 }
 
 void game_over() {
-    textout_centre_ex(screen, font, "GAME OVER", 190, SCREEN_H - 34,
+    textout_centre_ex(screen, font, "GAME OVER", SCREEN_W/2, SCREEN_H /2,
                       makecol(255, 255, 255), makecol(10, 10, 10));
+    while(!key[KEY_SPACE]) {
+        rest(10);
+    }
 }
 
 void draw_lifebar() {
@@ -328,7 +331,7 @@ void process() {
     }
     
 
-    if (small_counter == 10) {
+    if (small_counter == 10 || player.curr_sprite == 0) {
         if (player.is_floor > 0) {
             player.is_floor--;
             return;
@@ -345,6 +348,7 @@ void process() {
             } else {
                 switch_walk(2);
             }
+            textprintf_ex(double_buffer, font, 0, 0, makecol(255,255,255), 0, "x:%03d", player.x);
         } else if (player.y_moving == MOVING_UP || player.y_moving == MOVING_DOWN){
             switch_walk(1);
         } else if (player.moving == PUNCH_RIGHT ||
@@ -587,7 +591,7 @@ void load_level() {
     if (next_level == 0) {
         //bg = load_pcx("bege.pcx", NULL);
         bg = load_level_background(0);
-        textout_ex(bg, font, "v1.2", 60, 30, makecol(100, 100, 100), -1);
+        textout_ex(bg, font, "v1.3", 60, 30, makecol(100, 100, 100), -1);
         textout_ex(bg, font, "MSDOS CLUB", SCREEN_H - 20, 40, makecol(100, 100, 100), -1);
         textout_ex(bg, font, "Rio Immaculado", SCREEN_W / 2 - 55, 140, makecol(255, 255, 255), -1);
         textout_ex(bg, font, "Space to start", SCREEN_W / 2 - 40, 80, makecol(156, 176, 239), -1);

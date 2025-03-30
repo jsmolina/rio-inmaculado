@@ -80,6 +80,7 @@ typedef struct  {
     unsigned int y_moving;
     unsigned int targetX;
     unsigned int targetY;
+    unsigned int waitTarget;
     unsigned int curr_sprite;
     int is_hit;
     int is_punching;
