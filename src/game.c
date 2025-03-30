@@ -348,7 +348,6 @@ void process() {
             } else {
                 switch_walk(2);
             }
-            textprintf_ex(double_buffer, font, 0, 0, makecol(255,255,255), 0, "x:%03d", player.x);
         } else if (player.y_moving == MOVING_UP || player.y_moving == MOVING_DOWN){
             switch_walk(1);
         } else if (player.moving == PUNCH_RIGHT ||
