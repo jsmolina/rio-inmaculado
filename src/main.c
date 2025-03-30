@@ -1,7 +1,3 @@
-/*
- * Copyright (C) 2016, Michiel Sikma <michiel@sikma.org>
- * MIT License
- */
 #include <time.h>
 #include <allegro.h>
 #include <stdio.h>
