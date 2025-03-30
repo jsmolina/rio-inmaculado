@@ -4,6 +4,8 @@ Codebase structure inspired in https://github.com/msikma/allegro-4.2.2-xc by Mic
 
 What happens if you mix "River City" + "Target Renegade" + "an 80s kid"? This crazy thing for the MS-DOS game contest.
 
+This game is more than a beat-em-up, it has surprises and mini games, you will discover them!
+
 *Compiling*
 
 Just use docker:
