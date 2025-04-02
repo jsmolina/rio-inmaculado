@@ -1,13 +1,16 @@
-RIO INMACULADO
-==============
+# Table of Contents
+1. [Compiling](#compiling)
+2. [Devlog-English](#devlog-english)
+3. [Third Example](#devlog-spanish)
+
+# Code
 Codebase structure inspired in https://github.com/msikma/allegro-4.2.2-xc by Michiel Sikma <michiel@sikma.org>
 
 What happens if you mix "River City" + "Target Renegade" + "an 80s kid"? This crazy thing for the MS-DOS game contest.
 
 This game is more than a beat-em-up, it has surprises and mini games, you will discover them!
 
-*Compiling*
-
+## compiling
 Just use docker:
 
 Mac ARM processors:
@@ -24,8 +27,9 @@ docker-compose -f docker-compose2.yaml up
 
 ![portada](https://github.com/user-attachments/assets/e8233e81-bf09-4aab-a854-d0fc941a6425)
 
-WHAT'S THIS?
-============
+# what's this?
+Just a game!
+
 Johnny’s stolen your beloved Vespino, and Jenny claims she knows where it’s parked — in the school lot! But beware, Johnny’s friends aren’t going to make it easy for you to get it back. You’ll have to navigate through tricky situations, outsmart the gang, and reclaim your ride!
 
 This is an MS-DOS game, and it requires DOSBOX, or a PC with VGA 256 colors and a Sound Blaster card to experience the full retro glory. Are you ready for the challenge?
@@ -34,9 +38,9 @@ Music by 'Roger'.
 Code by 'Jordi'
 Dedicated to G&C
 
-DEVLOG
-======
-ENGLISH
+# devlog
+
+## devlog-english
 
 Let's explain where the idea for this game came from.
 
@@ -71,7 +75,8 @@ It has been a game full of highs and lows—impossible crashes I couldn't find, 
 
 Let me know if you'd like any tweaks! 😊
 
-SPANISH
+
+## devlog-spanish
 
 Vamos a explicar de dónde ha salido la idea de este juego. 
 
