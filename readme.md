@@ -66,7 +66,7 @@ So I went back to an old favorite: TILED. With it, I reused the tiles I had plan
 
 I spent a lot of time trying to use the 256-color mode in GIMP, but with little success—it either broke transparency or messed up the palette.
 
-Until I discovered ASEPRITE, thanks to the developer of No Cash. That allowed me to convert my game to 320x240 resolution with 256 colors—the ultimate tool, in my opinion, for making sprites and tiles for retro games.
+Until I discovered ASEPRITE, thanks to the developer of 'Out of cash' @warrior-rockk. That allowed me to convert my game to 320x240 resolution with 256 colors—the ultimate tool, in my opinion, for making sprites and tiles for retro games.
 
 <img width="571" alt="image" src="https://github.com/user-attachments/assets/4c33c4a7-8709-48dd-970e-414a998d474b" />
 
@@ -101,7 +101,7 @@ Primero pensé en la IA para generarlas, y hasta generé cosas, que eran más bo
 
 Con GIMP estuve mucho tiempo intentando utilizar el modo 256 Colores, sin mucho éxito ya que o bien me rompía la transparencia, o bien me rompía la paleta.
 
-Hasta que descubrí ASEPRITE gracias al developer de  'No cash', puse pasar mi juego a modo 320x240 256 colores, la herramienta definitiva en mi opinión para hacer sprites y tiles en juegos retro.
+Hasta que descubrí ASEPRITE gracias al developer de  'Out of cash' @warrior-rockk, puse pasar mi juego a modo 320x240 256 colores, la herramienta definitiva en mi opinión para hacer sprites y tiles en juegos retro.
 
 <img width="571" alt="image" src="https://github.com/user-attachments/assets/4c33c4a7-8709-48dd-970e-414a998d474b" />
 
