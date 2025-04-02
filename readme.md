@@ -1,7 +1,7 @@
 # Table of Contents
 1. [Compiling](#compiling)
 2. [Devlog-English](#devlog-english)
-3. [Third Example](#devlog-spanish)
+3. [Devlog spanish](#devlog-spanish)
 
 # Code
 Codebase structure inspired in https://github.com/msikma/allegro-4.2.2-xc by Michiel Sikma <michiel@sikma.org>
