@@ -52,11 +52,20 @@ When the contest was announced, I was already considering porting Target: Renega
 
 At first, I thought about using AI to generate them, and I even created some things that looked nice, but they lacked coherence and didn't allow me to properly design a game map.
 
+![image](https://github.com/user-attachments/assets/64a19507-f3ca-4b02-a193-86f3fabfb9a9)
+
+
 So I went back to an old favorite: TILED. With it, I reused the tiles I had planned for my Mega Drive project and expanded them, first in 16-bit colors.
+
+<img width="552" alt="image" src="https://github.com/user-attachments/assets/6f4f4cba-35be-42da-b501-065e42eda613" />
+
 
 I spent a lot of time trying to use the 256-color mode in GIMP, but with little success—it either broke transparency or messed up the palette.
 
 Until I discovered ASEPRITE, thanks to the developer of No Cash. That allowed me to convert my game to 320x240 resolution with 256 colors—the ultimate tool, in my opinion, for making sprites and tiles for retro games.
+
+<img width="571" alt="image" src="https://github.com/user-attachments/assets/4c33c4a7-8709-48dd-970e-414a998d474b" />
+
 
 It has been a game full of highs and lows—impossible crashes I couldn't find, trying to make everything super editable but ending up hardcoding some things—but I had an amazing time making it and really enjoyed talking with other developers.
 
@@ -81,6 +90,7 @@ Primero pensé en la IA para generarlas, y hasta generé cosas, que eran más bo
 ![image](https://github.com/user-attachments/assets/64a19507-f3ca-4b02-a193-86f3fabfb9a9)
 
 ​Así que volví a un viejo conocido: TILED. Con él reutilicé los tiles que tenía pensados para mi proyecto de mega-drive y los amplié, primero en colores de 16 bits.​
+
 <img width="552" alt="image" src="https://github.com/user-attachments/assets/6f4f4cba-35be-42da-b501-065e42eda613" />
 
 ​​
@@ -88,6 +98,7 @@ Primero pensé en la IA para generarlas, y hasta generé cosas, que eran más bo
 Con GIMP estuve mucho tiempo intentando utilizar el modo 256 Colores, sin mucho éxito ya que o bien me rompía la transparencia, o bien me rompía la paleta.
 
 Hasta que descubrí ASEPRITE gracias al developer de  'No cash', puse pasar mi juego a modo 320x240 256 colores, la herramienta definitiva en mi opinión para hacer sprites y tiles en juegos retro.
+
 <img width="571" alt="image" src="https://github.com/user-attachments/assets/4c33c4a7-8709-48dd-970e-414a998d474b" />
 
 
