@@ -805,8 +805,10 @@ void misifu_process() {
             die("error setting 320x240 16bpp: %s", allegro_error);
         }        
         set_palette(palette);
-        play_looped_midi(music, 0, -1);
-
+        play_looped_midi(music, 209, -1);
+        if (blue_key == TRUE) {
+            midi_seek(280);
+        }
         // WARN! After a gfx mode set, requires setting video bitmap again
         double_buffer = create_video_bitmap(SCREEN_W, SCREEN_H);
         bg_video = create_video_bitmap(SCREEN_W, SCREEN_H);
