@@ -73,7 +73,6 @@ Until I discovered ASEPRITE, thanks to the developer of No Cash. That allowed me
 
 It has been a game full of highs and lows—impossible crashes I couldn't find, trying to make everything super editable but ending up hardcoding some things—but I had an amazing time making it and really enjoyed talking with other developers.
 
-Let me know if you'd like any tweaks! 😊
 
 
 ## devlog-spanish
