@@ -55,15 +55,18 @@ void draw_main_menu() {
     }
 }
 
-void handle_input() {
+void handle_input(int menu_items) {
     static int debounce = 0;
     
     if(key[KEY_UP] && !debounce) {
-        selected_item = (selected_item - 1 + 4) % 4;
+        selected_item = (selected_item - 1);
+        if (selected_item < 0) {
+            selected_item = menu_items - 1;
+        }
         debounce = 10;
     }
     if(key[KEY_DOWN] && !debounce) {
-        selected_item = (selected_item + 1) % 4;
+        selected_item = (selected_item + 1) % menu_items;
         debounce = 10;
     }
     
@@ -120,7 +123,7 @@ int main() {
     install_keyboard();
     set_color_depth(8);
     set_gfx_mode(GFX_AUTODETECT, 320, 240, 0, 0);
-    
+    int menu_items = 4;
     //load_config();
     
     while(!exit_program) {
@@ -128,31 +131,49 @@ int main() {
         
         switch(menu_state) {
             case MAIN_MENU:
+                menu_items = 4;
                 draw_main_menu();
                 break;
                 
             case SOUND_MENU:
+                menu_items = 8;
                 textout_centre_ex(screen, font, "SELECCION DE TARJETA DE SONIDO", 
                                 SCREEN_W/2, 20, 0xFFFFFF, -1);
                 for(int i=0; i<8; i++) {
-                    int color = (i == config.sound_card) ? 0xFFFFFF : 0xFFFFAA;
-                    textprintf_centre_ex(screen, font, SCREEN_W/2, 60 + i*20,
-                                       color, -1, "%s", sound_cards[i]);
+                    int color = (i == selected_item) ? 0xFFFFFF : 0xFFFFAA;
+                    textout_ex(screen, font, (i == selected_item) ? ">" : " ",
+                               MENU_X - 10, MENU_Y + i * 20, color, -1);
+                    textout_ex(screen, font, sound_cards[i], MENU_X,
+                               MENU_Y + i * 20, color, -1);
+                    textout_ex(screen, font,
+                               (i == config.sound_card) ? "D" : " ",
+                               MENU_X - 20, MENU_Y + i * 20, color, -1);
+                    // textprintf_centre_ex(screen, font, SCREEN_W/2, 60 + i*20,
+                    //                    color, -1, "%s", sound_cards[i]);
                 }
                 break;
                 
             case MIDI_MENU:
+                menu_items = 9;
                 textout_centre_ex(screen, font, "SELECCION DE DISPOSITIVO MIDI", 
                                 SCREEN_W/2, 20, 0xFFFFFF, -1);
                 for(int i=0; i<9; i++) {
-                    int color = (i == config.midi_card) ? 0xFFFFFF : 0xFFFFAA;
-                    textprintf_centre_ex(screen, font, SCREEN_W/2, 60 + i*20,
-                                       color, -1, "%s", midi_devices[i]);
+                    int color = (i == selected_item) ? 0xFFFFFF : 0xFFFFAA;
+                    textout_ex(screen, font, (i == selected_item) ? ">" : " ",
+                               MENU_X - 10, MENU_Y + i * 20, color, -1);
+                    textout_ex(screen, font,
+                               (i == config.midi_card) ? "D" : " ",
+                               MENU_X - 20, MENU_Y + i * 20, color, -1);
+                    textout_ex(screen, font, midi_devices[i], MENU_X,
+                               MENU_Y + i * 20, color, -1);
+
+                    //textprintf_centre_ex(screen, font, SCREEN_W/2, 60 + i*20,
+                    //                   color, -1, "%s", midi_devices[i]);
                 }
                 break;
         }
-        
-        handle_input();
+
+        handle_input(menu_items);
         vsync();
     }
     
