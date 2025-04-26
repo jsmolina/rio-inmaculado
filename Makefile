@@ -53,3 +53,6 @@ clean:
 	rm -rf ${DISTDIR}
 	rm -f ${OBJS}
 	touch ${STATICDIR}/data.dat
+
+setup: src/setup.c
+	${CC} -o dist/setup.exe src/setup.c ${CFLAGS} -O3 ${LDFLAGS}
