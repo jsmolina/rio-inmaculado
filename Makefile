@@ -37,6 +37,8 @@ ${DISTDIR}:
 
 ${DISTDIR}/${BIN}: ${OBJS}
 	${CC} -o ${DISTDIR}/${BIN} $+ ${LDFLAGS} -O3
+	${CC} -o static/setup.exe setup/setup.c ${CFLAGS} -O3 ${LDFLAGS}
+
 
 ${STATICDEST}:
 	cd $(STATICDIR) && sh convert.sh	
@@ -44,6 +46,7 @@ ${STATICDEST}:
 	cp $(subst $(DISTDIR),$(STATICDIR),$@) $@
 	cp static/cwsdpmi.exe ${DISTDIR}
 	cp static/msdos.pcx ${DISTDIR}
+	cp static/setup.* ${DISTDIR}
 
 all: ${DISTDIR} ${DISTDIR}/${BIN} ${STATICDEST}
 
@@ -53,6 +56,3 @@ clean:
 	rm -rf ${DISTDIR}
 	rm -f ${OBJS}
 	touch ${STATICDIR}/data.dat
-
-setup: src/setup.c
-	${CC} -o dist/setup.exe src/setup.c ${CFLAGS} -O3 ${LDFLAGS}
