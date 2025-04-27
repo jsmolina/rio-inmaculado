@@ -156,7 +156,6 @@ int main(int argc, const char **argv) {
     if (install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, "./allegro.cfg") != 0) {
         die("Error: inicializando sistema de sonido\n%s\n", allegro_error);
     }
-    set_volume(230, 150);
 
     srand(time(NULL));
     // load tilemap

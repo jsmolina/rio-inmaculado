@@ -39,7 +39,7 @@
 
 /* these can be customised to suit your program... */
 #ifndef SETUP_TITLE
-   #define SETUP_TITLE           "Allegro Setup " ALLEGRO_VERSION_STR ", " ALLEGRO_PLATFORM_STR
+   #define SETUP_TITLE           "Rio Inmaculado Setup "
 #endif
 
 #ifndef SETUP_CFG_FILE
