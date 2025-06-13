@@ -205,10 +205,7 @@ int main(int argc, const char **argv) {
     // will load menu
     next_level = 0;
     
-
     load_level();
-    
-    
 
     exit_game = 0;               /* reset flag */
     player.x = 16;

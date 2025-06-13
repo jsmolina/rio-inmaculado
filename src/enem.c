@@ -28,14 +28,20 @@ int has_alive_enemies() {
 void eies_sprite(DATAFILE *dat_file, enemyData *enem, unsigned int variant) {
     char file_buffer[14];
     // TODO usar variants
-    int mains[] = {ENEM1_1_PCX, ENEM1_2_PCX,  ENEM1_3_PCX, ENEM1_4_PCX,
-                   ENEM1_5_PCX, ENEM1_6_PCX,  ENEM1_7_PCX, ENEM1_8_PCX,
-                   ENEM1_9_PCX, ENEM1_10_PCX, ENEM1_11_PCX};
+    int mains[3][12] = {{ENEM1_1_PCX, ENEM1_2_PCX, ENEM1_3_PCX, ENEM1_4_PCX,
+                         ENEM1_5_PCX, ENEM1_6_PCX, ENEM1_7_PCX, ENEM1_8_PCX,
+                         ENEM1_9_PCX, ENEM1_10_PCX, ENEM1_11_PCX, ENEM1D_PCX},
+                        {ENEM2_1_PCX, ENEM2_2_PCX, ENEM2_3_PCX, ENEM2_4_PCX,
+                         ENEM2_5_PCX, ENEM2_6_PCX, ENEM2_7_PCX, ENEM2_8_PCX,
+                         ENEM2_9_PCX, ENEM2_10_PCX, ENEM2_11_PCX, ENEM2D_PCX},
+                        {ENEM3_1_PCX, ENEM3_2_PCX, ENEM3_3_PCX, ENEM3_4_PCX,
+                         ENEM3_5_PCX, ENEM3_6_PCX, ENEM3_7_PCX, ENEM3_8_PCX,
+                         ENEM3_9_PCX, ENEM3_10_PCX, ENEM3_11_PCX, ENEM3D_PCX}};
 
     // load enemy1
     for (int i = 0; i < 9; i++) {
         //sprintf(file_buffer, "ENEM%d_%d.PCX", variant, i + 1); 
-        enem->sprite[i] = dat_file[mains[i]].dat;//load_pcx(file_buffer, NULL);
+        enem->sprite[i] = dat_file[mains[variant - 1][i]].dat;//load_pcx(file_buffer, NULL);
         enem->variant = variant;
         if (!enem->sprite[i]) {
             die("Cannot load %s", file_buffer);
@@ -43,7 +49,7 @@ void eies_sprite(DATAFILE *dat_file, enemyData *enem, unsigned int variant) {
     }
     // load dead position
     //sprintf(file_buffer, "ENEM%dd.PCX", variant); 
-    enem->sprite[11] = dat_file[ENEM1D_PCX].dat;
+    enem->sprite[11] = dat_file[mains[variant - 1][11]].dat;
     if (!enem->sprite[11]) {
         die("cannot load died enem%dd.pcx", enem->variant);
     }

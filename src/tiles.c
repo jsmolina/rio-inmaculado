@@ -1,9 +1,11 @@
 #include "tiles.h"
+#include "allegro/datafile.h"
 #include "datos.h"
 #include "helpers.h"
 #include <allegro.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "dat_manager.h"
 
 PALETTE palette;
 
@@ -28,10 +30,10 @@ inline void destroy_tiles() {
     // destroy_bitmap(tiles);
 }
 
-BITMAP * load_background(char * filename) {
-    char *in_file = load_datafile_object("DATOS.DAT", filename)->dat;
+BITMAP * load_background(int id) {
+    char *in_file = dat_file[id].dat;
     if (in_file == NULL) {
-        die("cannot load %s", filename);
+        die("cannot load %s", id);
     }
     BITMAP * background = create_bitmap(SCREEN_W, SCREEN_H);
     rectfill(background, 0, 0, SCREEN_W, SCREEN_H, makecol(40, 40, 40));
@@ -92,6 +94,7 @@ BITMAP * load_background(char * filename) {
         iterations += 1;
         // if (iterations == 200) start_csv = -1; // Uncomment if needed
     } while (current != '\0' && start_csv != -1);
+
 
     return background;
 }

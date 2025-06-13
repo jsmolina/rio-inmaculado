@@ -1,4 +1,4 @@
-#include <allegro.h>
+#include "levels.h"
 #include "allegro/alcompat.h"
 #include "allegro/color.h"
 #include "allegro/digi.h"
@@ -7,12 +7,13 @@
 #include "allegro/midi.h"
 #include "allegro/palette.h"
 #include "allegro/text.h"
-#include <stdio.h>
+#include "dat_manager.h"
+#include "datos.h"
 #include "game.h"
 #include "helpers.h"
 #include "tiles.h"
-#include "levels.h"
-
+#include <allegro.h>
+#include <stdio.h>
 
 int velocidad = VELOCIDAD_BASE;
 char sentido = DERECHA;
@@ -79,19 +80,35 @@ inline int move_to_level_if_needed() {
 
 
 BITMAP * load_level_background(unsigned char lvl) {
-    char level_filename[17];
+    // char level_filename[17];
+    int bgs[] = {
+        BG0_TMX,
+        BG1_TMX,
+        BG2_TMX,
+        BG3_TMX,
+        BG4_TMX,
+        BG5_TMX,
+        BG6_TMX,
+        BG7_TMX,
+        BG8_TMX,
+        BG9_TMX,
+        BG10_TMX,
+        BG11_TMX,
+        BG12_TMX
+    };
+    int id = 0;
     switch (lvl) {
         case 5:
             if (locked_elevator) {
-                sprintf(level_filename, "BG5_0_TMX");
+                id = BG5_0_TMX;
             } else {
-                sprintf(level_filename, "BG5_TMX");
+                id = BG5_TMX;
             }
         break;
         default:
-            sprintf(level_filename, "BG%d_TMX", lvl);        
+            id = bgs[lvl];
     }
-    return load_background(level_filename);
+    return load_background(id);
 }
 
 inline void rotate_palette(PALETTE pal, int start, int end) {

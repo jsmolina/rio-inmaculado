@@ -1,12 +1,9 @@
-#include "allegro.h"
-#include "allegro/datafile.h"
-#include "allegro/system.h"
 #include <dirent.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include "dat_manager.h"
+
+DATAFILE *dat_file;
 
 #define MAX_FILENAME_LEN 16
 
@@ -34,7 +31,7 @@ END_OF_FUNCTION(rotar_paleta)
 DATAFILE * extract_data() {
     //install_int(rotar_paleta, 100);
     install_int_ex(rotar_paleta, BPS_TO_TIMER(40));
-    DATAFILE *dat_file = load_datafile("datos.dat");
+    dat_file = load_datafile("datos.dat");
     
     /*FILE *input = fopen("DATA.DAT", "rb");
     if (!input) {
