@@ -31,11 +31,12 @@ static void rotar_paleta() {
 END_OF_FUNCTION(rotar_paleta)
 
 
-void extract_data() {
+DATAFILE * extract_data() {
     //install_int(rotar_paleta, 100);
     install_int_ex(rotar_paleta, BPS_TO_TIMER(40));
+    DATAFILE *dat_file = load_datafile("datos.dat");
     
-    FILE *input = fopen("DATA.DAT", "rb");
+    /*FILE *input = fopen("DATA.DAT", "rb");
     if (!input) {
         allegro_message("Error al abrir el archivo de entrada");
         exit(EXIT_FAILURE);
@@ -82,10 +83,10 @@ void extract_data() {
         free(buffer);
 
         fclose(output);        
-    }
+    }*/
     remove_int(rotar_paleta);
-
-    fclose(input);
+    return dat_file;
+    //fclose(input);
 }
 
 void cleanup_data() {

@@ -47,6 +47,8 @@ ${STATICDEST}:
 	cp static/cwsdpmi.exe ${DISTDIR}
 	cp static/msdos.pcx ${DISTDIR}
 	cp static/setup.* ${DISTDIR}
+	cp static/datos.dat ${DISTDIR}
+	cp static/tiles.pcx ${DISTDIR}
 
 all: ${DISTDIR} ${DISTDIR}/${BIN} ${STATICDEST}
 

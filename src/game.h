@@ -63,7 +63,7 @@ inline void output();
 // setups next level
 void increase_level_and_load();
 // opens the levels.nfo file which includes actionable parameters for each level
-void load_levels();
+void load_levels(char * data);
 // opens the current playable level
 void load_level();
 void draw_lives();

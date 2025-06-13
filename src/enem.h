@@ -27,7 +27,7 @@ extern vespinoData vespino_enemy;
 
 // initializes enemies on level
 void init_level_enemies();
-void init_enemies();
+void init_enemies(DATAFILE *dat_file);
 
 // Animations for all enemies
 void all_enemy_animations();

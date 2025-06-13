@@ -1,20 +1,11 @@
-#include <time.h>
 #include <allegro.h>
-#include <stdio.h>
-#include "allegro/alcompat.h"
-#include "allegro/color.h"
-#include "allegro/datafile.h"
-#include "allegro/digi.h"
-#include "allegro/draw.h"
-#include "allegro/gfx.h"
-#include "allegro/inline/draw.inl"
-#include "allegro/keyboard.h"
-#include "allegro/midi.h"
-#include "allegro/system.h"
+#include "dat_manager.h"
+#include "datos.h"
 #include "game.h"
 #include "helpers.h"
 #include "tiles.h"
-#include "dat_manager.h"
+#include <stdio.h>
+#include <time.h>
 
 static volatile int update_count, frame_count, fps = 0;
 
@@ -129,25 +120,28 @@ int main(int argc, const char **argv) {
         blit(msdos, screen, 0, 0, 0, 0, 320, 240);    
         destroy_bitmap(msdos);
     }
+    textout_centre_ex(screen, font, "Loading Instituto Rio Immaculado...",
+                      SCREEN_W / 2, 30, 200, -1);
     
-    textout_centre_ex(screen, font, "Loading Instituto Rio Immaculado...", SCREEN_W / 2, 30, 200, -1);    
+
+    // extract_data(); // todo mover despues de textout
+    DATAFILE *dat_file = extract_data();
     
-    extract_data(); // todo mover despues de textout
+    char *data_levels = dat_file[LEVELS_CSV].dat;
+    load_levels(data_levels);
 
-    load_levels();
-
-    music = load_midi("ROGERR.MID");
-    final_music = load_midi("WIN.MID");
-    alleytheme = load_wav("alleytheme.wav");
-    hit = load_wav("hit.wav");
-    punch = load_wav("punch.wav");
-    punch2 = load_wav("punch2.wav");
-    voice = load_wav("voice.wav");
-    dog_theme = load_wav("dog.wav");
-    fall = load_wav("fall.wav");
-    die_sample = load_wav("die.wav");
-    motorbike = load_wav("moto.wav");
-    metalhit = load_wav("metal.wav");
+    music = dat_file[ROGERR_MID].dat;        // load_midi("ROGERR.MID");
+    final_music = dat_file[WIN_MID].dat;     // load_midi("WIN.MID");
+    alleytheme = dat_file[ALLEYTHE_WAV].dat; // load_wav("alleytheme.wav");
+    hit = dat_file[HIT_WAV].dat;
+    punch = dat_file[PUNCH_WAV].dat;
+    punch2 = dat_file[PUNCH2_WAV].dat;
+    voice = dat_file[VOICE_WAV].dat;
+    dog_theme = dat_file[DOG_WAV].dat;
+    fall = dat_file[FALL_WAV].dat;
+    die_sample = dat_file[DIE_WAV].dat;
+    motorbike = dat_file[MOTO_WAV].dat;
+    metalhit = dat_file[METAL_WAV].dat;
 
     if (!final_music || !music || !alleytheme || !hit || !punch || !punch2 || !dog_theme || !fall || !die_sample) {
         die("cannot load samples");
@@ -159,29 +153,33 @@ int main(int argc, const char **argv) {
 
     srand(time(NULL));
     // load tilemap
-    load_tiles();
+    load_tiles(dat_file);
     palette[0].r = 10;
     palette[0].g = 10;
     palette[0].b = 10;
     set_pallete(palette);
 
+    int mains[] = {MAIN1_PCX, MAIN2_PCX,  MAIN3_PCX, MAIN4_PCX,
+                   MAIN5_PCX, MAIN6_PCX,  MAIN7_PCX, MAIN8_PCX,
+                   MAIN9_PCX, MAIN10_PCX, MAIN11_PCX, MAIN12_PCX};
     for (int i = 0; i < 12; i++) {
-        sprintf(file_buffer, "MAIN%d.PCX", i + 1);
-        player.sprite[i] = load_pcx( file_buffer, NULL );
+        //sprintf(file_buffer, "MAIN%d.PCX", i + 1);
+        player.sprite[i] = dat_file[mains[i]].dat; //load_pcx( file_buffer, NULL );
         if(!player.sprite[i]) {
-            die("Cannot load %s", file_buffer);
+            die("Cannot load %d", mains[i]);
         }
     }
-    player.sprite[12] = load_pcx("maind.pcx", NULL);
+    //MAIND_PCX
+    player.sprite[12] = dat_file[MAIND_PCX].dat; //load_pcx("maind.pcx", NULL);
     if (!player.sprite[12]) {
         die("cannot load die sprite from player");
     }
-    player_head = load_pcx( "HEAD.PCX", NULL );
-    player_lifebar = load_pcx("LIFEBAR.PCX", NULL);
-    girl = load_pcx("GIRL.PCX", NULL);
-    key_sprite = load_pcx( "KEY.PCX", NULL );
-    key_sprite_blue = load_pcx( "BLUE_KEY.PCX", NULL );
-    vespino = load_pcx("vespino.pcx", NULL);
+    player_head = dat_file[HEAD_PCX].dat;//load_pcx( "HEAD.PCX", NULL );
+    player_lifebar = dat_file[LIFEBAR_PCX].dat;
+    girl = dat_file[GIRL_PCX].dat; // load_pcx("GIRL.PCX", NULL);
+    key_sprite = dat_file[KEY_PCX].dat;
+    key_sprite_blue =  dat_file[BLUE_KEY_PCX].dat;
+    vespino = dat_file[VESPINO_PCX].dat;
 
     if (!player_head) {
         die("cannot load head");
@@ -203,10 +201,13 @@ int main(int argc, const char **argv) {
     }
 
     // pre load enemies sprites
-    init_enemies();
+    init_enemies(dat_file);
     // will load menu
     next_level = 0;
+    
+
     load_level();
+    
     
 
     exit_game = 0;               /* reset flag */
@@ -281,29 +282,15 @@ int main(int argc, const char **argv) {
 
     } while (exit_game == 0); /* until the flag is set */
 
-    destroy_bitmap(bg);
+    /*destroy_bitmap(bg);
     for (int i = 0; i < 12; i++) {
         destroy_bitmap(player.sprite[i]); 
-    }
-    destroy_bitmap(player_head);
-    destroy_bitmap(player_lifebar);
-    destroy_bitmap(girl);
-    destroy_bitmap(key_sprite);
-    destroy_bitmap(key_sprite_blue);
-    destroy_bitmap(vespino);
-    destroy_sample(alleytheme);
-    destroy_sample(hit);
-    destroy_sample(punch);
-    destroy_sample(punch2);
-    destroy_sample(fall);    
-    destroy_sample(die_sample);
-    destroy_sample(motorbike);
-    destroy_sample(metalhit);
-    destroy_bitmap(double_buffer);
-    unload_enemies();
-    destroy_tiles();
-    cleanup_data();
-    destroy_midi(music);
+    }*/
+    unload_datafile(dat_file);
+    //unload_enemies();
+    //destroy_tiles();
+    //cleanup_data();
+    //destroy_midi(music);
     set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
   
     return 0;

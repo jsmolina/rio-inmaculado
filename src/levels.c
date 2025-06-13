@@ -83,15 +83,14 @@ BITMAP * load_level_background(unsigned char lvl) {
     switch (lvl) {
         case 5:
             if (locked_elevator) {
-                sprintf(level_filename, "bg5_0.tmx");
+                sprintf(level_filename, "BG5_0_TMX");
             } else {
-                sprintf(level_filename, "bg5.tmx");
+                sprintf(level_filename, "BG5_TMX");
             }
         break;
         default:
-            sprintf(level_filename, "bg%d.tmx", lvl);        
+            sprintf(level_filename, "BG%d_TMX", lvl);        
     }
-
     return load_background(level_filename);
 }
 
@@ -106,6 +105,7 @@ inline void rotate_palette(PALETTE pal, int start, int end) {
 
 void level_win() {
     PALETTE palete_win;
+    // TODO
     bg = load_pcx("final.pcx", palete_win);
     blit(bg, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
 

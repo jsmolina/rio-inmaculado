@@ -531,42 +531,36 @@ void init_level_variables(unsigned int initialX, unsigned int initialY) {
 /**
 Loads the whole set of levels
 */
-void load_levels() {
-    FILE* archivo = fopen("levels.csv", "r");
-    if (archivo == NULL) {
-        die("Cannot open 'levels.csv'\n");
-    }
-    // discard first line
-    char buffer[150];
-    fgets(buffer, 72, archivo);
-    /*level,door1Pos,door1,door2Pos,door2,left,right,enemies,initialX,initialY,elevatorPos,elevator, minX,maxX */
-    int total_levels = 0;
+void load_levels(char *data) {
+    char *line = data;
+    char *next_line;
     int level_index = 1;
+    int total_levels = 0;
 
-    while (fscanf(archivo, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", 
-                  &levels[level_index].level,
-                  &levels[level_index].door1Pos,
-                  &levels[level_index].door1,
-                  &levels[level_index].door2Pos,
-                  &levels[level_index].door2,
-                  &levels[level_index].left,
-                  &levels[level_index].right,
-                  &levels[level_index].total_enemies, 
-                  &levels[level_index].initialX,
-                  &levels[level_index].initialY, 
-                  &levels[level_index].elevatorPos,
-                  &levels[level_index].elevator,
-                  &levels[level_index].minX, 
-                  &levels[level_index].maxX) > 2) {
-        total_levels++;
-        level_index++;
-        if (total_levels >= TOTAL_LEVELS) break;
+    while (line && *line && total_levels < TOTAL_LEVELS) {
+        next_line = strchr(line, '\n'); // buscar fin de línea
+        if (next_line) {
+            *next_line = '\0'; // terminar la línea temporalmente
+        }
+
+        if (sscanf(
+                line, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
+                &levels[level_index].level, &levels[level_index].door1Pos,
+                &levels[level_index].door1, &levels[level_index].door2Pos,
+                &levels[level_index].door2, &levels[level_index].left,
+                &levels[level_index].right, &levels[level_index].total_enemies,
+                &levels[level_index].initialX, &levels[level_index].initialY,
+                &levels[level_index].elevatorPos, &levels[level_index].elevator,
+                &levels[level_index].minX, &levels[level_index].maxX) == 14) {
+            total_levels++;
+            level_index++;
+        }
+
+        if (!next_line)
+            break;            // fin del buffer
+        line = next_line + 1; // avanzar a la siguiente línea
     }
-
-    fclose(archivo);
 }
-
-
 
 void load_level() {
     unsigned char prev_level = level;

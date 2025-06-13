@@ -1,10 +1,7 @@
 #include "tiles.h"
+#include "datos.h"
 #include "helpers.h"
-#include "allegro/color.h"
-#include "allegro/gfx.h"
-#include "allegro/inline/draw.inl"
-#include "allegro/palette.h"
-#include "allegro/system.h"
+#include <allegro.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -18,35 +15,43 @@ struct coords get_tile_coords(int tile_number) {
 
     return result;
 }
-inline void load_tiles() {
-    tiles = load_pcx("tiles.pcx", palette);
+inline void load_tiles(DATAFILE *dat_file) {
+    tiles =  load_pcx("tiles.pcx", palette);
+   // generate_optimized_palette(tiles, palette, 0); 
+
     if(!tiles) {
         die("cannot load tiles");
     }
 }
 
 inline void destroy_tiles() {
-    destroy_bitmap(tiles);
+    // destroy_bitmap(tiles);
 }
 
 BITMAP * load_background(char * filename) {
+    char *in_file = load_datafile_object("DATOS.DAT", filename)->dat;
+    if (in_file == NULL) {
+        die("cannot load %s", filename);
+    }
     BITMAP * background = create_bitmap(SCREEN_W, SCREEN_H);
     rectfill(background, 0, 0, SCREEN_W, SCREEN_H, makecol(40, 40, 40));
-    FILE *in_file  = fopen(filename, "r");
+    // FILE *in_file  = fopen(filename, "r");
     char current;
 
-    if (!in_file) { 
-        die("ops, file <%s> can't be read", filename);
-    }
-    
-    short start_csv = 0;
+    // if (!in_file) {
+    //     die("ops, file <%s> can't be read", filename);
+    //}
+
     // skip xml data
+    int start_csv = 0;
+    int i = 0;
+
     do {
-        current = fgetc(in_file);
+        current = in_file[i++];
         if (current == '>') {
             start_csv += 1;
         }
-    } while (start_csv < 5);
+    } while (start_csv < 5 && current != '\0');
 
     // temporal data for csv
     char current_tile[5] = "     ";
@@ -58,7 +63,8 @@ BITMAP * load_background(char * filename) {
     screen_coords.x = screen_coords.y = 0;
 
     do {
-        current = fgetc(in_file);      
+        current = in_file[i++];
+
         if (current == ',' || current == '<') {
             if (current == '<') {
                 // signal finish reading
@@ -68,30 +74,24 @@ BITMAP * load_background(char * filename) {
             charpos = 0;
             int tile_number = strtol(current_tile, &output, 10);
             struct coords coordinates = get_tile_coords(tile_number);
+
             // copies from tiles to background
-            blit(
-                tiles, background, 
-                coordinates.x, coordinates.y, 
-                screen_coords.x, screen_coords.y, 
-                TILES_SIZE, TILES_SIZE
-            );
-            
+            blit(tiles, background, coordinates.x, coordinates.y,
+                 screen_coords.x, screen_coords.y, TILES_SIZE, TILES_SIZE);
+
             screen_coords.x += 8;
             if (screen_coords.x >= 319) {
                 screen_coords.y += 8;
                 screen_coords.x = 0;
             }
-        } else { // a number
-            current_tile[charpos] = current;
-            charpos += 1;
-        }
-        iterations += 1;
-        if (iterations == 200) {
-            //start_csv = -1;
-        }
-    } while (current != EOF && start_csv != -1);
 
-    fclose(in_file);
+        } else if (current != '\0') { // a number
+            current_tile[charpos++] = current;
+        }
+
+        iterations += 1;
+        // if (iterations == 200) start_csv = -1; // Uncomment if needed
+    } while (current != '\0' && start_csv != -1);
 
     return background;
 }

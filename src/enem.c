@@ -3,11 +3,10 @@
 #include "allegro/digi.h"
 #include "allegro/gfx.h"
 #include "allegro/inline/draw.inl"
-#include "allegro/platform/astdint.h"
-#include "allegro/text.h"
 #include "game.h"
 #include "helpers.h"
 #include <stdio.h>
+#include "datos.h"
 
 enemyData enemies[MAX_ENEMIES];
 vespinoData vespino_enemy;
@@ -26,20 +25,25 @@ int has_alive_enemies() {
     return 0;
 }
 
-void eies_sprite(enemyData *enem, unsigned int variant) {
+void eies_sprite(DATAFILE *dat_file, enemyData *enem, unsigned int variant) {
     char file_buffer[14];
+    // TODO usar variants
+    int mains[] = {ENEM1_1_PCX, ENEM1_2_PCX,  ENEM1_3_PCX, ENEM1_4_PCX,
+                   ENEM1_5_PCX, ENEM1_6_PCX,  ENEM1_7_PCX, ENEM1_8_PCX,
+                   ENEM1_9_PCX, ENEM1_10_PCX, ENEM1_11_PCX};
+
     // load enemy1
     for (int i = 0; i < 9; i++) {
-        sprintf(file_buffer, "ENEM%d_%d.PCX", variant, i + 1); 
-        enem->sprite[i] = load_pcx(file_buffer, NULL);
+        //sprintf(file_buffer, "ENEM%d_%d.PCX", variant, i + 1); 
+        enem->sprite[i] = dat_file[mains[i]].dat;//load_pcx(file_buffer, NULL);
         enem->variant = variant;
         if (!enem->sprite[i]) {
             die("Cannot load %s", file_buffer);
         }
     }
     // load dead position
-    sprintf(file_buffer, "ENEM%dd.PCX", variant); 
-    enem->sprite[11] = load_pcx(file_buffer, NULL);
+    //sprintf(file_buffer, "ENEM%dd.PCX", variant); 
+    enem->sprite[11] = dat_file[ENEM1D_PCX].dat;
     if (!enem->sprite[11]) {
         die("cannot load died enem%dd.pcx", enem->variant);
     }
@@ -60,13 +64,13 @@ void unload_enemies() {
     
 }
 
-void init_enemies() {
+void init_enemies(DATAFILE *dat_file) {
     for (int ec = 0; ec < MAX_ENEMIES; ec++) {
-        eies_sprite(&enemies[ec], ec % 3 + 1);
+        eies_sprite(dat_file, &enemies[ec], ec % 3 + 1);
         alive_enemies[level][ec] = FALSE;
     }
-    vespino_enemy.sprite[0] = load_pcx("vespino2.pcx", NULL);
-    vespino_enemy.sprite[1] = load_pcx("vespino3.pcx", NULL);
+    vespino_enemy.sprite[0] = dat_file[VESPINO2_PCX].dat;
+    vespino_enemy.sprite[1] = dat_file[VESPINO3_PCX].dat;
 }
 
 void init_level_enemies() {
