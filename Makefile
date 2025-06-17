@@ -49,6 +49,9 @@ ${STATICDEST}:
 	cp static/setup.* ${DISTDIR}
 	cp static/datos.dat ${DISTDIR}
 	cp static/tiles.pcx ${DISTDIR}
+	cp static/alley.pcx ${DISTDIR}
+	cp static/shareware.txt ${DISTDIR}/SHARE.TXT	
+	cp static/final.pcx ${DISTDIR}/FINAL.PCX
 
 all: ${DISTDIR} ${DISTDIR}/${BIN} ${STATICDEST}
 

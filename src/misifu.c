@@ -7,13 +7,13 @@
 #include "allegro/inline/gfx.inl"
 #include "allegro/keyboard.h"
 #include "allegro/midi.h"
-#include "allegro/platform/astdint.h"
-#include "allegro/text.h"
-#include "enem.h"
+#include "allegro/system.h"
 #include "game.h"
 #include "misifu.h"
 #include "allegro/datafile.h"
 #include "tiles.h"
+#include "dat_manager.h"
+#include "datos.h"
 
 
 struct clothes {
@@ -80,6 +80,7 @@ uint8_t opened_window_frames;
 uint8_t opened_window;
 uint8_t exit_misifu;
 unsigned char original_lives;
+MIDI *misifu_music;
 BITMAP *heart;
 
 struct holes holes_pos[HOLES_POS] = {
@@ -109,39 +110,33 @@ struct holes holes_conn[HOLES_CONN] = {
 };
 
 BITMAP *load_misifu_alley() {
-    char file_buffer[16];
-
     stop_sample(alleytheme);
     BITMAP *back = load_pcx("alley.pcx", misifu_palette);
-    heart = load_pcx("HEART.PCX", NULL);
+    heart = dat_file[HEART_PCX].dat;
     original_lives = player.lives;
     set_palette(misifu_palette);
     for (int i = 0; i < 7; i++) {
-        sprintf(file_buffer, "CAT%d.PCX", i + 1);
-        misifu.sprite[i] = load_pcx( file_buffer, NULL );
+        misifu.sprite[i] = dat_file[CAT1_PCX + i].dat;
         if(!misifu.sprite[i]) {
-            die("Cannot load %s", file_buffer);
+            die("Cannot load %s", CAT1_PCX + i);
         }
     }
     for (int i = 0; i < 4; i++) {
-        sprintf(file_buffer, "DOG%d.PCX", i + 1);
-        dog.sprite[i] = load_pcx( file_buffer, NULL );
+        //sprintf(file_buffer, "DOG%d.PCX", i + 1);
+        dog.sprite[i] = dat_file[DOG1_PCX + i].dat;
         if(!dog.sprite[i]) {
-            die("Cannot load %s", file_buffer);
+            die("Cannot load %s", i);
         }
     }
-    if (music) {
-        stop_midi();
-        destroy_midi(music);
-    }
-    music = load_midi("ALLEYCAT.MID");
-    play_looped_midi(music, 0, -1);
-    clothes.sprite1 = load_pcx("CLOTHES1.PCX", NULL);
-    clothes.sprite2 = load_pcx("CLOTHES2.PCX", NULL);
+    stop_midi();
+    misifu_music = dat_file[ALLEYCAT_MID].dat;//load_midi("ALLEYCAT.MID");
+    play_looped_midi(misifu_music, 0, -1);
+    clothes.sprite1 = dat_file[CLOTHES1_PCX].dat;
+    clothes.sprite2 = dat_file[CLOTHES2_PCX].dat;
     bincat.in_bin = NONE;
     bincat.appears = NONE;
-    bincat.sprite = load_pcx("BINCAT.PCX", NULL);
-    object.sprite = load_pcx("PHONE.PCX", NULL);
+    bincat.sprite = dat_file[BINCAT_PCX].dat;
+    object.sprite = dat_file[PHONE_PCX].dat;
     object.direction = NONE;
     exit_misifu = 0;
     clothes.row1_x = 225;
@@ -161,7 +156,7 @@ BITMAP *load_misifu_alley() {
 }
 
 BITMAP * load_misifu_cheese() {
-    BITMAP *back = load_pcx("cheese.pcx", misifu_palette);
+    BITMAP *back = dat_file[CHEESE_PCX].dat;
     opened_window_frames = NONE;
     opened_window = NONE;
     misifu.y = FLOOR_Y;
@@ -677,22 +672,9 @@ inline void alley_loop() {
 
 void destroy_misifu_data() {
     // todo destroy sprite
-    for (int i = 0; i < 8; i++) {
-        destroy_bitmap(misifu.sprite[i]);
-    }
-    for (int i = 0; i < 4; i++) {
-        destroy_bitmap(dog.sprite[i]);
-    }
-    destroy_bitmap(clothes.sprite1);
-    destroy_bitmap(clothes.sprite2);
-    destroy_bitmap(bincat.sprite);
-    destroy_bitmap(object.sprite);
-    destroy_bitmap(heart);
 
     if (music) {
         stop_midi();
-        destroy_midi(music);
-        music = load_midi("ROGERR.MID");
     }
 }
 
@@ -754,7 +736,7 @@ void misifu_process() {
         misifu_output();
         check_fsm();
     } else {
-        stop_sample(dog_theme);
+        //stop_sample(dog_theme);
         load_level();
     }
 
@@ -762,7 +744,7 @@ void misifu_process() {
         exit_misifu = MEXIT_END;
     }
     if (exit_misifu == MEXIT_SUCCESS) {
-        stop_sample(dog_theme);
+        //stop_sample(dog_theme);
         stop_midi();
         clear_to_color(screen, 0);
         for (int i = 0; i < 6; i++) {
@@ -781,21 +763,21 @@ void misifu_process() {
         stop_sample(dog_theme);
         destroy_misifu_data();
         next_level = 10;
+        set_gfx_mode(GFX_AUTODETECT, 640, 480, 0, 0);
         player.lives = original_lives;
-
         FILE *file;
         char line[61];
-        file = fopen("shareware.txt", "r");
+        file = fopen("SHARE.TXT", "r");
         if (!file) {
-            die("Cannot open file shareware.txt");
+            printf("Cannot open file SHARE.txt");
         }
-        set_gfx_mode(GFX_TEXT, 80, 25, 0, 0);
         while (fgets(line, sizeof(line), file)) {
             printf("%s", line);
         }
 
         printf("\nPress ENTER to continue\n");
         printf("T:\\NOVELL\\MISIFU>exit");
+        fflush(stdout);
         while (!key[KEY_ENTER] && !key[KEY_SPACE] && !key[KEY_ESC]) {
             rest(1);
         }
@@ -803,7 +785,7 @@ void misifu_process() {
         set_color_depth(8);
         if(set_gfx_mode(GFX_MODEX, 320, 240, 0, 0) != 0) {
             die("error setting 320x240 16bpp: %s", allegro_error);
-        }        
+        }
         set_palette(palette);
         play_looped_midi(music, 209, -1);
         if (blue_key == TRUE) {

@@ -83,6 +83,8 @@ void rotate_pal(int index1, int index2) {
     set_palette(palette);
 }
 
+
+
 int main(int argc, const char **argv) {
     char file_buffer[14];
     BITMAP *bmp;
@@ -100,6 +102,7 @@ int main(int argc, const char **argv) {
     set_color_conversion(COLORCONV_NONE);
     // Switch to graphics mode, 320x200.
     set_color_depth(8);
+    printf("Loading...");
 
     if (set_gfx_mode(GFX_MODEX, 320, 240, 0, 0) != 0) {
         die("Cannot set graphics mode");
@@ -124,8 +127,12 @@ int main(int argc, const char **argv) {
                       SCREEN_W / 2, 30, 200, -1);
     
 
-    // extract_data(); // todo mover despues de textout
-    DATAFILE *dat_file = extract_data();
+    int saved_stdout = dup(fileno(stdout));
+    freopen("/dev/null", "w", stdout);
+    extract_data(); 
+    fflush(stdout);
+    dup2(saved_stdout, fileno(stdout));
+    close(saved_stdout);
     
     char *data_levels = dat_file[LEVELS_CSV].dat;
     load_levels(data_levels);
@@ -243,10 +250,10 @@ int main(int argc, const char **argv) {
 
 
             if (key[KEY_SPACE]) {
-                increase_level_and_load();
                 if (play_looped_midi(music, 0, -1) != 0) {
                     die("Cant play music");
                 }
+                increase_level_and_load();                
             }
         } else if (level == GAME_OVER) {
             level = 0;

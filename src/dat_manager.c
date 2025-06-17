@@ -1,7 +1,10 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <stdio.h>
+
 #include "dat_manager.h"
+
 
 DATAFILE *dat_file;
 
@@ -29,6 +32,7 @@ END_OF_FUNCTION(rotar_paleta)
 
 
 DATAFILE * extract_data() {
+
     //install_int(rotar_paleta, 100);
     install_int_ex(rotar_paleta, BPS_TO_TIMER(40));
     dat_file = load_datafile("datos.dat");
