@@ -1,6 +1,6 @@
 #include "tiles.h"
 #include "allegro/datafile.h"
-#include "datos.h"
+#include "statics.h"
 #include "helpers.h"
 #include <allegro.h>
 #include <stdio.h>
@@ -18,7 +18,8 @@ struct coords get_tile_coords(int tile_number) {
     return result;
 }
 inline void load_tiles(DATAFILE *dat_file) {
-    tiles =  load_pcx("tiles.pcx", palette);
+    tiles = dat_file[TILES_BMP].dat;
+    dat_palette(PALETE_TILES_BMP, palette);
    // generate_optimized_palette(tiles, palette, 0); 
 
     if(!tiles) {

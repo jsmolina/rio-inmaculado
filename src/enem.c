@@ -6,7 +6,8 @@
 #include "game.h"
 #include "helpers.h"
 #include <stdio.h>
-#include "datos.h"
+#include "statics.h"
+#include "dat_manager.h"
 
 enemyData enemies[MAX_ENEMIES];
 vespinoData vespino_enemy;
@@ -16,9 +17,13 @@ int alive_enemies[TOTAL_LEVELS][MAX_ENEMIES];
 int attack_variant = 0;
 unsigned char alive_enemies_count = 0;
 
+int enemy_in_room(int i) {
+    return level < TOTAL_LEVELS && alive_enemies[level][i] != ENEMY_NONE && enemies[i].enter_delay == 0;
+}
+
 int has_alive_enemies() {
-    for (int i = 0; i < levels[level].total_enemies; i++) {
-        if (enemies[i].is_floor == FALSE) {
+    for (int i = 0; i < MAX_ENEMIES; i++) {
+        if (alive_enemies[level][i] == TRUE) { // also followers still on their way in
             return 1;
         }
     }
@@ -28,28 +33,20 @@ int has_alive_enemies() {
 void eies_sprite(DATAFILE *dat_file, enemyData *enem, unsigned int variant) {
     char file_buffer[14];
     // TODO usar variants
-    int mains[3][12] = {{ENEM1_1_PCX, ENEM1_2_PCX, ENEM1_3_PCX, ENEM1_4_PCX,
-                         ENEM1_5_PCX, ENEM1_6_PCX, ENEM1_7_PCX, ENEM1_8_PCX,
-                         ENEM1_9_PCX, ENEM1_10_PCX, ENEM1_11_PCX, ENEM1D_PCX},
-                        {ENEM2_1_PCX, ENEM2_2_PCX, ENEM2_3_PCX, ENEM2_4_PCX,
-                         ENEM2_5_PCX, ENEM2_6_PCX, ENEM2_7_PCX, ENEM2_8_PCX,
-                         ENEM2_9_PCX, ENEM2_10_PCX, ENEM2_11_PCX, ENEM2D_PCX},
-                        {ENEM3_1_PCX, ENEM3_2_PCX, ENEM3_3_PCX, ENEM3_4_PCX,
-                         ENEM3_5_PCX, ENEM3_6_PCX, ENEM3_7_PCX, ENEM3_8_PCX,
-                         ENEM3_9_PCX, ENEM3_10_PCX, ENEM3_11_PCX, ENEM3D_PCX}};
+    int sheets[3] = {ENEMY1_BMP, ENEMY2_BMP, ENEMY3_BMP};
+    int dead[3] = {ENEM1D_BMP, ENEM2D_BMP, ENEM3D_BMP};
 
     // load enemy1
     for (int i = 0; i < 9; i++) {
-        //sprintf(file_buffer, "ENEM%d_%d.PCX", variant, i + 1); 
-        enem->sprite[i] = dat_file[mains[variant - 1][i]].dat;//load_pcx(file_buffer, NULL);
+        enem->sprite[i] = dat_frame(sheets[variant - 1], 40 * i, 40, 40);
         enem->variant = variant;
         if (!enem->sprite[i]) {
-            die("Cannot load %s", file_buffer);
+            die("Cannot load enemy %d frame %d", variant, i);
         }
     }
     // load dead position
     //sprintf(file_buffer, "ENEM%dd.PCX", variant); 
-    enem->sprite[11] = dat_file[mains[variant - 1][11]].dat;
+    enem->sprite[11] = dat_file[dead[variant - 1]].dat;
     if (!enem->sprite[11]) {
         die("cannot load died enem%dd.pcx", enem->variant);
     }
@@ -75,13 +72,26 @@ void init_enemies(DATAFILE *dat_file) {
         eies_sprite(dat_file, &enemies[ec], ec % 3 + 1);
         alive_enemies[level][ec] = FALSE;
     }
-    vespino_enemy.sprite[0] = dat_file[VESPINO2_PCX].dat;
-    vespino_enemy.sprite[1] = dat_file[VESPINO3_PCX].dat;
+    vespino_enemy.sprite[0] = dat_file[VESPINO2_BMP].dat;
+    vespino_enemy.sprite[1] = dat_file[VESPINO3_BMP].dat;
 }
 
-void init_level_enemies() {
-    for (int ec = 0; ec < levels[level].total_enemies; ec++) {
-        enemies[ec].x = levels[level].maxX - 60 - ec * 15; // it should vary per level
+void init_level_enemies(unsigned char prev_level) {
+    // Enemies still standing when the player leaves through a side follow: they move to this
+    // room for good and walk in from the side the player came from, one after another.
+    char from_left = player.x < SCREEN_W / 2;
+    char can_follow = prev_level >= 1 && prev_level < TOTAL_LEVELS && prev_level != level;
+    for (int ec = 0; ec < MAX_ENEMIES; ec++) {
+        if (can_follow && alive_enemies[prev_level][ec] == TRUE && enemies[ec].is_floor == FALSE
+            && alive_enemies[level][ec] != TRUE) {
+            alive_enemies[prev_level][ec] = ENEMY_NONE;
+            alive_enemies[level][ec] = TRUE;
+            enemies[ec].x = from_left ? levels[level].minX : levels[level].maxX - 20;
+            enemies[ec].enter_delay = 50 + 30 * ec;
+        } else {
+            enemies[ec].x = levels[level].maxX - 60 - ec * 15; // it should vary per level
+            enemies[ec].enter_delay = 0;
+        }
         enemies[ec].y = 150 + ((ec % 2) * 3); // it should vary per enemy
         enemies[ec].targetX = 0;
         enemies[ec].targetY = 0;
@@ -97,6 +107,7 @@ void init_level_enemies() {
         }
         enemies[ec].is_punching = FALSE;
         enemies[ec].received_hits = 0;
+        enemies[ec].knock = KNOCK_MAX;
     }
 }
 
@@ -112,10 +123,6 @@ void enemy_animation(enemyData *enem) {
         enem->curr_sprite = ANIM_HITTED;
         enem->is_hit--;
         return;
-    }
-
-    if (enem->punch_wait > 0) {
-        enem->punch_wait--;
     }
 
     if (enem->moving == MOVING_RIGHT || enem->moving == MOVING_LEFT || enem->y_moving == MOVING_UP|| enem->y_moving == MOVING_DOWN) {
@@ -156,176 +163,132 @@ int enemy_decision(enemyData *enem) {
     x_distance = point_distance(player.x, enem->x);
     y_distance = point_distance(player.y, enem->y);
     // check hits
-    if (x_distance <= 24 && y_distance <= 2) {
-        if ((player.moving == PUNCH_LEFT || player.moving == KICK_LEFT) && enem->x <= player.x && !hitted_this_loop /*&& counter % 10 == 0*/) {
+    if (x_distance <= 24 && y_distance <= LANE_REACH) {
+        char hit = FALSE;
+        // one strike per press, as in Target Renegade (holding the button used to hit again every
+        // time the enemy's hit stun ended); the flying kick strikes while it is a kick
+        char strike = player.jump > 0 || player.is_punching == 1 || player.is_kicking == 1;
+        if (strike && (player.moving == PUNCH_LEFT || player.moving == KICK_LEFT) && enem->x <= player.x && !hitted_this_loop) {
             enem->enem_received_hit_sample = 1;
             score += 10;
             enem->is_hit = HIT_DURATION_ENEM;
             ++enem->received_hits;
             hitted_this_loop = TRUE;
+            hit = TRUE;
         }
-        if ((player.moving == PUNCH_RIGHT || player.moving == KICK_RIGHT) && player.x <= enem->x && !hitted_this_loop /*&& counter % 10 == 0*/) {
+        if (strike && (player.moving == PUNCH_RIGHT || player.moving == KICK_RIGHT) && player.x <= enem->x && !hitted_this_loop) {
             score += 10;
             enem->enem_received_hit_sample = 1;
             enem->is_hit = HIT_DURATION_ENEM;
             ++enem->received_hits;
             hitted_this_loop = TRUE;
+            hit = TRUE;
         }
 
+        if (hit) {
+            // being hit cancels the attack in progress (Target Renegade: the hit reaction replaces it)
+            enem->is_punching = 0;
+            enem->moving = player.x < enem->x ? STOP_LEFT : STOP_RIGHT;
+        }
         if (enem->received_hits == 10) {
-            stop_sample(punch);
-            play_sample(fall, 255, 127, 1000, 0);  
+            // dead: only the kill sound (not the knockdown fall). The hit's punch sound is played
+            // later this frame (game.c) and, longer and louder, would bury this short sample
+            enem->enem_received_hit_sample = 0;
+            play_sample(enemy_kill, 255, 127, 1000, 0);
             enem->is_floor = FLOOR_DURATION;
             enem->moving = MOVING_RIGHT;
             ++enem->floor_times;
             enem->received_hits = 0;
             return TRUE;
         }
+        if (hit) {
+            enem->knock -= KNOCK_HIT;
+        }
+        // a flying kick floors at once, a ground combo when the meter runs out; either way the enemy
+        // gets up again (all_enemy_decisions), as in Target Renegade
+        if (hit && (player.jump > 0 || enem->knock <= 0)) {
+            enem->knock = KNOCK_MAX;
+            stop_sample(punch);
+            play_sample(fall, 255, 127, 1000, 0);
+            enem->is_floor = FLOOR_DURATION;
+            enem->moving = MOVING_RIGHT;
+            ++enem->floor_times;
+            return FALSE;
+        }
     }
 
-    if (enem->is_punching > 0 && x_distance > (FIGHT_DISTANCE + 2)) {
+    // Target Renegade style: nothing is latched between frames except the attack in progress.
+    // An attack is a fixed-length action that always ends; otherwise the "stick" is worked out
+    // from scratch every frame: walk to the attack spot, line up with the player, then attack.
+    enem->y_moving = STOPPOS;
+    if (enem->punch_wait > 0) {
+        enem->punch_wait--;
+    }
+
+    if (enem->is_punching > 0) {
+        // the hit lands on one frame of the attack, so it can be dodged
+        if (enem->is_punching == ATTACK_HIT_FRAME && player.is_floor == FALSE && y_distance <= LANE_REACH
+            && x_distance <= FIGHT_DISTANCE
+            && ((enem->moving == PUNCH_LEFT && player.x <= enem->x)
+                || (enem->moving == PUNCH_RIGHT && player.x >= enem->x))) {
+            player.is_hit = HIT_DURATION;
+            player.curr_sprite = ANIM_HITTED;
+            enem->enem_hitted_sample = 1;
+            player.received_hits++;
+            if (player.jump > 0) {
+                // hit in the air: knocked down at once, the jump arc becomes the fall
+                // (Target Renegade 58744: airborne actors skip the knockdown meter)
+                player.received_hits = HIT_KO;
+            }
+            if (player.lifebar > 0 && cheat_mode != 1) {
+                player.lifebar--;
+            }
+            draw_lifebar();
+        }
+        if (--enem->is_punching == 0) {
+            enem->moving = enem->moving == PUNCH_LEFT ? STOP_LEFT : STOP_RIGHT;
+        }
         return FALSE;
     }
 
-    char enem_has_moved = FALSE;
-    // TODO: enemy should not tresspass hero
-
-    if (point_distance(player.x, enem->targetX) >= FIGHT_DISTANCE || enem->targetX == FALSE) {
-        if (random_choice == (8 + enem->variant)) {
-            if (alive_enemies_count == 1) {
-                if ( enem->x > player.x) {
-                    if (player.x < levels[level].maxX) {
-                        enem->targetX = player.x + FIGHT_DISTANCE;
-                    } else {
-                        enem->targetX = player.x - FIGHT_DISTANCE;
-                    }
-                } else {
-                    if (player.x < levels[level].minX) {
-                        enem->targetX = player.x + FIGHT_DISTANCE;
-                    } else {
-                        enem->targetX = player.x - FIGHT_DISTANCE;
-                    }
-                }
-            } else {
-                switch (enem->variant) {
-                    case ALEX:
-                        if (player.x < levels[level].maxX) {
-                            enem->targetX = player.x + FIGHT_DISTANCE - 10;
-                        } else {
-                            enem->targetX = player.x - FIGHT_DISTANCE + 10;
-                        }
-                    break;
-                    case JOHNY:
-                        if (player.x < levels[level].maxX) {
-                            enem->targetX = player.x + FIGHT_DISTANCE;
-                        } else {
-                            enem->targetX = player.x - FIGHT_DISTANCE;
-                        }
-                        break;
-                    case PETER:
-                        if (player.x > FIGHT_DISTANCE) {
-                            enem->targetX = player.x - FIGHT_DISTANCE;
-                        } else {
-                            enem->targetX = player.x + FIGHT_DISTANCE;
-                        }
-                        break;                
-                }
-            }
-        }
-    } 
-    if (enem->targetY != FALSE && enem->targetY != enem->y) {
-        if (enem->waitTarget > 1) {
-            --enem->waitTarget;
-        } else {
-            if (enem->y > enem->targetY) {
-                enem->y_moving = MOVING_UP;
-                enem->y--;
-                enem->targetY = player.y;
-            } else {
-                enem->y_moving = MOVING_DOWN;
-                enem->y++;
-            }
-            enem_has_moved = TRUE;
-        }
-    } else if (enem->targetX != FALSE && enem->targetX != enem->x) {
-        if (enem->x > enem->targetX && enem->x > 0) {
+    // targetX comes from assign_attack_spots() (0 = no spot: hold position)
+    if (enem->targetX != FALSE && enem->targetX != enem->x) {
+        if (enem->x > enem->targetX) {
             enem->x--;
-            enem_has_moved = TRUE;
             enem->moving = MOVING_LEFT;
-        } else if (enem->x < enem->targetX) {
+        } else {
             enem->x++;
-            enem_has_moved = TRUE;
             enem->moving = MOVING_RIGHT;
-            if (enem->x >= levels[level].maxX) {
-                enem->targetX = 0;
-            }
-        } else {
-            enem->moving = STOP_RIGHT;
         }
-    } else {
-        if (point_distance(player.y, enem->y) >= 2 /*&& (counter % 2) == 0*/) {
-            if (random_choice > 55 && (counter & 1) == 0) {
-                enem->targetY = player.y; 
-                enem->waitTarget = 20;
-            }
+        return FALSE;
+    }
+    // half the player's speed on the lane, so the player can sidestep out of line (1px every other frame)
+    if (enem->targetX != FALSE && enem->y != player.y && (counter & 1) == 0) {
+        if (enem->y > player.y) {
+            enem->y--;
+            enem->y_moving = MOVING_UP;
         } else {
-            enem->y_moving = STOPPOS;
-
-            if (enem->moving == MOVING_LEFT) {
-                enem->moving = STOP_LEFT;
-                enem->targetX = FALSE;
-            } else if (enem->moving == MOVING_RIGHT) {
-                enem->moving = STOP_RIGHT;
-                enem->targetX = FALSE;
-            }
-            if (player.is_floor == FALSE && (x_distance <= FIGHT_DISTANCE)) {
-                if (enem->punch_wait == 0 && random_choice > 10 && (enem->moving == STOP_LEFT || enem->moving == STOP_RIGHT)) {
-                    // TODO think on punch
-                    if (enem->x > player.x) {
-                        enem->moving = PUNCH_LEFT;
-                    } else {
-                        enem->moving = PUNCH_RIGHT;
-                    }
-                    enem->curr_sprite = ANIM_PUNCH;
-                    enem->is_punching = HIT_DURATION;
-                    enem->punch_wait = 2;
-                } else if (enem->is_punching != 0 && y_distance < 8
-                    && ((enem->moving == PUNCH_LEFT && player.x <= enem->x && x_distance <= FIGHT_DISTANCE) 
-                || (enem->moving == PUNCH_RIGHT && player.x >= enem->x && x_distance <= FIGHT_DISTANCE)))  {
-                    player.is_hit = HIT_DURATION;
-                    player.curr_sprite = ANIM_HITTED;
-                    enem->enem_hitted_sample = 1;
-                    //play_sample(punch2, 200, 127, 1200 , 0); 
-                    enem->is_punching = 0;
-                    player.received_hits++;
-                    if (player.lifebar > 0 && cheat_mode != 1) {
-                        player.lifebar--;
-                    }
-                    
-                    draw_lifebar();
-                }
-
-                if (enem->punch_wait == 0) {
-                    if(enem->moving == PUNCH_LEFT) {
-                        enem->moving = STOP_LEFT;
-                    } else if(enem->moving == PUNCH_RIGHT) {
-                        enem->moving = STOP_RIGHT;
-                    }
-                }
-            }
+            enem->y++;
+            enem->y_moving = MOVING_DOWN;
         }
-
     }
 
-    if (!enem_has_moved && (enem->moving == MOVING_LEFT || enem->moving == MOVING_RIGHT)) {
-        enem->moving = STOP_LEFT;
+    // on the spot (or no spot): face the player
+    char left = player.x < enem->x;
+    enem->moving = left ? STOP_LEFT : STOP_RIGHT;
+    if (y_distance <= LANE_REACH && player.is_floor == FALSE && player.is_hit == 0
+        && x_distance <= FIGHT_DISTANCE && enem->punch_wait == 0 && random_choice > 10) {
+        enem->moving = left ? PUNCH_LEFT : PUNCH_RIGHT;
+        enem->curr_sprite = ANIM_PUNCH;
+        enem->is_punching = ATTACK_FRAMES;
+        enem->punch_wait = ATTACK_FRAMES + ATTACK_COOLDOWN;
     }
     return FALSE;
 }
 
 inline void draw_enemy(int index) {
-    if ((index + 1) > levels[level].total_enemies) {
-        return; 
+    if (!enemy_in_room(index)) {
+        return;
     }
 
 
@@ -357,8 +320,10 @@ inline void draw_enemy(int index) {
 }
 
 void all_enemy_animations() {
-    for (int i = 0; i < levels[level].total_enemies; i++) {
-        enemy_animation(&enemies[i]);
+    for (int i = 0; i < MAX_ENEMIES; i++) {
+        if (enemy_in_room(i)) {
+            enemy_animation(&enemies[i]);
+        }
     }
 }
 
@@ -368,7 +333,7 @@ void clean_vespino() {
 }
 
 void enem_resets() {
-    for (int i = 0; i < levels[level].total_enemies; i++) {
+    for (int i = 0; i < MAX_ENEMIES; i++) {
         enemies[i].is_punching = 0;
         enemies[i].curr_sprite = 0;
         enemies[i].targetX = 0;
@@ -388,18 +353,79 @@ void vespino_hitted() {
     draw_lifebar_vespino_enemy();
 }
 
+// Target Renegade's AI: attack spots at both sides of the player, and the cheapest
+// enemy/spot pair is taken first, so enemies flank the player instead of piling up.
+// Inner spots (FIGHT_DISTANCE) first, the remaining enemies wait at the outer ones.
+static void assign_attack_spots() {
+    int n = MAX_ENEMIES;
+    char free_enem[MAX_ENEMIES];
+    for (int e = 0; e < n; e++) {
+        free_enem[e] = enemy_in_room(e) && enemies[e].is_floor == FALSE;
+        enemies[e].targetX = 0; // recomputed every frame
+    }
+    for (int ring = 1; ring <= 2; ring++) {
+        int spot[2] = {(int)player.x - ring * FIGHT_DISTANCE, (int)player.x + ring * FIGHT_DISTANCE};
+        // spots outside the level are not used (> minX also keeps targetX != FALSE)
+        char free_spot[2] = {spot[0] > (int)levels[level].minX, spot[1] < (int)levels[level].maxX};
+        for (int k = 0; k < 2; k++) {
+            int best = 0x7fff, bs = 0, be = 0;
+            for (int s = 0; s < 2; s++) {
+                if (!free_spot[s]) {
+                    continue;
+                }
+                for (int e = 0; e < n; e++) {
+                    if (!free_enem[e]) {
+                        continue;
+                    }
+                    // horizontal distance weighs 4x, as in the original
+                    int cost = 4 * abs((int)enemies[e].x - spot[s]) + abs((int)enemies[e].y - (int)player.y);
+                    if (cost < best) {
+                        best = cost;
+                        bs = s;
+                        be = e;
+                    }
+                }
+            }
+            if (best == 0x7fff) {
+                break;
+            }
+            enemies[be].targetX = spot[bs];
+            free_spot[bs] = FALSE;
+            free_enem[be] = FALSE;
+        }
+    }
+}
+
 void all_enemy_decisions() {
 
     hitted_this_loop = FALSE;
+    assign_attack_spots();
 
     alive_enemies_count = 0;
-    for (int i = 0; i < levels[level].total_enemies; i++) {
+    for (int i = 0; i < MAX_ENEMIES; i++) {
         random_choice = rand() & 0b111111;
-        if (alive_enemies[level][i] != FALSE) {
+        if (alive_enemies[level][i] == TRUE) {
             ++alive_enemies_count;
         }
     }
-    for (int i = 0; i < levels[level].total_enemies; i++) {
+    for (int i = 0; i < MAX_ENEMIES; i++) {
+        if (enemies[i].enter_delay > 0) {
+            enemies[i].enter_delay--; // follower still on its way in
+            continue;
+        }
+        if (!enemy_in_room(i)) {
+            continue;
+        }
+        if (enemies[i].knock < KNOCK_MAX) {
+            enemies[i].knock++;
+        }
+        // floored but not dead (flying kick): gets up after FLOOR_DURATION ticks, like the player
+        if (enemies[i].is_floor > 0 && alive_enemies[level][i] == TRUE && small_counter == 10
+            && --enemies[i].is_floor == FALSE) {
+            enemies[i].targetX = 0;
+            enemies[i].targetY = 0;
+            enemies[i].is_punching = 0;
+        }
         if (enemy_decision(&enemies[i]) == TRUE) {
             alive_enemies[level][i] = FALSE;
         }
@@ -493,8 +519,8 @@ void draw_vespino() {
 
 
 void redraw_bg_enemy_positions() {
-    for (int i = 0; i < levels[level].total_enemies; i++) {
-        blit(bg, double_buffer, enemies[i].x, 120,
+    for (int i = 0; i < MAX_ENEMIES; i++) {
+        if (enemy_in_room(i)) blit(bg, double_buffer, enemies[i].x, 120,
              enemies[i].x, 120, 40, 80);
     }
     if (vespino_enemy.direction != VESPINO_HIDDEN) {
@@ -504,8 +530,8 @@ void redraw_bg_enemy_positions() {
 
 
 inline int enemy_on_path(unsigned int new_player_x) {
-    for (int i = 0; i < levels[level].total_enemies; i++) {
-        if (enemies[i].is_floor != FALSE) {
+    for (int i = 0; i < MAX_ENEMIES; i++) {
+        if (!enemy_in_room(i) || enemies[i].is_floor != FALSE) {
             continue;
         }
         int x_distance = point_distance(new_player_x, enemies[i].x);        

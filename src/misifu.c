@@ -13,7 +13,7 @@
 #include "allegro/datafile.h"
 #include "tiles.h"
 #include "dat_manager.h"
-#include "datos.h"
+#include "statics.h"
 
 
 struct clothes {
@@ -111,19 +111,20 @@ struct holes holes_conn[HOLES_CONN] = {
 
 BITMAP *load_misifu_alley() {
     stop_sample(alleytheme);
-    BITMAP *back = load_pcx("alley.pcx", misifu_palette);
-    heart = dat_file[HEART_PCX].dat;
+    BITMAP *back = dat_copy(ALLEY_BMP); // load_level() destroys bg later
+    dat_palette(PALETE_ALLEY_BMP, misifu_palette);
+    heart = dat_file[HEART_BMP].dat;
     original_lives = player.lives;
     set_palette(misifu_palette);
+    int cat_x[7] = {0, 24, 120, 144, 168, 192, 216}; // frames used from the cat sheet
     for (int i = 0; i < 7; i++) {
-        misifu.sprite[i] = dat_file[CAT1_PCX + i].dat;
+        misifu.sprite[i] = dat_frame(CAT_BMP, cat_x[i], 24, 24);
         if(!misifu.sprite[i]) {
-            die("Cannot load %s", CAT1_PCX + i);
+            die("Cannot load cat frame %d", i);
         }
     }
     for (int i = 0; i < 4; i++) {
-        //sprintf(file_buffer, "DOG%d.PCX", i + 1);
-        dog.sprite[i] = dat_file[DOG1_PCX + i].dat;
+        dog.sprite[i] = dat_frame(DOG_BMP, 24 * i, 24, 16);
         if(!dog.sprite[i]) {
             die("Cannot load %s", i);
         }
@@ -131,12 +132,12 @@ BITMAP *load_misifu_alley() {
     stop_midi();
     misifu_music = dat_file[ALLEYCAT_MID].dat;//load_midi("ALLEYCAT.MID");
     play_looped_midi(misifu_music, 0, -1);
-    clothes.sprite1 = dat_file[CLOTHES1_PCX].dat;
-    clothes.sprite2 = dat_file[CLOTHES2_PCX].dat;
+    clothes.sprite1 = dat_file[CLOTHES1_BMP].dat;
+    clothes.sprite2 = dat_file[CLOTHES2_BMP].dat;
     bincat.in_bin = NONE;
     bincat.appears = NONE;
-    bincat.sprite = dat_file[BINCAT_PCX].dat;
-    object.sprite = dat_file[PHONE_PCX].dat;
+    bincat.sprite = dat_file[BINCAT_BMP].dat;
+    object.sprite = dat_file[PHONE_BMP].dat;
     object.direction = NONE;
     exit_misifu = 0;
     clothes.row1_x = 225;
@@ -156,7 +157,7 @@ BITMAP *load_misifu_alley() {
 }
 
 BITMAP * load_misifu_cheese() {
-    BITMAP *back = dat_file[CHEESE_PCX].dat;
+    BITMAP *back = dat_copy(CHEESE_BMP); // load_level() destroys bg later
     opened_window_frames = NONE;
     opened_window = NONE;
     misifu.y = FLOOR_Y;

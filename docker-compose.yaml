@@ -1,7 +1,28 @@
-version: '3'
-
+# docker-compose.yml
 services:
-  compile:
-    build: .
+  build_rio_dat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: build_rio
     volumes:
-      - ./dist:/app/out
+      - ./static:/compile # Carpeta compartida para resultados
+      - ./src:/src
+    working_dir: /compile
+    command: /bin/bash -c -e "./build.sh  "
+
+  build_rio_exe:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: build_rio
+    depends_on:
+      build_rio_dat:
+        condition: service_completed_successfully
+    volumes:
+      - ./src:/compile/src         # Codigo fuente
+      - ./setup:/compile/setup     # Setup allegro
+      - ./dist:/compile/dist       # Carpeta compartida para resultados
+      - ./static:/compile/static   # static folder
+    working_dir: /compile
+    command: /bin/bash -c -e "./build_project.sh"

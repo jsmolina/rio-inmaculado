@@ -14,6 +14,21 @@
 #define VESPINO_SPEED 3
 
 #define FIGHT_DISTANCE 22
+// enemy attack: fixed-length action (frames), the hit is checked once, ATTACK_HIT_FRAME frames
+// before the end; then ATTACK_COOLDOWN frames before the next one
+#define ATTACK_FRAMES 22
+#define ATTACK_HIT_FRAME 16
+#define ATTACK_COOLDOWN 35
+// hits (both ways) only connect between actors in the same lane: |dy| <= LANE_REACH
+#define LANE_REACH 2
+// Target Renegade knockdown meter (58744): each hit drains KNOCK_HIT, it refills 1 per frame up to
+// KNOCK_MAX; when it runs out the enemy is floored for a while and gets up (alive). Only a quick
+// combo (3 hits) floors; life is still the 10 hits that kill.
+#define KNOCK_MAX 40
+#define KNOCK_HIT 24
+// alive_enemies[room][slot]: TRUE alive, FALSE dead (body on the floor), ENEMY_NONE nobody
+// (the room has no enemy in that slot, or it followed the player to another room)
+#define ENEMY_NONE 2
 
 #define JOHNY_INDEX 0
 #define PETER_INDEX 1
@@ -26,7 +41,9 @@ extern int alive_enemies[TOTAL_LEVELS][MAX_ENEMIES];
 extern vespinoData vespino_enemy;
 
 // initializes enemies on level
-void init_level_enemies();
+void init_level_enemies(unsigned char prev_level);
+// TRUE if slot i has an enemy (standing or lying) in the current room right now
+int enemy_in_room(int i);
 void init_enemies(DATAFILE *dat_file);
 
 // Animations for all enemies

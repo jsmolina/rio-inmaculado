@@ -8,7 +8,7 @@
 #include "allegro/palette.h"
 #include "allegro/text.h"
 #include "dat_manager.h"
-#include "datos.h"
+#include "statics.h"
 #include "game.h"
 #include "helpers.h"
 #include "tiles.h"
@@ -123,7 +123,8 @@ inline void rotate_palette(PALETTE pal, int start, int end) {
 void level_win() {
     PALETTE palete_win;
     // TODO
-    bg = load_pcx("final.pcx", palete_win);
+    bg = dat_copy(FINAL_BMP); // load_level() destroys bg later
+    dat_palette(PALETE_FINAL_BMP, palete_win);
     blit(bg, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
 
     stop_midi();
@@ -170,8 +171,9 @@ void level8_coursnave() {
     sprintf(missed, "COURSE: %01d", beep_count);
     textout_ex(screen, font, missed, 200, SCREEN_H - 26, makecol(0, 100, 255), makecol(0, 0, 0));
 
-    float tiempo_entre_beeps = (float)(tiempo_actual - ultimo_beep) / CLOCKS_PER_SEC;
-    if (ultimo_beep == 0 || tiempo_entre_beeps > (4 - beep_count * 0.25)) {
+    // integer milliseconds: no FPU needed
+    long ms_entre_beeps = (tiempo_actual - ultimo_beep) * 1000 / CLOCKS_PER_SEC;
+    if (ultimo_beep == 0 || ms_entre_beeps > (4000 - beep_count * 250)) {
         ultimo_beep = clock();
         if (beep_side == IZQUIERDA) {
             beep(2000, 50);
@@ -212,29 +214,29 @@ void level8_coursnave() {
         return;
     }
 
-    float tiempo_transcurrido = (float)(tiempo_actual - ultimo_tiempo) / CLOCKS_PER_SEC;
+    long ms_transcurrido = (tiempo_actual - ultimo_tiempo) * 1000 / CLOCKS_PER_SEC;
     char buf[25];
     if (key[KEY_Z] && ultima_tecla != KEY_Z) {
         //velocidad += (1.0 / tiempo_transcurrido);
         ultima_tecla = KEY_Z;
         ultimo_tiempo = tiempo_actual;
     } else if (key[KEY_X] && ultima_tecla != KEY_X) {
-        if (tiempo_transcurrido > 1) {
+        if (ms_transcurrido > 1000) {
             velocidad = 0;
-        } else if (tiempo_transcurrido >= 0.5) {
+        } else if (ms_transcurrido >= 500) {
             velocidad = 1;
-        } else if (tiempo_transcurrido >= 0.4) {
+        } else if (ms_transcurrido >= 400) {
             velocidad = 2;
-        } else if (tiempo_transcurrido >= 0.3) {
+        } else if (ms_transcurrido >= 300) {
             velocidad = 3;
-        } else if (tiempo_transcurrido >= 0.1) {
+        } else if (ms_transcurrido >= 100) {
             velocidad = 4;
         }
         ultima_tecla = KEY_X;
         ultimo_tiempo = tiempo_actual;
     } 
 
-    if (tiempo_transcurrido > 0.1) {
+    if (ms_transcurrido > 100) {
         velocidad -= 1;
         if (velocidad  < 1) {
             velocidad = 1;
@@ -263,7 +265,7 @@ void level8_coursnave() {
         } else {
             player.moving = MOVING_LEFT;
         }
-    } else if(tiempo_transcurrido > 0.2) {
+    } else if(ms_transcurrido > 200) {
         if (sentido == DERECHA) {
             player.moving = STOP_RIGHT;
         } else {
@@ -349,6 +351,21 @@ void move_with_level_limits() {
         level8_coursnave();
         return;
     } else {
+        if (player.jump > 0) {
+            // flying kick: keeps the take-off direction, stops at walls and enemies
+            int nx = (int)player.x + player.jump_dx;
+            if (nx >= (int)minX && nx <= (int)maxX && !enemy_on_path(nx)) {
+                player.x = nx;
+            }
+            --player.jump;
+            // past the top the kick is over: the player drops in the stop pose (and no longer hits)
+            if ((player.jump == JUMP_FRAMES / 2 && (player.moving == KICK_LEFT || player.moving == KICK_RIGHT))
+                || player.jump == 0) {
+                player.moving = (player.moving & 1) ? STOP_LEFT : STOP_RIGHT;
+                player.curr_sprite = 0;
+            }
+            return;
+        }
         // normal movement
         if (player.moving == MOVING_RIGHT && player.x < maxX) {
             if (!enemy_on_path(player.x + 1)) {

@@ -1,6 +1,6 @@
 #include <allegro.h>
 #include "dat_manager.h"
-#include "datos.h"
+#include "statics.h"
 #include "game.h"
 #include "helpers.h"
 #include "tiles.h"
@@ -117,7 +117,7 @@ int main(int argc, const char **argv) {
     //set_color_depth(desktop_color_depth());
     slow_cpu = 1;
     clear_to_color(screen, 0);
-    BITMAP *msdos = load_pcx("msdos.pcx", palette);
+    BITMAP *msdos = load_bmp("msdos.bmp", palette); // shown before datos.dat is loaded
     if (msdos) {
         set_pallete(palette);
         blit(msdos, screen, 0, 0, 0, 0, 320, 240);    
@@ -139,7 +139,7 @@ int main(int argc, const char **argv) {
 
     music = dat_file[ROGERR_MID].dat;        // load_midi("ROGERR.MID");
     final_music = dat_file[WIN_MID].dat;     // load_midi("WIN.MID");
-    alleytheme = dat_file[ALLEYTHE_WAV].dat; // load_wav("alleytheme.wav");
+    alleytheme = dat_file[ALLEYTHEME_WAV].dat; // load_wav("alleytheme.wav");
     hit = dat_file[HIT_WAV].dat;
     punch = dat_file[PUNCH_WAV].dat;
     punch2 = dat_file[PUNCH2_WAV].dat;
@@ -147,10 +147,11 @@ int main(int argc, const char **argv) {
     dog_theme = dat_file[DOG_WAV].dat;
     fall = dat_file[FALL_WAV].dat;
     die_sample = dat_file[DIE_WAV].dat;
+    enemy_kill = dat_file[ENEMY_KILL_WAV].dat;
     motorbike = dat_file[MOTO_WAV].dat;
     metalhit = dat_file[METAL_WAV].dat;
 
-    if (!final_music || !music || !alleytheme || !hit || !punch || !punch2 || !dog_theme || !fall || !die_sample) {
+    if (!final_music || !music || !alleytheme || !hit || !punch || !punch2 || !dog_theme || !fall || !die_sample || !enemy_kill) {
         die("cannot load samples");
     }
 
@@ -166,27 +167,22 @@ int main(int argc, const char **argv) {
     palette[0].b = 10;
     set_pallete(palette);
 
-    int mains[] = {MAIN1_PCX, MAIN2_PCX,  MAIN3_PCX, MAIN4_PCX,
-                   MAIN5_PCX, MAIN6_PCX,  MAIN7_PCX, MAIN8_PCX,
-                   MAIN9_PCX, MAIN10_PCX, MAIN11_PCX, MAIN12_PCX};
     for (int i = 0; i < 12; i++) {
-        //sprintf(file_buffer, "MAIN%d.PCX", i + 1);
-        player.sprite[i] = dat_file[mains[i]].dat; //load_pcx( file_buffer, NULL );
+        player.sprite[i] = dat_frame(PLAYER_BMP, 40 * i, 40, 40);
         if(!player.sprite[i]) {
-            die("Cannot load %d", mains[i]);
+            die("Cannot load player frame %d", i);
         }
     }
-    //MAIND_PCX
-    player.sprite[12] = dat_file[MAIND_PCX].dat; //load_pcx("maind.pcx", NULL);
+    player.sprite[12] = dat_file[MAIND_BMP].dat;
     if (!player.sprite[12]) {
         die("cannot load die sprite from player");
     }
-    player_head = dat_file[HEAD_PCX].dat;//load_pcx( "HEAD.PCX", NULL );
-    player_lifebar = dat_file[LIFEBAR_PCX].dat;
-    girl = dat_file[GIRL_PCX].dat; // load_pcx("GIRL.PCX", NULL);
-    key_sprite = dat_file[KEY_PCX].dat;
-    key_sprite_blue =  dat_file[BLUE_KEY_PCX].dat;
-    vespino = dat_file[VESPINO_PCX].dat;
+    player_head = dat_file[HEAD_BMP].dat;
+    player_lifebar = dat_file[LIFEBAR_BMP].dat;
+    girl = dat_file[GIRL_BMP].dat;
+    key_sprite = dat_file[KEY_BMP].dat;
+    key_sprite_blue =  dat_file[BLUE_KEY_BMP].dat;
+    vespino = dat_file[VESPINO_BMP].dat;
 
     if (!player_head) {
         die("cannot load head");
@@ -226,6 +222,7 @@ int main(int argc, const char **argv) {
     player.received_hits = 0;
     player.lives = 3;
     player.floor_times = 0;
+    player.jump = 0;
     cheat_mode = 0;
 
     gfx_init_timer();

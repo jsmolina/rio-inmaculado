@@ -2,6 +2,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "dat_manager.h"
 
@@ -88,6 +89,21 @@ DATAFILE * extract_data() {
     remove_int(rotar_paleta);
     return dat_file;
     //fclose(input);
+}
+
+BITMAP *dat_frame(int id, int x, int w, int h) {
+    return create_sub_bitmap(dat_file[id].dat, x, 0, w, h);
+}
+
+BITMAP *dat_copy(int id) {
+    BITMAP *src = dat_file[id].dat;
+    BITMAP *copy = create_bitmap(src->w, src->h);
+    blit(src, copy, 0, 0, 0, 0, src->w, src->h);
+    return copy;
+}
+
+void dat_palette(int id, PALETTE pal) {
+    memcpy(pal, dat_file[id].dat, sizeof(PALETTE));
 }
 
 void cleanup_data() {
