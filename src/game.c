@@ -52,6 +52,7 @@ SAMPLE *hit;
 SAMPLE *punch, *punch2;
 SAMPLE *voice;
 SAMPLE *fall, *die_sample;
+SAMPLE *enemy_kill;
 SAMPLE *motorbike, *metalhit;
 char slow_cpu;
 LevelData levels[TOTAL_LEVELS];
@@ -69,6 +70,9 @@ void input() {
     // end_game = 1;
     if (level == 12 || (level == 8 && !coursnave_completed)) {
         return;
+    }
+    if (player.jump > 0) {
+        return; // no control in the air
     }
     if (player.moving != LOOKING_WALL) {
         if (player.moving < STOPPOS) {
@@ -89,6 +93,17 @@ void input() {
         return;
     }
     unsigned char pressing_alt = key[KEY_ALT] || key[KEY_ALTGR];
+    // flying kick (Target Renegade): kick + up jumps straight up, adding left/right flies that way;
+    // drawn as the kick pose on a parabola
+    if (pressing_alt && key[KEY_UP]) {
+        char left = key[KEY_LEFT] || (!key[KEY_RIGHT] && (player.moving & 1));
+        player.jump = JUMP_FRAMES;
+        player.jump_dx = key[KEY_LEFT] ? -JUMP_DX : (key[KEY_RIGHT] ? JUMP_DX : 0);
+        player.moving = left ? KICK_LEFT : KICK_RIGHT;
+        player.y_moving = STOPPOS;
+        player.curr_sprite = ANIM_KICK;
+        return;
+    }
     if (!pressing_alt && player.is_kicking > 0) {
         player.is_kicking = 0;
     }
@@ -175,11 +190,12 @@ void increase_level_and_load() {
     player.win = FALSE;
     player.lifebar = 10;
     player.floor_times = 0;
+    player.jump = 0;
 
     start_playing = time(NULL);
     for (int i = 0; i < TOTAL_LEVELS; i++) {
         for (int j=0; j < MAX_ENEMIES; j++) {
-            alive_enemies[i][j] = TRUE;
+            alive_enemies[i][j] = j < levels[i].total_enemies ? TRUE : ENEMY_NONE;
         }        
     }
 
@@ -373,24 +389,30 @@ void process() {
     }
 }
 
+// flying kick height over the floor: parabola t*(T-t), scaled so the top is JUMP_PEAK
+static inline int jump_height() {
+    return (JUMP_FRAMES - player.jump) * player.jump * JUMP_PEAK / ((JUMP_FRAMES / 2) * (JUMP_FRAMES / 2));
+}
+
 inline void draw_player() {
+    unsigned int y = player.y - jump_height();
     // redraw pair or impair?
     if (player.is_floor != FALSE) {
         if (player.moving & 1) {
             draw_sprite(double_buffer, player.sprite[12], player.x,
-                        player.y + 30);
+                        y + 30);
         } else {
             draw_sprite_h_flip(double_buffer, player.sprite[12], player.x,
-                               player.y + 30);
+                               y + 30);
         }
 
     } else {
         if (player.moving & LOOKING_LEFT) {
             draw_sprite_h_flip(double_buffer, player.sprite[player.curr_sprite],
-                               player.x, player.y);
+                               player.x, y);
         } else {
             draw_sprite(double_buffer, player.sprite[player.curr_sprite],
-                        player.x, player.y);
+                        player.x, y);
         }
     }
 }
@@ -415,12 +437,15 @@ inline void clean() {
         return;
     }
     // clean enemies
-    for (int i = 0; i < levels[level].total_enemies; i++) {
-        blit(bg_video, double_buffer, enemies[i].x, 120, enemies[i].x, 120, 40, 80);
+    for (int i = 0; i < MAX_ENEMIES; i++) {
+        if (enemy_in_room(i)) {
+            blit(bg_video, double_buffer, enemies[i].x, 120, enemies[i].x, 120, 40, 80);
+        }
     }
     // clean player
-    blit(bg_video, double_buffer, player.x - 5, player.y - 10, player.x - 5,
-        player.y - 10, 45, 55);
+    // still at last frame's height: process() runs after clean()
+    int jy = player.y - 10 - jump_height();
+    blit(bg_video, double_buffer, player.x - 5, jy, player.x - 5, jy, 45, 55);
     // clean vespino (if applies)
     if (level == 11 && vespino_enemy.direction != VESPINO_HIDDEN) {
         blit(bg_video, double_buffer, vespino_enemy.x - 3, vespino_enemy.y,
@@ -487,10 +512,11 @@ inline void output() {
         die("double buffer empty");
     }
 
-    blit(double_buffer, screen, 0, 0, 0, 0, 320, 200);
+    // no blit to screen: double_buffer is the first video bitmap, which Allegro places at VRAM
+    // offset 0, the visible page (also after set_gfx_mode, which frees all video bitmaps)
 
-    for (int i = 0; i < levels[level].total_enemies; i++) {
-        // enemy hits player
+    for (int i = 0; i < MAX_ENEMIES; i++) {
+        // enemy hits player (sample flags are only set by enemies in the room)
         if(enemies[i].enem_received_hit_sample == 1) {
             enemies[i].enem_received_hit_sample = 0;            
             play_sample(punch, 200, 155, 1200 +small_counter , 0);            
@@ -519,6 +545,7 @@ void init_level_variables(unsigned int initialX, unsigned int initialY) {
     player.is_floor = FALSE;
     player.received_hits = 0; // TODO remove
     player.floor_times = 0;
+    player.jump = 0;
     if (initialY == 130) {
         starting_level_counter = 20; // simulate leaving elevator
     } else {
@@ -531,42 +558,36 @@ void init_level_variables(unsigned int initialX, unsigned int initialY) {
 /**
 Loads the whole set of levels
 */
-void load_levels() {
-    FILE* archivo = fopen("levels.csv", "r");
-    if (archivo == NULL) {
-        die("Cannot open 'levels.csv'\n");
-    }
-    // discard first line
-    char buffer[150];
-    fgets(buffer, 72, archivo);
-    /*level,door1Pos,door1,door2Pos,door2,left,right,enemies,initialX,initialY,elevatorPos,elevator, minX,maxX */
-    int total_levels = 0;
+void load_levels(char *data) {
+    char *line = data;
+    char *next_line;
     int level_index = 1;
+    int total_levels = 0;
 
-    while (fscanf(archivo, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", 
-                  &levels[level_index].level,
-                  &levels[level_index].door1Pos,
-                  &levels[level_index].door1,
-                  &levels[level_index].door2Pos,
-                  &levels[level_index].door2,
-                  &levels[level_index].left,
-                  &levels[level_index].right,
-                  &levels[level_index].total_enemies, 
-                  &levels[level_index].initialX,
-                  &levels[level_index].initialY, 
-                  &levels[level_index].elevatorPos,
-                  &levels[level_index].elevator,
-                  &levels[level_index].minX, 
-                  &levels[level_index].maxX) > 2) {
-        total_levels++;
-        level_index++;
-        if (total_levels >= TOTAL_LEVELS) break;
+    while (line && *line && total_levels < TOTAL_LEVELS) {
+        next_line = strchr(line, '\n'); // buscar fin de línea
+        if (next_line) {
+            *next_line = '\0'; // terminar la línea temporalmente
+        }
+
+        if (sscanf(
+                line, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
+                &levels[level_index].level, &levels[level_index].door1Pos,
+                &levels[level_index].door1, &levels[level_index].door2Pos,
+                &levels[level_index].door2, &levels[level_index].left,
+                &levels[level_index].right, &levels[level_index].total_enemies,
+                &levels[level_index].initialX, &levels[level_index].initialY,
+                &levels[level_index].elevatorPos, &levels[level_index].elevator,
+                &levels[level_index].minX, &levels[level_index].maxX) == 14) {
+            total_levels++;
+            level_index++;
+        }
+
+        if (!next_line)
+            break;            // fin del buffer
+        line = next_line + 1; // avanzar a la siguiente línea
     }
-
-    fclose(archivo);
 }
-
-
 
 void load_level() {
     unsigned char prev_level = level;
@@ -590,7 +611,7 @@ void load_level() {
     if (next_level == 0) {
         //bg = load_pcx("bege.pcx", NULL);
         bg = load_level_background(0);
-        textout_ex(bg, font, "v1.32", 60, 30, makecol(100, 100, 100), -1);
+        textout_ex(bg, font, "v1.5", 60, 30, makecol(100, 100, 100), -1);
         textout_ex(bg, font, "MSDOS CLUB", SCREEN_H - 20, 40, makecol(100, 100, 100), -1);
         textout_ex(bg, font, "Rio Immaculado", SCREEN_W / 2 - 55, 140, makecol(255, 255, 255), -1);
         textout_ex(bg, font, "Space to start", SCREEN_W / 2 - 40, 80, makecol(156, 176, 239), -1);
@@ -643,6 +664,7 @@ void load_level() {
         player.is_floor = FALSE;
         player.received_hits = 0; // TODO remove
         player.floor_times = 0;
+        player.jump = 0;
         if (initialY == 130) {
             starting_level_counter = 20; // simulate leaving elevator
         } else {
@@ -650,7 +672,7 @@ void load_level() {
         }
         player.curr_sprite = ANIM_WALK1;
 
-        init_level_enemies();
+        init_level_enemies(prev_level);
     }
     if (!bg) {
         die("Cannot load graphic");        

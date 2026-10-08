@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Out of Cash (Sin blanca)</title>
+  <title>Rio Inmaculado</title>
   <style>
     html,
     body {
@@ -28,19 +28,26 @@
           // kiosk: true,
           //background: "https://dos.zone/images/http/original/2X/f/f833b147609640191342f555d70eb07261f53c03.png/0a94af564ab81a14a27d6a67671e5416.webp",
           pathPrefix: "emulators/",      
-          noNetworking: false,
+          noNetworking: true,
           noCursor: false,		  
           renderAspect: "AsIs",
           // renderBackend: "webgl",
           imageRendering: "pixelated",
-		  backend: "dosboxX",
-		  backendLocked: true,
-		  softkeyboardlayout: [
-		    "q w e r t",
-		    "{up} {down}",
-		    "{left} {right}",
-		    "{layout}"
-		  ],
+          backend: "dosboxX",
+          backendLocked: false,
+          softKeyboardLayout:
+            [[[
+              "q w e r t y u i o p",
+              "a s d f g h j k l ñ",
+              "{alt} {ctrl} z x c v b n m",              
+            ],
+              [
+                "{up}",
+                "{left} {down} {right}",
+                "{space} {ctrl} {alt} {enter}"
+              ]
+            ]],
+              
           // key: "-----",
           onEvent: (event, arg) => {
             console.log("Event", event, arg);

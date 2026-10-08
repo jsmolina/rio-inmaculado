@@ -18,7 +18,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y zip libfl2 wget build-essential bzip2 bison flex curl gcc g++ make texinfo unzip zlib1g-dev imagemagick git
+          sudo apt-get install -y zip libfl2 wget build-essential bzip2 bison flex curl gcc g++ make texinfo unzip zlib1g-dev git liballegro4-dev
       
       - name: Clone djgpp and symlink
         run: |
@@ -37,14 +37,10 @@ jobs:
       - name: Compile your project
         run: |
           # Aquí van los comandos para compilar tu proyecto que utiliza Allegro 4
-          cd static
-          gcc dat2.c -o dat2
-          cd ..
+          (cd static && ./build.sh)
           export PATH=/usr/local/djgpp/i586-pc-msdosdjgpp/bin:$PATH
           export DJDIR=/usr/local/djgpp/i586-pc-msdosdjgpp
           export DJGPP_CC=/usr/local/djgpp/bin/i586-pc-msdosdjgpp-gcc
-          sudo apt-get install imagemagick
-          sudo ln -s /usr/bin/convert /usr/bin/magick
           make clean && make
           zip -r -j rio.zip dist
       

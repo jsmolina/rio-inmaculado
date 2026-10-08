@@ -52,7 +52,6 @@
 void beep(int frequency, int duration);
 int random_range(unsigned int low, unsigned int high);
 int point_distance(unsigned int x, unsigned int targetX);
-char is_cpu_slow();
 
 typedef struct  {
     unsigned int x;
@@ -70,6 +69,8 @@ typedef struct  {
     int is_punching;
     int is_kicking;
     int win;
+    int jump;    // flying kick frames left, 0 = on the ground
+    int jump_dx; // horizontal speed during the flying kick
 } spritePos;
 
 typedef struct  {
@@ -92,6 +93,8 @@ typedef struct  {
     unsigned char floor_times;
     int counter_for_state;
     int variant; // which enemy are we painting?
+    int enter_delay; // frames until a following enemy walks into the room (0 = here)
+    int knock;       // knockdown meter: hits drain it, it refills every frame, empty = knocked down
 } enemyData;
 
 typedef struct {

@@ -16,6 +16,9 @@
 #define MIGUEL_WALK_CYCLE 2
 #define MOTORBIKE_HIT 8
 #define HIT_KO 5
+#define JUMP_FRAMES 32 // flying kick airtime
+#define JUMP_DX 2       // flying kick horizontal speed
+#define JUMP_PEAK 20    // flying kick max height in px (sprites are 40px tall)
 
 
 // TODO define maximum vertical distance to allow before two objects can no
@@ -41,9 +44,11 @@ extern SAMPLE *alleytheme;
 extern SAMPLE *hit;
 extern SAMPLE *dog_theme;
 extern SAMPLE *punch, *fall, *punch2, *die_sample, *motorbike, *metalhit, *voice;
+extern SAMPLE *enemy_kill;
 
 extern char cheat_mode;
 extern int counter;
+extern unsigned int small_counter; // 0..10, animations tick when it is 10
 extern BITMAP *bg;
 extern BITMAP *bg_video;
 extern BITMAP *double_buffer;
@@ -63,7 +68,7 @@ inline void output();
 // setups next level
 void increase_level_and_load();
 // opens the levels.nfo file which includes actionable parameters for each level
-void load_levels();
+void load_levels(char * data);
 // opens the current playable level
 void load_level();
 void draw_lives();

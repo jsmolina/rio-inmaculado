@@ -3,8 +3,9 @@
 
 CC        = $(DJGPP_CC)
 VENDOR    = vendor
-CFLAGS    = -DHAVE_STDBOOL_H=1 -fgnu89-inline -Ivendor/allegro-4.2.2-xc/include
-LDFLAGS   = -Lvendor/allegro-4.2.2-xc/lib/djgpp -lalleg
+CFLAGS    = -DHAVE_STDBOOL_H=1 -fgnu89-inline -march=i386 -mno-80387 -mno-fp-ret-in-387 -Ivendor/allegro-4.2.2-xc/include
+# -lemu links DJGPP's x87 emulator: Allegro/libc contain FPU instructions, which crash 386/486SX without it
+LDFLAGS   = -Lvendor/allegro-4.2.2-xc/lib/djgpp -lalleg -lemu
 
 BIN       = main.exe
 SRCDIR    = src
@@ -12,9 +13,8 @@ OBJDIR    = obj
 DISTDIR   = dist
 STATICDIR = static
 
-# Static files, e.g. the readme.txt file, that get copied straight to
-# the dist directory.
-STATIC    = $(shell find $(STATICDIR) -name "DATA.DAT" -not -name ".*" 2> /dev/null)
+# Game datafile, packed by static/build.sh (docker-compose runs it first), copied to dist.
+STATIC    = $(STATICDIR)/datos.dat
 STATICDEST= $(subst $(STATICDIR),$(DISTDIR),$(STATIC))
 
 # All source files (*.c) and their corresponding object files.
@@ -33,26 +33,29 @@ ${DISTDIR}:
 	mkdir -p ${DISTDIR}
 
 %.o: %.c
-	${CC} -c -o $@ $? ${CFLAGS} -O3
+	${CC} -c -o $@ $< ${CFLAGS} -O3
+
+# rebuild when a header changes (statics.h indices change whenever datos.dat is repacked)
+${OBJS}: $(wildcard $(SRCDIR)/*.h)
 
 ${DISTDIR}/${BIN}: ${OBJS}
 	${CC} -o ${DISTDIR}/${BIN} $+ ${LDFLAGS} -O3
 	${CC} -o static/setup.exe setup/setup.c ${CFLAGS} -O3 ${LDFLAGS}
 
 
-${STATICDEST}:
-	cd $(STATICDIR) && sh convert.sh	
+# copied again whenever static/build.sh repacks the datafile
+${STATICDEST}: ${STATIC}
 	@mkdir -p $(shell dirname $@)
 	cp $(subst $(DISTDIR),$(STATICDIR),$@) $@
 	cp static/cwsdpmi.exe ${DISTDIR}
-	cp static/msdos.pcx ${DISTDIR}
 	cp static/setup.* ${DISTDIR}
+	cp static/msdos.bmp ${DISTDIR}
+	cp static/shareware.txt ${DISTDIR}/SHARE.TXT
 
 all: ${DISTDIR} ${DISTDIR}/${BIN} ${STATICDEST}
 
 static: ${STATICDEST}
 
 clean:
-	rm -rf ${DISTDIR}
+	rm -f ${DISTDIR}/*
 	rm -f ${OBJS}
-	touch ${STATICDIR}/data.dat

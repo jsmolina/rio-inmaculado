@@ -11,19 +11,16 @@ What happens if you mix "River City" + "Target Renegade" + "an 80s kid"? This cr
 This game is more than a beat-em-up, it has surprises and mini games, you will discover them!
 
 ## compiling
-Just use docker:
+Just use docker, it includes all the toolchain necessary to build the project (any host, the image is linux/amd64):
 
-Mac ARM processors:
 ```
 $ docker-compose build
 $ docker-compose up
 ```
 
-OTHERS
-```
-docker-compose -f docker-compose2.yaml build
-docker-compose -f docker-compose2.yaml up
-```
+`docker-compose up` first packs `static/datos.dat` (and `src/statics.h`) with `static/build.sh`, using
+[allegro-dat-replacement](https://github.com/jsmolina/allegro-dat-replacement), then compiles the game into `dist/`.
+Graphics are 8-bit BMPs in `static/`; sprite sheets are cut into frames in code.
 
 ![portada](https://github.com/user-attachments/assets/e8233e81-bf09-4aab-a854-d0fc941a6425)
 
